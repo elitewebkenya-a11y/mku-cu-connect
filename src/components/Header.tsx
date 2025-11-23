@@ -3,6 +3,7 @@ import { Menu, X, Youtube, Phone, Mail, Facebook, Instagram, Twitter } from "luc
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import logo from "@/assets/mku-cu-logo.png";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,6 +68,7 @@ export const Header = () => {
 
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center gap-3">
+              <ThemeToggle />
               <Button variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white">
                 <Youtube className="w-4 h-4 mr-2" />
                 Watch Live
@@ -74,13 +76,16 @@ export const Header = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              className="lg:hidden p-2"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            <div className="flex items-center gap-2 lg:hidden">
+              <ThemeToggle />
+              <button
+                className="p-2"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
 
