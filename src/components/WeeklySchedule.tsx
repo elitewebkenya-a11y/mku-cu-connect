@@ -1,9 +1,12 @@
-import { Calendar, Clock, MapPin, User, BookOpen, Heart, Mic, MessageCircle, Moon, Book, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, User, BookOpen, Heart, Mic, MessageCircle, Moon, Book, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { toast } from "sonner";
+import { format } from "date-fns";
 
 const weeklyEvents = [
   {
@@ -460,6 +463,16 @@ const DayCard = ({ daySchedule, dayIndex }: { daySchedule: typeof weeklyEvents[0
 };
 
 export const WeeklySchedule = () => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  const getEventsForDate = (date: Date) => {
+    const dayOfWeek = format(date, 'EEEE').toUpperCase();
+    return weeklyEvents.find(day => day.day === dayOfWeek);
+  };
+
+  const selectedDayEvents = selectedDate ? getEventsForDate(selectedDate) : null;
+
   return (
     <section className="py-12 md:py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -481,12 +494,87 @@ export const WeeklySchedule = () => {
             ))}
           </div>
 
-          {/* View Full Schedule CTA */}
+          {/* View Full Schedule CTA with Calendar Dialog */}
           <div className="text-center mt-8 md:mt-12">
-            <Button size="lg" className="bg-navy hover:bg-navy-light text-white text-sm md:text-base">
-              <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              View Full Week Schedule
-            </Button>
+            <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="bg-navy hover:bg-navy-light text-white text-sm md:text-base">
+                  <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                  View Full Week Schedule
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-serif">Weekly Event Calendar</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6">
+                  <div className="flex justify-center">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      className="rounded-md border pointer-events-auto"
+                    />
+                  </div>
+                  
+                  {selectedDayEvents ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 pb-3 border-b">
+                        <div className={`w-10 h-10 rounded-full bg-${selectedDayEvents.color}-500/10 flex items-center justify-center`}>
+                          <selectedDayEvents.icon className={`w-5 h-5 text-${selectedDayEvents.color}-600`} />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold">{selectedDayEvents.day}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {selectedDate && format(selectedDate, 'MMMM d, yyyy')}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {selectedDayEvents.events.map((event, idx) => (
+                        <Card key={idx} className="p-4 border-l-4" style={{ borderLeftColor: `var(--${selectedDayEvents.color}-500)` }}>
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex-1">
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <h4 className="text-base font-bold">{event.title}</h4>
+                                {event.hasLive && (
+                                  <Badge className="bg-red-500 text-white text-xs">🔴 LIVE</Badge>
+                                )}
+                              </div>
+                              {event.subtitle && (
+                                <p className="text-sm text-muted-foreground italic mb-2">{event.subtitle}</p>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-2 text-sm">
+                            {event.time && (
+                              <div className="flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-muted-foreground" />
+                                <span>{event.time}</span>
+                              </div>
+                            )}
+                            {event.venue && (
+                              <div className="flex items-center gap-2">
+                                <MapPin className="w-4 h-4 text-muted-foreground" />
+                                <span>{event.venue}</span>
+                              </div>
+                            )}
+                            {event.description && (
+                              <p className="text-muted-foreground mt-2">{event.description}</p>
+                            )}
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">No events scheduled for this date.</p>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
