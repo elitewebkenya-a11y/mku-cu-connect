@@ -1,6 +1,5 @@
 import { EnhancedHeroSlider } from "@/components/EnhancedHeroSlider";
 import { DailyVerse } from "@/components/DailyVerse";
-import { DailyBibleVerse } from "@/components/DailyBibleVerse";
 import { QuickActions } from "@/components/QuickActions";
 import { EnhancedStatsCounter } from "@/components/EnhancedStatsCounter";
 import { WeeklySchedule } from "@/components/WeeklySchedule";
@@ -23,7 +22,6 @@ const Index = () => {
         <DailyVerse />
         <QuickActions />
         <EnhancedStatsCounter />
-        <DailyBibleVerse />
         <WeeklySchedule />
         <LatestSermons />
         <GivingSection />
