@@ -154,7 +154,7 @@ const Blog = () => {
           <div className="container mx-auto px-4 py-4">
             <div className="max-w-6xl mx-auto">
               {/* Categories */}
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
                   <button
                     key={category}
@@ -168,18 +168,6 @@ const Blog = () => {
                     {category}
                   </button>
                 ))}
-              </div>
-
-              {/* Search */}
-              <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search posts..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
               </div>
             </div>
           </div>

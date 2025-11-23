@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Avatar } from "@/components/ui/avatar";
+import { CommentsSection } from "@/components/CommentsSection";
 import { Calendar, Clock, User, Eye, Facebook, Twitter, Link as LinkIcon, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
@@ -387,6 +387,9 @@ const BlogPost = () => {
                       </div>
                     </div>
                   </Card>
+
+                  {/* Comments Section */}
+                  <CommentsSection />
                 </div>
               </div>
             </div>
