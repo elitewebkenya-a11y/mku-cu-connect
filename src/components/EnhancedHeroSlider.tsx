@@ -108,7 +108,7 @@ export const EnhancedHeroSlider = () => {
   };
 
   return (
-    <div className="relative h-[60vh] md:h-[70vh] lg:h-[85vh] min-h-[500px] md:min-h-[600px] w-full overflow-hidden touch-pan-y">
+    <div className="relative h-[80vh] md:h-[70vh] lg:h-[85vh] min-h-[600px] md:min-h-[600px] w-full overflow-hidden touch-pan-y">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -140,26 +140,26 @@ export const EnhancedHeroSlider = () => {
               {/* Slide 1: Main Welcome */}
               {slide.id === 1 && (
                 <>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-white mb-4 md:mb-6 leading-tight drop-shadow-lg px-4">
+                  <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-3 md:mb-5 leading-tight drop-shadow-lg">
                     {slide.title}
                   </h1>
-                  <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-gold mb-4 md:mb-6 font-semibold px-4">
+                  <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gold mb-3 md:mb-5 font-semibold">
                     {slide.subtitle}
                   </p>
-                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 italic mb-2 max-w-3xl mx-auto leading-relaxed px-4">
+                  <p className="text-sm sm:text-base md:text-lg text-white/90 italic mb-2 max-w-3xl mx-auto leading-relaxed">
                     {slide.verse}
                   </p>
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gold-light mb-6 md:mb-10 px-4">
+                  <p className="text-xs sm:text-sm md:text-base text-gold-light mb-6 md:mb-8">
                     {slide.verseRef}
                   </p>
-                  <div className="flex flex-col gap-3 md:gap-4 justify-center items-center px-4 w-full max-w-md md:max-w-none mx-auto">
-                    <a href={slide.cta1.link} target={slide.cta1.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta1.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full md:w-auto">
-                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-base md:text-lg shadow-glow w-full">
+                  <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center w-full max-w-lg mx-auto">
+                    <a href={slide.cta1.link} target={slide.cta1.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta1.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
+                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base shadow-glow w-full">
                         {slide.cta1.text} →
                       </Button>
                     </a>
-                    <a href={slide.cta2.link} target={slide.cta2.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta2.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full md:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-base md:text-lg w-full">
+                    <a href={slide.cta2.link} target={slide.cta2.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta2.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
+                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base w-full">
                         {slide.cta2.text} →
                       </Button>
                     </a>
@@ -170,36 +170,36 @@ export const EnhancedHeroSlider = () => {
               {/* Slide 2: Sunday Service */}
               {slide.id === 2 && (
                 <>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-serif font-bold text-white mb-3 md:mb-4 drop-shadow-lg px-4">
+                  <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-2 md:mb-3 drop-shadow-lg">
                     {slide.title}
                   </h1>
-                  <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gold mb-2 px-4">
+                  <p className="text-sm sm:text-base md:text-xl text-gold mb-2">
                     {slide.subtitle}
                   </p>
-                  <p className="text-sm sm:text-base md:text-lg text-white/90 mb-4 md:mb-6 px-4">
+                  <p className="text-xs sm:text-sm md:text-base text-white/90 mb-3 md:mb-4">
                     {slide.location}
                   </p>
-                  <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 md:p-6 mb-4 md:mb-6 max-w-2xl mx-4 md:mx-auto">
-                    <h3 className="text-white font-bold text-base md:text-xl mb-3 md:mb-4">Three Services:</h3>
-                    <div className="space-y-1 md:space-y-2 text-white/90">
+                  <div className="bg-white/10 backdrop-blur-md rounded-lg p-3 md:p-5 mb-3 md:mb-5 max-w-2xl mx-auto">
+                    <h3 className="text-white font-bold text-sm md:text-lg mb-2 md:mb-3">Three Services:</h3>
+                    <div className="space-y-1 text-white/90 text-xs md:text-base">
                       {slide.details?.map((detail, idx) => (
-                        <p key={idx} className="text-sm md:text-lg">• {detail}</p>
+                        <p key={idx}>• {detail}</p>
                       ))}
                     </div>
                   </div>
-                  <div className="mb-6 md:mb-8 px-4">
-                    <p className="text-gold text-base md:text-xl font-bold">This Week's Theme:</p>
-                    <p className="text-white text-lg md:text-2xl font-serif">{slide.theme}</p>
-                    <p className="text-gold-light text-sm md:text-base">{slide.themeVerse}</p>
+                  <div className="mb-4 md:mb-6">
+                    <p className="text-gold text-sm md:text-lg font-bold">This Week's Theme:</p>
+                    <p className="text-white text-base md:text-xl font-serif">{slide.theme}</p>
+                    <p className="text-gold-light text-xs md:text-sm">{slide.themeVerse}</p>
                   </div>
-                  <div className="flex flex-col gap-3 md:gap-4 justify-center px-4 w-full max-w-md md:max-w-none mx-auto">
-                    <a href={slide.cta1.link} target={slide.cta1.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta1.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full md:w-auto">
-                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-sm md:text-base w-full">
+                  <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center w-full max-w-lg mx-auto">
+                    <a href={slide.cta1.link} target={slide.cta1.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta1.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
+                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta1.text}
                       </Button>
                     </a>
-                    <a href={slide.cta2.link} target={slide.cta2.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta2.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full md:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-sm md:text-base w-full">
+                    <a href={slide.cta2.link} target={slide.cta2.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta2.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
+                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta2.text}
                       </Button>
                     </a>
@@ -210,27 +210,27 @@ export const EnhancedHeroSlider = () => {
               {/* Slide 3: YouTube */}
               {slide.id === 3 && (
                 <>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-serif font-bold text-white mb-4 md:mb-8 drop-shadow-lg px-4">
+                  <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-3 md:mb-6 drop-shadow-lg">
                     {slide.title}
                   </h1>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-8 max-w-3xl mx-4 md:mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 mb-4 md:mb-6 max-w-3xl mx-auto">
                     {slide.features?.map((feature, idx) => (
-                      <div key={idx} className="bg-white/10 backdrop-blur-md rounded-lg p-3 md:p-4">
-                        <p className="text-white text-sm md:text-lg">{feature}</p>
+                      <div key={idx} className="bg-white/10 backdrop-blur-md rounded-lg p-2 md:p-3">
+                        <p className="text-white text-xs md:text-base">{feature}</p>
                       </div>
                     ))}
                   </div>
-                  <p className="text-base sm:text-lg md:text-xl text-gold-light mb-6 md:mb-8 px-4">
+                  <p className="text-sm sm:text-base md:text-lg text-gold-light mb-4 md:mb-6">
                     {slide.stats}
                   </p>
-                  <div className="flex flex-col gap-3 md:gap-4 justify-center px-4 w-full max-w-md md:max-w-none mx-auto">
-                    <a href={slide.cta1.link} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto">
-                      <Button size="lg" className="bg-crimson hover:bg-crimson/90 text-white font-semibold px-6 py-4 md:px-8 md:py-6 text-sm md:text-base w-full">
+                  <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center w-full max-w-lg mx-auto">
+                    <a href={slide.cta1.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                      <Button size="lg" className="bg-accent hover:bg-accent/90 text-white font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta1.text}
                       </Button>
                     </a>
-                    <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-sm md:text-base w-full">
+                    <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta2.text} →
                       </Button>
                     </a>
@@ -241,33 +241,33 @@ export const EnhancedHeroSlider = () => {
               {/* Slide 4: Mission Event */}
               {slide.id === 4 && (
                 <>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-serif font-bold text-white mb-3 md:mb-4 drop-shadow-lg px-4">
+                  <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-2 md:mb-3 drop-shadow-lg">
                     {slide.title}
                   </h1>
-                  <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gold font-serif italic mb-2 px-4">
+                  <p className="text-base sm:text-lg md:text-2xl text-gold font-serif italic mb-2">
                     {slide.subtitle}
                   </p>
-                  <p className="text-base sm:text-lg md:text-xl text-gold-light mb-4 md:mb-6 px-4">{slide.verse}</p>
-                  <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 md:p-6 mb-4 md:mb-6 max-w-2xl mx-4 md:mx-auto">
-                    <p className="text-white text-base md:text-xl mb-2">{slide.date}</p>
-                    <p className="text-white text-base md:text-xl mb-3 md:mb-4">{slide.location}</p>
-                    <div className="space-y-1 md:space-y-2 text-white/90">
+                  <p className="text-sm sm:text-base md:text-lg text-gold-light mb-3 md:mb-4">{slide.verse}</p>
+                  <div className="bg-white/10 backdrop-blur-md rounded-lg p-3 md:p-5 mb-3 md:mb-5 max-w-2xl mx-auto">
+                    <p className="text-white text-sm md:text-lg mb-1">{slide.date}</p>
+                    <p className="text-white text-sm md:text-lg mb-2 md:mb-3">{slide.location}</p>
+                    <div className="space-y-1 text-white/90 text-xs md:text-base">
                       {slide.activities?.map((activity, idx) => (
-                        <p key={idx} className="text-sm md:text-lg">✓ {activity}</p>
+                        <p key={idx}>✓ {activity}</p>
                       ))}
                     </div>
                   </div>
-                  <p className="text-lg sm:text-xl md:text-2xl text-gold mb-6 md:mb-8 font-semibold px-4">
+                  <p className="text-base sm:text-lg md:text-xl text-gold mb-4 md:mb-6 font-semibold">
                     {slide.tagline}
                   </p>
-                  <div className="flex flex-col gap-3 md:gap-4 justify-center px-4 w-full max-w-md md:max-w-none mx-auto">
-                    <a href={slide.cta1.link} className="w-full md:w-auto">
-                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-sm md:text-base w-full">
+                  <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center w-full max-w-lg mx-auto">
+                    <a href={slide.cta1.link} className="w-full sm:w-auto">
+                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta1.text}
                       </Button>
                     </a>
-                    <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-sm md:text-base w-full">
+                    <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta2.text}
                       </Button>
                     </a>
@@ -278,33 +278,33 @@ export const EnhancedHeroSlider = () => {
               {/* Slide 5: Community */}
               {slide.id === 5 && (
                 <>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-serif font-bold text-white mb-4 md:mb-8 drop-shadow-lg px-4">
+                  <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-3 md:mb-6 drop-shadow-lg">
                     {slide.title}
                   </h1>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-8 max-w-3xl mx-4 md:mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 mb-3 md:mb-6 max-w-3xl mx-auto">
                     {Array.isArray(slide.stats) && slide.stats.map((stat, idx) => (
-                      <div key={idx} className="bg-white/10 backdrop-blur-md rounded-lg p-3 md:p-4">
-                        <p className="text-white text-sm md:text-lg font-semibold">{stat}</p>
+                      <div key={idx} className="bg-white/10 backdrop-blur-md rounded-lg p-2 md:p-3">
+                        <p className="text-white text-xs md:text-base font-semibold">{stat}</p>
                       </div>
                     ))}
                   </div>
-                  <p className="text-lg sm:text-xl md:text-2xl text-gold mb-4 md:mb-6 font-semibold px-4">
+                  <p className="text-base sm:text-lg md:text-xl text-gold mb-3 md:mb-4 font-semibold">
                     {slide.tagline}
                   </p>
-                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 italic mb-2 max-w-3xl mx-auto px-4">
+                  <p className="text-sm sm:text-base md:text-lg text-white/90 italic mb-1 max-w-3xl mx-auto">
                     {slide.verse}
                   </p>
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gold-light mb-6 md:mb-10 px-4">
+                  <p className="text-xs sm:text-sm md:text-base text-gold-light mb-4 md:mb-6">
                     {slide.verseRef}
                   </p>
-                  <div className="flex flex-col gap-3 md:gap-4 justify-center px-4 w-full max-w-md md:max-w-none mx-auto">
-                    <a href={slide.cta1.link} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto">
-                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-sm md:text-base w-full">
+                  <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center w-full max-w-lg mx-auto">
+                    <a href={slide.cta1.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta1.text}
                       </Button>
                     </a>
-                    <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-6 py-4 md:px-8 md:py-6 text-sm md:text-base w-full">
+                    <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta2.text} →
                       </Button>
                     </a>
