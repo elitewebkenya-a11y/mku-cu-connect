@@ -9,6 +9,8 @@ import { TodayTestimony } from "@/components/TodayTestimony";
 import { Testimonials } from "@/components/Testimonials";
 import { GalleryPreview } from "@/components/GalleryPreview";
 import { VisionMission } from "@/components/VisionMission";
+import { MinistriesPreview } from "@/components/MinistriesPreview";
+import { GuestForm } from "@/components/GuestForm";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
@@ -23,8 +25,10 @@ const Index = () => {
         <QuickActions />
         <EnhancedStatsCounter />
         <WeeklySchedule />
+        <MinistriesPreview />
         <LatestSermons />
         <GivingSection />
+        <GuestForm />
         <TodayTestimony />
         <Testimonials />
         <GalleryPreview />
