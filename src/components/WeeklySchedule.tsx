@@ -463,119 +463,104 @@ const DayCard = ({ daySchedule, dayIndex }: { daySchedule: typeof weeklyEvents[0
 };
 
 export const WeeklySchedule = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(new Date());
 
-  const getEventsForDate = (date: Date) => {
-    const dayOfWeek = format(date, 'EEEE').toUpperCase();
-    return weeklyEvents.find(day => day.day === dayOfWeek);
+  const getEventsForDate = (selectedDate: Date | undefined) => {
+    if (!selectedDate) return [];
+    
+    const dayOfWeek = selectedDate.getDay();
+    
+    // Return events based on day of week
+    const daySchedule = weeklyEvents.find((_, idx) => idx === dayOfWeek);
+    return daySchedule?.events || [];
   };
 
-  const selectedDayEvents = selectedDate ? getEventsForDate(selectedDate) : null;
-
   return (
-    <section className="py-12 md:py-20 bg-muted/30">
+    <section className="py-16 bg-muted">
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-8 md:mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-3 md:mb-4">
-              Happening This Week at MKU CU
-            </h2>
-            <p className="text-base md:text-xl text-muted-foreground">
-              November 24 - 30, 2025
-            </p>
-          </div>
+        <div className="text-center mb-10 animate-fade-in-up">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-3">
+            This Week's Activities
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Join us for worship, fellowship, and growth
+          </p>
+        </div>
 
-          {/* Weekly Events - Compact Cards */}
-          <div className="space-y-4 md:space-y-6">
-            {weeklyEvents.map((daySchedule, dayIndex) => (
-              <DayCard key={dayIndex} daySchedule={daySchedule} dayIndex={dayIndex} />
-            ))}
-          </div>
+        <div className="grid grid-cols-1 gap-4 md:gap-6 mb-8 max-w-5xl mx-auto">
+          {weeklyEvents.map((daySchedule, dayIndex) => (
+            <DayCard key={daySchedule.day} daySchedule={daySchedule} dayIndex={dayIndex} />
+          ))}
+        </div>
 
-          {/* View Full Schedule CTA with Calendar Dialog */}
-          <div className="text-center mt-8 md:mt-12">
-            <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-              <DialogTrigger asChild>
-                <Button size="lg" className="bg-navy hover:bg-navy-light text-white text-sm md:text-base">
-                  <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                  View Full Week Schedule
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-serif">Weekly Event Calendar</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-6">
-                  <div className="flex justify-center">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={setSelectedDate}
-                      className="rounded-md border pointer-events-auto"
-                    />
-                  </div>
-                  
-                  {selectedDayEvents ? (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3 pb-3 border-b">
-                        <div className={`w-10 h-10 rounded-full bg-${selectedDayEvents.color}-500/10 flex items-center justify-center`}>
-                          <selectedDayEvents.icon className={`w-5 h-5 text-${selectedDayEvents.color}-600`} />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold">{selectedDayEvents.day}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedDate && format(selectedDate, 'MMMM d, yyyy')}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      {selectedDayEvents.events.map((event, idx) => (
-                        <Card key={idx} className="p-4 border-l-4" style={{ borderLeftColor: `var(--${selectedDayEvents.color}-500)` }}>
-                          <div className="flex items-start justify-between gap-3 mb-3">
-                            <div className="flex-1">
-                              <div className="flex flex-wrap items-center gap-2 mb-2">
-                                <h4 className="text-base font-bold">{event.title}</h4>
-                                {event.hasLive && (
-                                  <Badge className="bg-red-500 text-white text-xs">🔴 LIVE</Badge>
+        <div className="text-center">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <CalendarIcon className="w-4 h-4 mr-2" />
+                View Full Calendar
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[90vw] md:max-w-[650px] max-h-[90vh] overflow-y-auto bg-card">
+              <DialogHeader>
+                <DialogTitle className="text-foreground text-xl">November 2025 Schedule</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="flex justify-center">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    className="rounded-md border pointer-events-auto border-border"
+                  />
+                </div>
+                {date && (
+                  <div className="mt-4 px-2">
+                    <h3 className="font-semibold mb-3 text-card-foreground text-lg">
+                      Events on {format(date, "EEEE, MMMM dd, yyyy")}:
+                    </h3>
+                    {getEventsForDate(date).length > 0 ? (
+                      <div className="space-y-3">
+                        {getEventsForDate(date).map((event: any, idx: number) => (
+                          <Card key={idx} className="p-4 bg-muted border-border">
+                            <div className="flex items-start gap-3">
+                              <div className="flex-shrink-0">
+                                <Clock className="w-5 h-5 mt-0.5 text-primary" />
+                              </div>
+                              <div className="flex-grow">
+                                <div className="flex items-center gap-2 flex-wrap mb-1">
+                                  <p className="font-medium text-card-foreground">{event.title}</p>
+                                  {event.hasLive && (
+                                    <Badge className="bg-red-500 text-white text-xs">🔴 LIVE</Badge>
+                                  )}
+                                </div>
+                                {event.time && (
+                                  <p className="text-sm text-muted-foreground mb-1">{event.time}</p>
+                                )}
+                                {event.venue && (
+                                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    {event.venue}
+                                  </p>
+                                )}
+                                {event.description && (
+                                  <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
                                 )}
                               </div>
-                              {event.subtitle && (
-                                <p className="text-sm text-muted-foreground italic mb-2">{event.subtitle}</p>
-                              )}
                             </div>
-                          </div>
-                          
-                          <div className="space-y-2 text-sm">
-                            {event.time && (
-                              <div className="flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-muted-foreground" />
-                                <span>{event.time}</span>
-                              </div>
-                            )}
-                            {event.venue && (
-                              <div className="flex items-center gap-2">
-                                <MapPin className="w-4 h-4 text-muted-foreground" />
-                                <span>{event.venue}</span>
-                              </div>
-                            )}
-                            {event.description && (
-                              <p className="text-muted-foreground mt-2">{event.description}</p>
-                            )}
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">No events scheduled for this date.</p>
-                    </div>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <Card className="p-4 bg-muted border-border">
+                        <p className="text-muted-foreground text-sm text-center">No events scheduled for this date</p>
+                      </Card>
+                    )}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </section>

@@ -36,21 +36,21 @@ export const Header = () => {
       </div>
 
       {/* Main Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
+      <header className="bg-background shadow-md sticky top-0 z-50 border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-4">
+          <div className="flex items-center justify-between py-2">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group">
+            <Link to="/" className="flex items-center gap-2 group">
               <img 
                 src={logo} 
                 alt="MKU CU Logo" 
-                className="w-14 h-14 object-contain transition-transform group-hover:scale-105"
+                className="w-10 h-10 object-contain transition-transform group-hover:scale-105"
               />
               <div>
-                <div className="font-serif font-bold text-xl text-navy group-hover:text-navy-light transition-colors">
+                <div className="font-serif font-bold text-base text-foreground group-hover:text-primary transition-colors">
                   MKU Christian Union
                 </div>
-                <div className="text-xs text-muted-foreground italic">
+                <div className="text-xs text-muted-foreground italic hidden md:block">
                   Living the Knowledge of God
                 </div>
               </div>
@@ -91,7 +91,7 @@ export const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t bg-white">
+          <div className="lg:hidden border-t bg-background">
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
               <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors py-2">Home</Link>
               <Link to="/about" className="text-foreground hover:text-primary font-medium transition-colors py-2">About</Link>

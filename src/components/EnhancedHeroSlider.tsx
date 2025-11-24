@@ -108,7 +108,7 @@ export const EnhancedHeroSlider = () => {
   };
 
   return (
-    <div className="relative h-[80vh] md:h-[70vh] lg:h-[85vh] min-h-[600px] md:min-h-[600px] w-full overflow-hidden touch-pan-y">
+    <div className="relative h-[500px] sm:h-[550px] md:h-[600px] lg:h-[700px] w-full overflow-hidden touch-pan-y">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
