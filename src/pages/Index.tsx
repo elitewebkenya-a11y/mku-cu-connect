@@ -13,6 +13,9 @@ import { MinistriesPreview } from "@/components/MinistriesPreview";
 import { GuestForm } from "@/components/GuestForm";
 import { PrayerRequestForm } from "@/components/PrayerRequestForm";
 import { UpcomingEvents } from "@/components/UpcomingEvents";
+import { CampusFellowships } from "@/components/CampusFellowships";
+import { VolunteerOpportunities } from "@/components/VolunteerOpportunities";
+import { ChurchAnnouncements } from "@/components/ChurchAnnouncements";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
@@ -28,7 +31,10 @@ const Index = () => {
         <EnhancedStatsCounter />
         <WeeklySchedule />
         <UpcomingEvents />
+        <ChurchAnnouncements />
         <MinistriesPreview />
+        <CampusFellowships />
+        <VolunteerOpportunities />
         <LatestSermons />
         <PrayerRequestForm />
         <GivingSection />

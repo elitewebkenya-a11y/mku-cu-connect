@@ -183,7 +183,7 @@ const weeklyEvents = [
     date: "November 30, 2025",
     color: "pink",
     borderColor: "border-l-pink-500",
-    icon: Calendar,
+    icon: CalendarIcon,
     events: [
       {
         title: "SPECIAL EVENT",
@@ -464,22 +464,57 @@ const DayCard = ({ daySchedule, dayIndex }: { daySchedule: typeof weeklyEvents[0
 
 export const WeeklySchedule = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const currentMonth = format(new Date(), 'MMMM');
   const currentYear = format(new Date(), 'yyyy');
 
-  // Calendar events for dialog
+  // Map events to specific dates for the calendar
+  const eventsByDate: Record<string, Array<{ title: string; time: string; venue: string; day: string }>> = {
+    "24": [
+      { day: "SUN", title: "Sunday Service", time: "7:00 AM - 12:45 PM", venue: "Auditorium (MKCC)" },
+      { day: "SUN", title: "Foundation Classes", time: "4:00 PM - 6:00 PM", venue: "MLT Hall B" },
+    ],
+    "25": [
+      { day: "MON", title: "Bible Study", time: "7:00 PM - 9:00 PM", venue: "Home Fellowships" },
+    ],
+    "26": [
+      { day: "TUE", title: "Nurture Class", time: "7:00 PM - 9:00 PM", venue: "CT Hall" },
+    ],
+    "27": [
+      { day: "WED", title: "Midweek Service", time: "4:00 PM - 6:00 PM", venue: "CT Hall" },
+      { day: "WED", title: "Debate Session", time: "6:30 PM - 8:30 PM", venue: "CC Hall" },
+      { day: "WED", title: "Midnight Prayers", time: "11:00 PM - 5:00 AM", venue: "CT Hall" },
+    ],
+    "28": [
+      { day: "THU", title: "Discovery Bible Study", time: "4:00 PM - 6:00 PM", venue: "MLT Hall A" },
+      { day: "THU", title: "BEST-P", time: "7:00 PM - 9:00 PM", venue: "CT Hall" },
+    ],
+    "29": [
+      { day: "FRI", title: "Fellowship Night", time: "7:00 PM - 9:00 PM", venue: "CT Hall" },
+    ],
+    "30": [
+      { day: "SAT", title: "Special Event", time: "TBA", venue: "Check announcements" },
+    ],
+  };
+
+  const getEventsForDate = (date: Date | undefined) => {
+    if (!date) return [];
+    const day = format(date, 'd');
+    return eventsByDate[day] || [];
+  };
+
   const weekDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const calendarEvents = [
-    { day: "SUN", title: "Sunday Service", time: "7:00 AM", venue: "Auditorium" },
-    { day: "SUN", title: "Foundation", time: "4:00 PM", venue: "MLT B" },
-    { day: "MON", title: "Bible Study", time: "7:00 PM", venue: "Fellowships" },
-    { day: "TUE", title: "Nurture Class", time: "7:00 PM", venue: "CT Hall" },
-    { day: "WED", title: "Midweek", time: "4:00 PM", venue: "CT Hall" },
-    { day: "WED", title: "Debate", time: "6:30 PM", venue: "CC Hall" },
-    { day: "WED", title: "Midnight Prayers", time: "11:00 PM", venue: "CT Hall" },
-    { day: "THU", title: "Discovery", time: "4:00 PM", venue: "MLT A" },
-    { day: "THU", title: "BEST-P", time: "7:00 PM", venue: "CT Hall" },
-    { day: "FRI", title: "Fellowship Night", time: "7:00 PM", venue: "CT Hall" },
+    { day: "SUN", title: "Sunday Service", time: "7:00 AM", venue: "Auditorium", date: 24 },
+    { day: "SUN", title: "Foundation", time: "4:00 PM", venue: "MLT B", date: 24 },
+    { day: "MON", title: "Bible Study", time: "7:00 PM", venue: "Fellowships", date: 25 },
+    { day: "TUE", title: "Nurture Class", time: "7:00 PM", venue: "CT Hall", date: 26 },
+    { day: "WED", title: "Midweek", time: "4:00 PM", venue: "CT Hall", date: 27 },
+    { day: "WED", title: "Debate", time: "6:30 PM", venue: "CC Hall", date: 27 },
+    { day: "WED", title: "Midnight Prayers", time: "11:00 PM", venue: "CT Hall", date: 27 },
+    { day: "THU", title: "Discovery", time: "4:00 PM", venue: "MLT A", date: 28 },
+    { day: "THU", title: "BEST-P", time: "7:00 PM", venue: "CT Hall", date: 28 },
+    { day: "FRI", title: "Fellowship Night", time: "7:00 PM", venue: "CT Hall", date: 29 },
   ];
 
   return (
@@ -528,10 +563,43 @@ export const WeeklySchedule = () => {
                 <div className="mt-6">
                   <Calendar
                     mode="single"
-                    selected={date}
-                    onSelect={setDate}
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
                     className="rounded-md border border-border mx-auto"
                   />
+                  
+                  {selectedDate && getEventsForDate(selectedDate).length > 0 && (
+                    <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+                      <h3 className="font-bold text-lg mb-3">
+                        Events on {format(selectedDate, 'MMMM d, yyyy')}
+                      </h3>
+                      <div className="space-y-3">
+                        {getEventsForDate(selectedDate).map((event, idx) => (
+                          <div key={idx} className="p-3 bg-card rounded border border-border">
+                            <div className="font-semibold text-sm mb-1">{event.title}</div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-3">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {event.time}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <MapPin className="w-3 h-3" />
+                                {event.venue}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selectedDate && getEventsForDate(selectedDate).length === 0 && (
+                    <div className="mt-6 p-4 bg-muted/30 rounded-lg text-center">
+                      <p className="text-sm text-muted-foreground">
+                        No events scheduled for {format(selectedDate, 'MMMM d, yyyy')}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </DialogContent>
             </Dialog>
