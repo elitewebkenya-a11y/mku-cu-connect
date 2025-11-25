@@ -11,6 +11,8 @@ import { GalleryPreview } from "@/components/GalleryPreview";
 import { VisionMission } from "@/components/VisionMission";
 import { MinistriesPreview } from "@/components/MinistriesPreview";
 import { GuestForm } from "@/components/GuestForm";
+import { PrayerRequestForm } from "@/components/PrayerRequestForm";
+import { UpcomingEvents } from "@/components/UpcomingEvents";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
@@ -25,8 +27,10 @@ const Index = () => {
         <QuickActions />
         <EnhancedStatsCounter />
         <WeeklySchedule />
+        <UpcomingEvents />
         <MinistriesPreview />
         <LatestSermons />
+        <PrayerRequestForm />
         <GivingSection />
         <GuestForm />
         <TodayTestimony />
