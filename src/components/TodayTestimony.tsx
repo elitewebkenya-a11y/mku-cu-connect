@@ -32,45 +32,45 @@ export const TodayTestimony = () => {
           </div>
 
           {/* Featured Testimony */}
-          <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-            <div className="grid md:grid-cols-5 gap-0">
+          <Card className="overflow-hidden hover:shadow-xl transition-shadow border-border">
+            <div className="grid md:grid-cols-2 gap-0">
               {/* Image Section */}
-              <div className="md:col-span-2 aspect-square md:aspect-auto">
-                <div className="relative h-full">
+              <div className="aspect-[4/3] md:aspect-auto order-1 md:order-1">
+                <div className="relative h-full min-h-[250px] md:min-h-[400px]">
                   <img
                     src={todayTestimony.image}
                     alt={todayTestimony.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent md:bg-gradient-to-r" />
-                  <div className="absolute bottom-6 left-6 md:bottom-auto md:top-6 text-white">
-                    <Quote className="w-12 h-12 text-gold mb-2" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 text-white">
+                    <Quote className="w-10 h-10 md:w-12 md:h-12 text-primary drop-shadow-lg" />
                   </div>
                 </div>
               </div>
 
               {/* Content Section */}
-              <div className="md:col-span-3 p-6 md:p-10">
-                <div className="mb-6">
-                  <h3 className="text-2xl md:text-3xl font-serif font-bold mb-2">
+              <div className="p-6 md:p-8 lg:p-10 order-2 md:order-2 bg-card">
+                <div className="mb-4 md:mb-6">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-serif font-bold mb-2 md:mb-3 text-card-foreground">
                     {todayTestimony.title}
                   </h3>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="font-semibold text-foreground">{todayTestimony.name}</span>
-                    <span>•</span>
-                    <span>{todayTestimony.role}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="font-semibold text-foreground text-base">{todayTestimony.name}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="text-xs sm:text-sm">{todayTestimony.role}</span>
                   </div>
                 </div>
 
                 <div className="mb-6">
-                  <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+                  <p className="text-sm md:text-base lg:text-lg leading-relaxed text-muted-foreground line-clamp-6 md:line-clamp-none">
                     {todayTestimony.testimony}
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link to="/blog">
-                    <Button className="bg-navy hover:bg-navy-light w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link to="/blog" className="w-full sm:w-auto">
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto">
                       Read More Testimonies
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -79,14 +79,15 @@ export const TodayTestimony = () => {
                     href="https://wa.me/254115475543?text=I%20would%20like%20to%20share%20my%20testimony%20with%20MKU%20CU"
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="w-full sm:w-auto"
                   >
-                    <Button variant="outline" className="w-full sm:w-auto">
+                    <Button variant="outline" className="w-full sm:w-auto border-border hover:bg-secondary">
                       Share Your Story
                     </Button>
                   </a>
                 </div>
 
-                <p className="text-xs text-muted-foreground mt-6 italic">
+                <p className="text-xs text-muted-foreground mt-4 md:mt-6 italic">
                   Member since {todayTestimony.date}
                 </p>
               </div>

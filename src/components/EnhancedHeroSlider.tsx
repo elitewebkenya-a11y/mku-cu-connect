@@ -108,7 +108,7 @@ export const EnhancedHeroSlider = () => {
   };
 
   return (
-    <div className="relative h-[500px] sm:h-[550px] md:h-[600px] lg:h-[700px] w-full overflow-hidden touch-pan-y">
+    <div className="relative h-[85vh] sm:h-[80vh] md:h-[85vh] lg:h-[90vh] min-h-[500px] max-h-[900px] w-full overflow-hidden touch-pan-y">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -117,23 +117,13 @@ export const EnhancedHeroSlider = () => {
           }`}
         >
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
               backgroundImage: `url(${slide.image})`,
-              transform: index === currentSlide ? "scale(1.05)" : "scale(1)",
-              transition: "transform 5s ease-out",
+              transform: index === currentSlide ? "scale(1)" : "scale(1)",
             }}
-          >
-            {/* Disable Ken Burns zoom on mobile */}
-            <style>{`
-              @media (max-width: 768px) {
-                .absolute.inset-0.bg-cover.bg-center {
-                  transform: scale(1) !important;
-                }
-              }
-            `}</style>
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/30" />
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/60 to-black/40" />
           
           <div className="relative h-full flex items-center justify-center text-center px-4">
             <div className="max-w-5xl mx-auto animate-fade-in-up">
@@ -154,12 +144,12 @@ export const EnhancedHeroSlider = () => {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center w-full max-w-lg mx-auto">
                     <a href={slide.cta1.link} target={slide.cta1.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta1.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
-                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base shadow-glow w-full">
+                      <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base shadow-lg w-full">
                         {slide.cta1.text} →
                       </Button>
                     </a>
                     <a href={slide.cta2.link} target={slide.cta2.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta2.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base w-full">
+                      <Button size="lg" variant="outline" className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-foreground font-semibold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base w-full">
                         {slide.cta2.text} →
                       </Button>
                     </a>
@@ -194,12 +184,12 @@ export const EnhancedHeroSlider = () => {
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center w-full max-w-lg mx-auto">
                     <a href={slide.cta1.link} target={slide.cta1.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta1.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
-                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
+                      <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta1.text}
                       </Button>
                     </a>
                     <a href={slide.cta2.link} target={slide.cta2.link.startsWith('http') ? '_blank' : undefined} rel={slide.cta2.link.startsWith('http') ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
+                      <Button size="lg" variant="outline" className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-foreground font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta2.text}
                       </Button>
                     </a>
@@ -225,12 +215,12 @@ export const EnhancedHeroSlider = () => {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center w-full max-w-lg mx-auto">
                     <a href={slide.cta1.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                      <Button size="lg" className="bg-accent hover:bg-accent/90 text-white font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
+                      <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta1.text}
                       </Button>
                     </a>
                     <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
+                      <Button size="lg" variant="outline" className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-foreground font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta2.text} →
                       </Button>
                     </a>
@@ -262,12 +252,12 @@ export const EnhancedHeroSlider = () => {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center w-full max-w-lg mx-auto">
                     <a href={slide.cta1.link} className="w-full sm:w-auto">
-                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
+                      <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta1.text}
                       </Button>
                     </a>
                     <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
+                      <Button size="lg" variant="outline" className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-foreground font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta2.text}
                       </Button>
                     </a>
@@ -299,12 +289,12 @@ export const EnhancedHeroSlider = () => {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center w-full max-w-lg mx-auto">
                     <a href={slide.cta1.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                      <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
+                      <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta1.text}
                       </Button>
                     </a>
                     <a href={slide.cta2.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                      <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-navy font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
+                      <Button size="lg" variant="outline" className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-foreground font-semibold px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm w-full">
                         {slide.cta2.text} →
                       </Button>
                     </a>
@@ -316,9 +306,9 @@ export const EnhancedHeroSlider = () => {
 
           {/* Scroll Indicator */}
           {index === currentSlide && (
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce text-center">
-              <p className="text-white/60 text-sm mb-2">Scroll to explore</p>
-              <ChevronDown className="w-8 h-8 text-white/60 mx-auto" />
+            <div className="absolute bottom-20 md:bottom-24 left-1/2 transform -translate-x-1/2 animate-bounce text-center hidden md:block">
+              <p className="text-white/80 text-sm mb-2 drop-shadow-lg">Scroll to explore</p>
+              <ChevronDown className="w-8 h-8 text-white/80 mx-auto drop-shadow-lg" />
             </div>
           )}
         </div>
@@ -340,16 +330,16 @@ export const EnhancedHeroSlider = () => {
         <ChevronRight className="w-6 h-6 text-white" />
       </button>
 
-      {/* Dot Indicators - Larger on mobile */}
-      <div className="absolute bottom-16 md:bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 md:gap-3 z-10">
+      {/* Dot Indicators */}
+      <div className="absolute bottom-6 md:bottom-12 left-1/2 transform -translate-x-1/2 flex gap-2 md:gap-3 z-10">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`h-3 md:h-3 rounded-full transition-all min-h-[44px] md:min-h-0 flex items-center ${
+            className={`h-2 md:h-3 rounded-full transition-all ${
               index === currentSlide 
-                ? "bg-gold w-8 md:w-10" 
-                : "bg-white/50 w-3 hover:bg-white/70"
+                ? "bg-primary w-8 md:w-10" 
+                : "bg-white/50 w-2 md:w-3 hover:bg-white/70"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />

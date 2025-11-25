@@ -464,103 +464,85 @@ const DayCard = ({ daySchedule, dayIndex }: { daySchedule: typeof weeklyEvents[0
 
 export const WeeklySchedule = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const currentMonth = format(new Date(), 'MMMM');
+  const currentYear = format(new Date(), 'yyyy');
 
-  const getEventsForDate = (selectedDate: Date | undefined) => {
-    if (!selectedDate) return [];
-    
-    const dayOfWeek = selectedDate.getDay();
-    
-    // Return events based on day of week
-    const daySchedule = weeklyEvents.find((_, idx) => idx === dayOfWeek);
-    return daySchedule?.events || [];
-  };
+  // Calendar events for dialog
+  const weekDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const calendarEvents = [
+    { day: "SUN", title: "Sunday Service", time: "7:00 AM", venue: "Auditorium" },
+    { day: "SUN", title: "Foundation", time: "4:00 PM", venue: "MLT B" },
+    { day: "MON", title: "Bible Study", time: "7:00 PM", venue: "Fellowships" },
+    { day: "TUE", title: "Nurture Class", time: "7:00 PM", venue: "CT Hall" },
+    { day: "WED", title: "Midweek", time: "4:00 PM", venue: "CT Hall" },
+    { day: "WED", title: "Debate", time: "6:30 PM", venue: "CC Hall" },
+    { day: "WED", title: "Midnight Prayers", time: "11:00 PM", venue: "CT Hall" },
+    { day: "THU", title: "Discovery", time: "4:00 PM", venue: "MLT A" },
+    { day: "THU", title: "BEST-P", time: "7:00 PM", venue: "CT Hall" },
+    { day: "FRI", title: "Fellowship Night", time: "7:00 PM", venue: "CT Hall" },
+  ];
 
   return (
-    <section className="py-16 bg-muted">
+    <section className="py-12 md:py-16 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10 animate-fade-in-up">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-3">
-            This Week's Activities
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Join us for worship, fellowship, and growth
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 md:gap-6 mb-8 max-w-5xl mx-auto">
-          {weeklyEvents.map((daySchedule, dayIndex) => (
-            <DayCard key={daySchedule.day} daySchedule={daySchedule} dayIndex={dayIndex} />
-          ))}
-        </div>
-
-        <div className="text-center">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <CalendarIcon className="w-4 h-4 mr-2" />
-                View Full Calendar
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[90vw] md:max-w-[650px] max-h-[90vh] overflow-y-auto bg-card">
-              <DialogHeader>
-                <DialogTitle className="text-foreground text-xl">November 2025 Schedule</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="flex justify-center">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4 text-foreground">
+              This Week's Activities
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground mb-6">
+              {currentMonth} {currentYear}
+            </p>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                  <CalendarIcon className="w-5 h-5 mr-2" />
+                  View Full Calendar
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[95vw] md:max-w-4xl max-h-[85vh] overflow-y-auto p-4 md:p-6">
+                <DialogHeader>
+                  <DialogTitle className="text-xl md:text-2xl font-serif">Full Week Calendar</DialogTitle>
+                </DialogHeader>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2 md:gap-3 mt-4">
+                  {weekDays.map((day) => (
+                    <div key={day} className="text-center">
+                      <div className="font-bold text-xs md:text-sm mb-2 text-foreground bg-muted/50 py-1 rounded">{day}</div>
+                      <div className="bg-card rounded-lg p-2 border border-border min-h-[120px] md:min-h-[180px] flex flex-col gap-1">
+                        {calendarEvents
+                          .filter((event) => event.day === day)
+                          .map((event, idx) => (
+                            <div
+                              key={idx}
+                              className="p-1.5 md:p-2 bg-primary/10 rounded text-[10px] md:text-xs border-l-2 border-primary hover:bg-primary/20 transition-colors"
+                            >
+                              <div className="font-semibold text-card-foreground line-clamp-2">{event.title}</div>
+                              <div className="text-muted-foreground mt-0.5">{event.time}</div>
+                              <div className="text-muted-foreground">{event.venue}</div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6">
                   <Calendar
                     mode="single"
                     selected={date}
                     onSelect={setDate}
-                    className="rounded-md border pointer-events-auto border-border"
+                    className="rounded-md border border-border mx-auto"
                   />
                 </div>
-                {date && (
-                  <div className="mt-4 px-2">
-                    <h3 className="font-semibold mb-3 text-card-foreground text-lg">
-                      Events on {format(date, "EEEE, MMMM dd, yyyy")}:
-                    </h3>
-                    {getEventsForDate(date).length > 0 ? (
-                      <div className="space-y-3">
-                        {getEventsForDate(date).map((event: any, idx: number) => (
-                          <Card key={idx} className="p-4 bg-muted border-border">
-                            <div className="flex items-start gap-3">
-                              <div className="flex-shrink-0">
-                                <Clock className="w-5 h-5 mt-0.5 text-primary" />
-                              </div>
-                              <div className="flex-grow">
-                                <div className="flex items-center gap-2 flex-wrap mb-1">
-                                  <p className="font-medium text-card-foreground">{event.title}</p>
-                                  {event.hasLive && (
-                                    <Badge className="bg-red-500 text-white text-xs">🔴 LIVE</Badge>
-                                  )}
-                                </div>
-                                {event.time && (
-                                  <p className="text-sm text-muted-foreground mb-1">{event.time}</p>
-                                )}
-                                {event.venue && (
-                                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                    <MapPin className="w-3 h-3" />
-                                    {event.venue}
-                                  </p>
-                                )}
-                                {event.description && (
-                                  <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
-                                )}
-                              </div>
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    ) : (
-                      <Card className="p-4 bg-muted border-border">
-                        <p className="text-muted-foreground text-sm text-center">No events scheduled for this date</p>
-                      </Card>
-                    )}
-                  </div>
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Expandable Day Cards */}
+          <div className="max-w-5xl mx-auto">
+            {weeklyEvents.map((daySchedule, index) => (
+              <DayCard key={index} daySchedule={daySchedule} dayIndex={index} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
