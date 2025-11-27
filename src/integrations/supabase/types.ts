@@ -14,16 +14,486 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          announcement_date: string
+          category: string | null
+          contact_link: string | null
+          created_at: string | null
+          description: string
+          end_time: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          priority: string | null
+          start_time: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          announcement_date: string
+          category?: string | null
+          contact_link?: string | null
+          created_at?: string | null
+          description: string
+          end_time?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          priority?: string | null
+          start_time?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          announcement_date?: string
+          category?: string | null
+          contact_link?: string | null
+          created_at?: string | null
+          description?: string
+          end_time?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          priority?: string | null
+          start_time?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          category: string | null
+          content: string
+          created_at: string | null
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          is_published: boolean | null
+          published_at: string | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          category?: string | null
+          content: string
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          is_published?: boolean | null
+          published_at?: string | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          is_published?: boolean | null
+          published_at?: string | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          end_time: string | null
+          event_date: string
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          location: string
+          registration_link: string | null
+          start_time: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_date: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location: string
+          registration_link?: string | null
+          start_time: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_date?: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location?: string
+          registration_link?: string | null
+          start_time?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      fellowships: {
+        Row: {
+          capacity: number | null
+          contact_link: string
+          contact_person: string | null
+          created_at: string | null
+          description: string
+          id: string
+          is_active: boolean | null
+          location: string
+          meeting_day: string
+          meeting_time: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          capacity?: number | null
+          contact_link: string
+          contact_person?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          is_active?: boolean | null
+          location: string
+          meeting_day: string
+          meeting_time: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          capacity?: number | null
+          contact_link?: string
+          contact_person?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          is_active?: boolean | null
+          location?: string
+          meeting_day?: string
+          meeting_time?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      leaders: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          display_order: number | null
+          email: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          position: string
+          updated_at: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          email?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          position: string
+          updated_at?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          email?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          position?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      media_gallery: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_featured: boolean | null
+          media_type: string
+          media_url: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          media_type: string
+          media_url: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          media_type?: string
+          media_url?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ministries: {
+        Row: {
+          created_at: string | null
+          description: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          joining_link: string
+          leader_name: string | null
+          meeting_schedule: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          joining_link: string
+          leader_name?: string | null
+          meeting_schedule?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          joining_link?: string
+          leader_name?: string | null
+          meeting_schedule?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sermons: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_featured: boolean | null
+          sermon_date: string | null
+          speaker: string | null
+          title: string
+          updated_at: string | null
+          youtube_id: string
+          youtube_url: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          sermon_date?: string | null
+          speaker?: string | null
+          title: string
+          updated_at?: string | null
+          youtube_id: string
+          youtube_url: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          sermon_date?: string | null
+          speaker?: string | null
+          title?: string
+          updated_at?: string | null
+          youtube_id?: string
+          youtube_url?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      volunteer_opportunities: {
+        Row: {
+          contact_link: string
+          created_at: string | null
+          description: string
+          id: string
+          is_active: boolean | null
+          requirements: string | null
+          time_commitment: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          contact_link: string
+          created_at?: string | null
+          description: string
+          id?: string
+          is_active?: boolean | null
+          requirements?: string | null
+          time_commitment?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          contact_link?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          is_active?: boolean | null
+          requirements?: string | null
+          time_commitment?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      weekly_activities: {
+        Row: {
+          created_at: string | null
+          day_of_week: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          location: string
+          time: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          day_of_week: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          location: string
+          time: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          day_of_week?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string
+          time?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +620,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
