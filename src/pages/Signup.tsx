@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,23 +18,18 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/login`,
-          data: {
-            full_name: fullName,
-          },
-        },
-      });
+      // Save account locally (mocking signup)
+      const userData = { fullName, email, password, role: "admin" };
+      localStorage.setItem("adminUser", JSON.stringify(userData));
 
-      if (error) throw error;
+      toast.success("Account created! Logging you in...");
 
-      toast.success("Account created! Please check your email to verify your account.");
-      navigate("/login");
-    } catch (error: any) {
-      toast.error(error.message);
+      // Auto-login
+      localStorage.setItem("isLoggedIn", "true");
+
+      navigate("/admin");
+    } catch (err: any) {
+      toast.error("Failed to create account");
     } finally {
       setLoading(false);
     }
@@ -45,8 +39,8 @@ const Signup = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Create Admin Account</CardTitle>
-          <CardDescription>Sign up for admin panel access</CardDescription>
+          <CardTitle>Create Account</CardTitle>
+          <CardDescription>Sign up for admin access</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
@@ -61,32 +55,36 @@ const Signup = () => {
                 required
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@mkucu.ac.ke"
+                placeholder="admin@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
               />
             </div>
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
+
           <p className="text-sm text-center mt-4 text-muted-foreground">
             Already have an account?{" "}
             <Link to="/login" className="text-primary hover:underline">
