@@ -2,8 +2,10 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL!;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL || "";
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 
 // Import with:
 // import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +22,7 @@ export const supabase = createClient<Database>(
     global: {
       headers: {
         "x-client-info": "admin-panel",
-      }
-    }
+      },
+    },
   }
 );
