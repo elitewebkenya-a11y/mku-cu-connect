@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,21 +13,52 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      navigate("/admin");
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const saved = JSON.parse(localStorage.getItem("adminUser") || "{}");
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (saved.email === email && saved.password === password) {
-      localStorage.setItem("isLoggedIn", "true");
-      toast.success("Logged in successfully!");
-      navigate("/admin");
-    } else {
-      toast.error("Invalid login credentials");
+      if (error) throw error;
+
+      if (data.user) {
+        // Check if user has admin role
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+
+        if (!roleData) {
+          await supabase.auth.signOut();
+          toast.error("Unauthorized: Admin access required");
+          return;
+        }
+
+        toast.success("Logged in successfully");
+        navigate("/admin");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to login");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

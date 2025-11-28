@@ -1,37 +1,66 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WeeklyActivitiesManager } from "@/components/admin/WeeklyActivitiesManager";
 import { EventsManager } from "@/components/admin/EventsManager";
+import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
+import { SermonsManager } from "@/components/admin/SermonsManager";
+import { BlogPostsManager } from "@/components/admin/BlogPostsManager";
+import { LeadersManager } from "@/components/admin/LeadersManager";
+import { MinistriesManager } from "@/components/admin/MinistriesManager";
+import { FellowshipsManager } from "@/components/admin/FellowshipsManager";
+import { VolunteersManager } from "@/components/admin/VolunteersManager";
+import { toast } from "sonner";
 import { LogOut } from "lucide-react";
+import { User } from "@supabase/supabase-js";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkAuth();
   }, []);
 
-  const checkAuth = () => {
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-    const storedEmail = localStorage.getItem("userEmail");
+  const checkAuth = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        navigate("/login");
+        return;
+      }
 
-    if (!loggedIn) {
+      // Check if user has admin role
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (!roleData) {
+        toast.error("Unauthorized: Admin access required");
+        await supabase.auth.signOut();
+        navigate("/login");
+        return;
+      }
+
+      setUser(user);
+    } catch (error: any) {
+      toast.error(error.message);
       navigate("/login");
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    setEmail(storedEmail);
-    setLoading(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userEmail");
-
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Logged out successfully");
     navigate("/login");
   };
 
@@ -49,7 +78,7 @@ const Admin = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Admin Panel</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{email}</span>
+            <span className="text-sm text-muted-foreground">{user?.email}</span>
             <Button onClick={handleLogout} variant="outline" size="sm">
               <LogOut className="w-4 h-4 mr-2" />
               Logout
@@ -60,9 +89,16 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="activities" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-2">
             <TabsTrigger value="activities">Weekly Activities</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="announcements">Announcements</TabsTrigger>
+            <TabsTrigger value="sermons">Sermons</TabsTrigger>
+            <TabsTrigger value="blog">Blog Posts</TabsTrigger>
+            <TabsTrigger value="leaders">Leaders</TabsTrigger>
+            <TabsTrigger value="ministries">Ministries</TabsTrigger>
+            <TabsTrigger value="fellowships">Fellowships</TabsTrigger>
+            <TabsTrigger value="volunteers">Volunteers</TabsTrigger>
           </TabsList>
 
           <TabsContent value="activities">
@@ -71,6 +107,34 @@ const Admin = () => {
 
           <TabsContent value="events">
             <EventsManager />
+          </TabsContent>
+
+          <TabsContent value="announcements">
+            <AnnouncementsManager />
+          </TabsContent>
+
+          <TabsContent value="sermons">
+            <SermonsManager />
+          </TabsContent>
+
+          <TabsContent value="blog">
+            <BlogPostsManager />
+          </TabsContent>
+
+          <TabsContent value="leaders">
+            <LeadersManager />
+          </TabsContent>
+
+          <TabsContent value="ministries">
+            <MinistriesManager />
+          </TabsContent>
+
+          <TabsContent value="fellowships">
+            <FellowshipsManager />
+          </TabsContent>
+
+          <TabsContent value="volunteers">
+            <VolunteersManager />
           </TabsContent>
         </Tabs>
       </main>
