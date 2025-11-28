@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,59 +13,40 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    checkUser();
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) navigate("/admin");
   }, []);
 
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      navigate("/admin");
-    }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const savedUser = localStorage.getItem("user");
 
-      if (error) throw error;
-
-      if (data.user) {
-        // Check if user has admin role
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.user.id)
-          .eq("role", "admin")
-          .maybeSingle();
-
-        if (!roleData) {
-          await supabase.auth.signOut();
-          toast.error("Unauthorized: Admin access required");
-          return;
-        }
-
-        toast.success("Logged in successfully");
-        navigate("/admin");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to login");
-    } finally {
+    if (!savedUser) {
+      toast.error("No account found. Please sign up first.");
       setLoading(false);
+      return;
     }
+
+    const user = JSON.parse(savedUser);
+
+    if (email !== user.email || password !== user.password) {
+      toast.error("Invalid email or password");
+      setLoading(false);
+      return;
+    }
+
+    toast.success("Logged in successfully!");
+    navigate("/admin");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Admin Login</CardTitle>
-          <CardDescription>Sign in to access the admin panel</CardDescription>
+          <CardTitle>Login</CardTitle>
+          <CardDescription>Sign in to access your dashboard</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
