@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WeeklyActivitiesManager } from "@/components/admin/WeeklyActivitiesManager";
@@ -14,52 +13,26 @@ import { FellowshipsManager } from "@/components/admin/FellowshipsManager";
 import { VolunteersManager } from "@/components/admin/VolunteersManager";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
-import { User } from "@supabase/supabase-js";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    const savedUser = localStorage.getItem("user");
 
-  const checkAuth = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-
-      // Check if user has admin role
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-
-      if (!roleData) {
-        toast.error("Unauthorized: Admin access required");
-        await supabase.auth.signOut();
-        navigate("/login");
-        return;
-      }
-
-      setUser(user);
-    } catch (error: any) {
-      toast.error(error.message);
+    if (!savedUser) {
       navigate("/login");
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+    setUser(JSON.parse(savedUser));
+    setLoading(false);
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
     toast.success("Logged out successfully");
     navigate("/login");
   };
