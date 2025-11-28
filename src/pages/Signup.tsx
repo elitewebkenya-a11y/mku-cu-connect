@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,26 +11,58 @@ const Signup = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      navigate("/admin");
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    
     setLoading(true);
 
     try {
-      // Save account locally (mocking signup)
-      const userData = { fullName, email, password, role: "admin" };
-      localStorage.setItem("adminUser", JSON.stringify(userData));
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: fullName,
+          }
+        }
+      });
 
-      toast.success("Account created! Logging you in...");
+      if (error) throw error;
 
-      // Auto-login
-      localStorage.setItem("isLoggedIn", "true");
-
-      navigate("/admin");
-    } catch (err: any) {
-      toast.error("Failed to create account");
+      if (data.user) {
+        toast.success("Account created! Please ask an existing admin to grant you admin role.");
+        navigate("/login");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create account");
     } finally {
       setLoading(false);
     }
@@ -80,6 +113,17 @@ const Signup = () => {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
@@ -98,4 +142,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
