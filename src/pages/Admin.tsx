@@ -2,39 +2,46 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WeeklyActivitiesManager } from "@/components/admin/WeeklyActivitiesManager";
-import { EventsManager } from "@/components/admin/EventsManager";
-import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
-import { SermonsManager } from "@/components/admin/SermonsManager";
-import { BlogPostsManager } from "@/components/admin/BlogPostsManager";
-import { LeadersManager } from "@/components/admin/LeadersManager";
-import { MinistriesManager } from "@/components/admin/MinistriesManager";
-import { FellowshipsManager } from "@/components/admin/FellowshipsManager";
-import { VolunteersManager } from "@/components/admin/VolunteersManager";
+import {
+  WeeklyActivitiesManager,
+  EventsManager,
+  AnnouncementsManager,
+  SermonsManager,
+  BlogPostsManager,
+  LeadersManager,
+  MinistriesManager,
+  FellowshipsManager,
+  VolunteersManager
+} from "@/components/admin";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    async function checkAuth() {
+      const { data } = await supabase.auth.getUser();
 
-    if (!savedUser) {
-      navigate("/login");
-      return;
+      if (!data?.user) {
+        navigate("/AdminLogin");
+        return;
+      }
+
+      setUser(data.user);
+      setLoading(false);
     }
 
-    setUser(JSON.parse(savedUser));
-    setLoading(false);
+    checkAuth();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast.success("Logged out successfully");
-    navigate("/login");
+    navigate("/AdminLogin");
   };
 
   if (loading) {
@@ -51,7 +58,7 @@ const Admin = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Admin Panel</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
+            <span className="text-sm text-muted-foreground">{user.email}</span>
             <Button onClick={handleLogout} variant="outline" size="sm">
               <LogOut className="w-4 h-4 mr-2" />
               Logout
