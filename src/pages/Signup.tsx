@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,17 +15,11 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    checkUser();
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) navigate("/admin");
   }, []);
 
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      navigate("/admin");
-    }
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -38,34 +31,21 @@ const Signup = () => {
       toast.error("Password must be at least 6 characters");
       return;
     }
-    
+
     setLoading(true);
 
-    try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName,
-          }
-        }
-      });
+    // Save user locally
+    const newUser = {
+      email,
+      password,
+      fullName,
+    };
 
-      if (error) throw error;
+    localStorage.setItem("user", JSON.stringify(newUser));
 
-      if (data.user) {
-        toast.success("Account created! Please ask an existing admin to grant you admin role.");
-        navigate("/login");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create account");
-    } finally {
-      setLoading(false);
-    }
+    toast.success("Account created! You are now logged in.");
+
+    navigate("/admin");
   };
 
   return (
@@ -73,7 +53,7 @@ const Signup = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Create Account</CardTitle>
-          <CardDescription>Sign up for admin access</CardDescription>
+          <CardDescription>Sign up to access the dashboard</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
