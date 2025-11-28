@@ -10,7 +10,7 @@ export default function AdminLogin() {
     e.preventDefault();
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (error) {
@@ -33,12 +33,14 @@ export default function AdminLogin() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+
         <input
           type="password"
           placeholder="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
         <button type="submit">Login</button>
       </form>
     </div>
