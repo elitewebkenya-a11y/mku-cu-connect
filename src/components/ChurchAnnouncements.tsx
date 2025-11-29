@@ -2,47 +2,66 @@ import { Megaphone, Calendar, Clock, MapPin, Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-const announcements = [
-  {
-    title: "Campus Evangelism Drive",
-    date: "This Week",
-    time: "Daily, 12:00 PM - 2:00 PM",
-    location: "Main Campus Gate",
-    description: "Join us as we share the gospel across campus. Bring your friends!",
-    type: "Outreach",
-    priority: "high",
-  },
-  {
-    title: "Leadership Training Workshop",
-    date: "December 7, 2025",
-    time: "2:00 PM - 5:00 PM",
-    location: "CT Hall",
-    description: "Equipping the next generation of campus leaders. Register early!",
-    type: "Training",
-    priority: "medium",
-  },
-  {
-    title: "End of Semester Thanksgiving Service",
-    date: "December 14, 2025",
-    time: "10:00 AM - 1:00 PM",
-    location: "Main Auditorium",
-    description: "Let's celebrate God's faithfulness this semester with thanksgiving and worship.",
-    type: "Service",
-    priority: "high",
-  },
-  {
-    title: "Christmas Outreach Planning",
-    date: "December 1, 2025",
-    time: "5:00 PM - 7:00 PM",
-    location: "CT Hall",
-    description: "Planning meeting for our Christmas community outreach program.",
-    type: "Meeting",
-    priority: "medium",
-  },
-];
+interface Announcement {
+  id: string;
+  title: string;
+  description: string;
+  announcement_date: string;
+  start_time: string | null;
+  end_time: string | null;
+  location: string | null;
+  category: string | null;
+  priority: string | null;
+  contact_link: string | null;
+  is_active: boolean | null;
+}
 
 export const ChurchAnnouncements = () => {
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const fetchAnnouncements = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("announcements")
+        .select("*")
+        .eq("is_active", true)
+        .order("priority", { ascending: false })
+        .order("announcement_date", { ascending: true })
+        .limit(4);
+
+      if (error) throw error;
+      setAnnouncements(data || []);
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+      toast.error("Failed to load announcements");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="py-12 md:py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center">Loading announcements...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (announcements.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4">
@@ -60,9 +79,9 @@ export const ChurchAnnouncements = () => {
         </div>
 
         <div className="max-w-4xl mx-auto space-y-4">
-          {announcements.map((announcement, index) => (
+          {announcements.map((announcement) => (
             <Card
-              key={index}
+              key={announcement.id}
               className={`p-6 hover:shadow-lg transition-all duration-300 border-l-4 ${
                 announcement.priority === "high" ? "border-l-accent" : "border-l-primary"
               }`}
@@ -81,9 +100,11 @@ export const ChurchAnnouncements = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <h3 className="font-bold text-lg">{announcement.title}</h3>
-                    <Badge variant={announcement.priority === "high" ? "default" : "outline"}>
-                      {announcement.type}
-                    </Badge>
+                    {announcement.category && (
+                      <Badge variant={announcement.priority === "high" ? "default" : "outline"}>
+                        {announcement.category}
+                      </Badge>
+                    )}
                     {announcement.priority === "high" && (
                       <Badge className="bg-accent text-white">Priority</Badge>
                     )}
@@ -96,22 +117,35 @@ export const ChurchAnnouncements = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      <span>{announcement.date}</span>
+                      <span>
+                        {new Date(announcement.announcement_date).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric', 
+                          year: 'numeric' 
+                        })}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      <span>{announcement.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      <span>{announcement.location}</span>
-                    </div>
+                    {announcement.start_time && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <span>
+                          {announcement.start_time}
+                          {announcement.end_time && ` - ${announcement.end_time}`}
+                        </span>
+                      </div>
+                    )}
+                    {announcement.location && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <span>{announcement.location}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex-shrink-0">
                   <a
-                    href={`https://wa.me/254115475543?text=I%20want%20more%20info%20about%20${encodeURIComponent(announcement.title)}`}
+                    href={announcement.contact_link || `https://wa.me/254115475543?text=I%20want%20more%20info%20about%20${encodeURIComponent(announcement.title)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

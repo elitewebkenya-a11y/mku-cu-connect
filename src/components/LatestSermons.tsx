@@ -1,32 +1,62 @@
 import { Youtube } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-const sermons = [
-  {
-    title: "Living in the Knowledge of God",
-    speaker: "Pst. Dennis Mutwiri",
-    date: "Nov 24, 2025",
-    videoId: "2nKqPUZFPCE",
-    duration: "45:23",
-  },
-  {
-    title: "Walking in Faith and Purpose",
-    speaker: "Rev. Sarah Kamau",
-    date: "Nov 17, 2025",
-    videoId: "2nKqPUZFPCE",
-    duration: "38:15",
-  },
-  {
-    title: "The Power of Prayer",
-    speaker: "Pst. John Omondi",
-    date: "Nov 10, 2025",
-    videoId: "2nKqPUZFPCE",
-    duration: "42:50",
-  },
-];
+interface Sermon {
+  id: string;
+  title: string;
+  speaker: string | null;
+  sermon_date: string | null;
+  youtube_id: string;
+  youtube_url: string;
+  description: string | null;
+  category: string | null;
+  is_featured: boolean | null;
+}
 
 export const LatestSermons = () => {
+  const [sermons, setSermons] = useState<Sermon[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSermons();
+  }, []);
+
+  const fetchSermons = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("sermons")
+        .select("*")
+        .order("sermon_date", { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      setSermons(data || []);
+    } catch (error) {
+      console.error("Error fetching sermons:", error);
+      toast.error("Failed to load sermons");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="py-12 md:py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center">Loading sermons...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (sermons.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-12 md:py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -46,7 +76,7 @@ export const LatestSermons = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
           {sermons.map((sermon, index) => (
             <Card
-              key={index}
+              key={sermon.id}
               className="overflow-hidden group hover:shadow-xl transition-all duration-300 animate-scale-in"
               style={{ animationDelay: `${index * 100}ms` }}
             >
@@ -54,7 +84,7 @@ export const LatestSermons = () => {
                 <iframe
                   width="100%"
                   height="100%"
-                  src={`https://www.youtube.com/embed/${sermon.videoId}`}
+                  src={`https://www.youtube.com/embed/${sermon.youtube_id}`}
                   title={sermon.title}
                   frameBorder="0"
                   allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -67,11 +97,18 @@ export const LatestSermons = () => {
                 <h3 className="font-bold text-base md:text-lg mb-2 line-clamp-2">
                   {sermon.title}
                 </h3>
-                <p className="text-xs md:text-sm text-muted-foreground mb-1">{sermon.speaker}</p>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">{sermon.date}</p>
-                  <p className="text-xs text-muted-foreground">{sermon.duration}</p>
-                </div>
+                {sermon.speaker && (
+                  <p className="text-xs md:text-sm text-muted-foreground mb-1">{sermon.speaker}</p>
+                )}
+                {sermon.sermon_date && (
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(sermon.sermon_date).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    })}
+                  </p>
+                )}
               </div>
             </Card>
           ))}
