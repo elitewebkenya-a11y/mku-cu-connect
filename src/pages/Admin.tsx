@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -13,57 +11,21 @@ import {
   FellowshipsManager,
   VolunteersManager
 } from "@/components/admin";
-import { toast } from "sonner";
-import { LogOut } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function checkAuth() {
-      const { data } = await supabase.auth.getUser();
-
-      if (!data?.user) {
-        navigate("/AdminLogin");
-        return;
-      }
-
-      setUser(data.user);
-      setLoading(false);
-    }
-
-    checkAuth();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success("Logged out successfully");
-    navigate("/AdminLogin");
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Admin Panel</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user.email}</span>
-            <Button onClick={handleLogout} variant="outline" size="sm">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
+          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+          <Button onClick={() => navigate("/")} variant="outline" size="sm">
+            <Home className="w-4 h-4 mr-2" />
+            Back to Site
+          </Button>
         </div>
       </header>
 
