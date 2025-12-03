@@ -57,10 +57,11 @@ export const Header = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav className="hidden lg:flex items-center gap-6">
               <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors">Home</Link>
               <Link to="/about" className="text-foreground hover:text-primary font-medium transition-colors">About</Link>
               <Link to="/events" className="text-foreground hover:text-primary font-medium transition-colors">Events</Link>
+              <Link to="/volunteer" className="text-foreground hover:text-primary font-medium transition-colors">Volunteer</Link>
               <Link to="/media" className="text-foreground hover:text-primary font-medium transition-colors">Media</Link>
               <Link to="/blog" className="text-foreground hover:text-primary font-medium transition-colors">Blog</Link>
               <Link to="/contact" className="text-foreground hover:text-primary font-medium transition-colors">Contact</Link>
@@ -96,6 +97,7 @@ export const Header = () => {
               <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors py-2">Home</Link>
               <Link to="/about" className="text-foreground hover:text-primary font-medium transition-colors py-2">About</Link>
               <Link to="/events" className="text-foreground hover:text-primary font-medium transition-colors py-2">Events</Link>
+              <Link to="/volunteer" className="text-foreground hover:text-primary font-medium transition-colors py-2">Volunteer</Link>
               <Link to="/media" className="text-foreground hover:text-primary font-medium transition-colors py-2">Media</Link>
               <Link to="/blog" className="text-foreground hover:text-primary font-medium transition-colors py-2">Blog</Link>
               <Link to="/contact" className="text-foreground hover:text-primary font-medium transition-colors py-2">Contact</Link>

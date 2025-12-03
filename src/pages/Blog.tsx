@@ -89,13 +89,13 @@ const Blog = () => {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-16 md:py-20 bg-gradient-to-br from-navy via-navy-light to-navy">
+        <section className="relative py-16 md:py-20 bg-gradient-to-br from-primary via-primary/90 to-primary">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center text-white">
+            <div className="max-w-4xl mx-auto text-center text-primary-foreground">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-4 md:mb-6 animate-fade-in-up">
                 Blog & Testimonies
               </h1>
-              <p className="text-lg md:text-xl text-gold-light animate-fade-in-up">
+              <p className="text-lg md:text-xl text-primary-foreground/80 animate-fade-in-up">
                 Stories of faith, transformation, and God's work at MKU CU
               </p>
             </div>
@@ -114,8 +114,8 @@ const Blog = () => {
                     onClick={() => setSelectedCategory(category)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                       selectedCategory === category
-                        ? "bg-navy text-white shadow-md"
-                        : "bg-muted text-muted-foreground hover:bg-navy/10"
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "bg-muted text-muted-foreground hover:bg-primary/10"
                     }`}
                   >
                     {category}
@@ -163,7 +163,7 @@ const Blog = () => {
                           </div>
                         )}
                       </div>
-                      <Button className="w-fit bg-navy hover:bg-navy-light">
+                      <Button className="w-fit bg-primary hover:bg-primary/90 text-primary-foreground">
                         Read More <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     </div>
@@ -197,9 +197,9 @@ const Blog = () => {
                         </div>
                         <div className="p-6 flex flex-col flex-grow">
                           {post.category && (
-                            <Badge className="mb-3 bg-navy text-white w-fit">{post.category}</Badge>
+                            <Badge className="mb-3 bg-primary text-primary-foreground w-fit">{post.category}</Badge>
                           )}
-                          <h3 className="text-xl font-bold mb-3 group-hover:text-navy-light transition-colors line-clamp-2">
+                          <h3 className="text-xl font-bold mb-3 text-card-foreground group-hover:text-primary transition-colors line-clamp-2">
                             {post.title}
                           </h3>
                           <p className="text-muted-foreground mb-4 line-clamp-3 flex-grow">{post.excerpt}</p>
@@ -217,7 +217,7 @@ const Blog = () => {
                               </div>
                             )}
                           </div>
-                          <Button variant="link" className="p-0 text-navy-light w-fit">
+                          <Button variant="link" className="p-0 text-primary w-fit">
                             Read More <ArrowRight className="w-4 h-4 ml-1" />
                           </Button>
                         </div>
@@ -237,7 +237,7 @@ const Blog = () => {
                   <Button variant="outline" size="icon" disabled>
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <Button className="bg-navy text-white">1</Button>
+                  <Button className="bg-primary text-primary-foreground">1</Button>
                   <Button variant="outline">2</Button>
                   <Button variant="outline">3</Button>
                   <span className="text-muted-foreground">...</span>
@@ -255,22 +255,22 @@ const Blog = () => {
         <TestimonialsSlider />
 
         {/* Newsletter CTA */}
-        <section className="py-16 md:py-20 bg-gradient-to-br from-gold via-gold-light to-gold">
+        <section className="py-16 md:py-20 bg-accent/10">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-navy mb-4 md:mb-6">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4 md:mb-6">
                 Stay Updated
               </h2>
-              <p className="text-base md:text-lg text-navy/80 mb-6 md:mb-8">
+              <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8">
                 Subscribe to receive the latest articles, updates, and devotionals delivered to your inbox.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center max-w-md mx-auto">
                 <Input
                   type="email"
                   placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 rounded-lg border-2 border-navy/20 focus:border-navy"
+                  className="flex-1 px-4 py-3 rounded-lg border-2 border-border focus:border-primary"
                 />
-                <Button className="bg-navy hover:bg-navy-light text-white">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   Subscribe
                 </Button>
               </div>
