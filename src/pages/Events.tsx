@@ -2,78 +2,77 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-const upcomingEvents = [
-  {
-    title: "Sunday Worship Service",
-    date: "Every Sunday",
-    time: "7:00 AM - 12:45 PM",
-    location: "Main Auditorium (MKCC)",
-    description: "Join us for powerful worship, inspiring sermons, and fellowship with believers.",
-    attendees: "500+",
-    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    title: "Midweek Bible Study",
-    date: "Every Wednesday",
-    time: "5:00 PM - 7:00 PM",
-    location: "Fellowship Hall",
-    description: "Deep dive into God's Word with interactive discussions and practical applications.",
-    attendees: "150+",
-    image: "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    title: "Campus Outreach Mission",
-    date: "December 15, 2024",
-    time: "10:00 AM - 4:00 PM",
-    location: "MKU Campus Grounds",
-    description: "Evangelism drive reaching out to students with the Gospel message and free resources.",
-    attendees: "200+",
-    image: "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    title: "Youth Praise & Worship Night",
-    date: "December 20, 2024",
-    time: "6:00 PM - 9:00 PM",
-    location: "Open Ground",
-    description: "An evening of powerful worship, testimonies, and prayer under the stars.",
-    attendees: "400+",
-    image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    title: "Leadership Training Workshop",
-    date: "January 10, 2025",
-    time: "9:00 AM - 5:00 PM",
-    location: "Conference Room A",
-    description: "Equipping the next generation of Christian leaders with practical ministry skills.",
-    attendees: "100",
-    image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    title: "Annual Missions Conference",
-    date: "February 14-16, 2025",
-    time: "All Day",
-    location: "Main Campus",
-    description: "Three-day conference focusing on global missions, with guest speakers and workshops.",
-    attendees: "600+",
-    image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=800&q=80",
-  },
-];
+interface Event {
+  id: string;
+  title: string;
+  description: string | null;
+  event_date: string;
+  start_time: string;
+  end_time: string | null;
+  location: string;
+  category: string | null;
+  image_url: string | null;
+  registration_link: string | null;
+  is_featured: boolean | null;
+}
 
 const Events = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .order("event_date", { ascending: true });
+
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      toast.error("Failed to load events");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center text-foreground">Loading events...</div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-navy via-navy-light to-navy">
+        <section className="relative py-20 bg-gradient-to-br from-primary via-primary/90 to-primary">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center text-white">
+            <div className="max-w-4xl mx-auto text-center text-primary-foreground">
               <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 animate-fade-in-up">
                 Upcoming Events
               </h1>
-              <p className="text-xl text-gold-light mb-8 animate-fade-in-up">
+              <p className="text-xl text-primary-foreground/80 mb-8 animate-fade-in-up">
                 Join us for life-changing gatherings, worship services, and fellowship opportunities
               </p>
             </div>
@@ -84,71 +83,96 @@ const Events = () => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-7xl mx-auto">
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {upcomingEvents.map((event, index) => (
-                  <Card key={index} className="overflow-hidden group hover:shadow-xl transition-all duration-300">
-                    <div className="aspect-video overflow-hidden">
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-2xl font-serif font-bold mb-3 group-hover:text-navy-light transition-colors">
-                        {event.title}
-                      </h3>
-                      <p className="text-muted-foreground mb-4">{event.description}</p>
-                      
-                      <div className="space-y-2 mb-6">
-                        <div className="flex items-center gap-2 text-sm">
-                          <Calendar className="w-4 h-4 text-gold" />
-                          <span>{event.date}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Clock className="w-4 h-4 text-gold" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <MapPin className="w-4 h-4 text-gold" />
-                          <span>{event.location}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Users className="w-4 h-4 text-gold" />
-                          <span>{event.attendees} Expected</span>
-                        </div>
+              {events.length > 0 ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {events.map((event) => (
+                    <Card key={event.id} className="overflow-hidden group hover:shadow-xl transition-all duration-300 bg-card">
+                      <div className="aspect-video overflow-hidden relative">
+                        <img
+                          src={event.image_url || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80"}
+                          alt={event.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                        {event.category && (
+                          <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground">
+                            {event.category}
+                          </Badge>
+                        )}
                       </div>
-                      
-                      <Button className="w-full bg-navy hover:bg-navy-light">
-                        Register Now
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+                      <div className="p-6">
+                        <h3 className="text-2xl font-serif font-bold mb-3 text-card-foreground group-hover:text-primary transition-colors">
+                          {event.title}
+                        </h3>
+                        {event.description && (
+                          <p className="text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
+                        )}
+                        
+                        <div className="space-y-2 mb-6">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="w-4 h-4 text-primary" />
+                            <span>
+                              {new Date(event.event_date).toLocaleDateString('en-US', { 
+                                weekday: 'long',
+                                month: 'long', 
+                                day: 'numeric', 
+                                year: 'numeric' 
+                              })}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Clock className="w-4 h-4 text-primary" />
+                            <span>
+                              {event.start_time}
+                              {event.end_time && ` - ${event.end_time}`}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <MapPin className="w-4 h-4 text-primary" />
+                            <span>{event.location}</span>
+                          </div>
+                        </div>
+                        
+                        <a
+                          href={event.registration_link || "https://wa.me/254115475543?text=Hi%2C%20I%20want%20to%20register%20for%20the%20event"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                            Register Now
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </Button>
+                        </a>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground text-lg">No upcoming events at the moment. Check back soon!</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-gold via-gold-light to-gold">
+        <section className="py-20 bg-accent/10">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-4xl font-serif font-bold text-navy mb-6">
+              <h2 className="text-4xl font-serif font-bold text-foreground mb-6">
                 Never Miss an Event
               </h2>
-              <p className="text-lg text-navy/80 mb-8">
+              <p className="text-lg text-muted-foreground mb-8">
                 Stay updated with all our upcoming events, services, and special gatherings. 
-                Subscribe to our calendar or join our WhatsApp community.
+                Join our WhatsApp community for instant updates.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-navy hover:bg-navy-light text-white">
-                  Subscribe to Calendar
-                </Button>
-                <Button size="lg" variant="outline" className="border-2 border-navy text-navy hover:bg-navy hover:text-white">
-                  Join WhatsApp Group
-                </Button>
+                <a href="https://wa.me/254115475543?text=Hi%2C%20add%20me%20to%20the%20events%20WhatsApp%20group" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    Join WhatsApp Group
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
