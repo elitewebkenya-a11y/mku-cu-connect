@@ -14,8 +14,11 @@ import { GuestForm } from "@/components/GuestForm";
 import { PrayerRequestForm } from "@/components/PrayerRequestForm";
 import { UpcomingEvents } from "@/components/UpcomingEvents";
 import { CampusFellowships } from "@/components/CampusFellowships";
-import { VolunteerOpportunities } from "@/components/VolunteerOpportunities";
 import { ChurchAnnouncements } from "@/components/ChurchAnnouncements";
+import { LeadersPreview } from "@/components/LeadersPreview";
+import { ConnectWithUs } from "@/components/ConnectWithUs";
+import { ServiceTimes } from "@/components/ServiceTimes";
+import { AnimatedSection } from "@/components/AnimatedSection";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
@@ -26,23 +29,82 @@ const Index = () => {
       <Header />
       <main>
         <EnhancedHeroSlider />
-        <DailyVerse />
-        <QuickActions />
-        <EnhancedStatsCounter />
-        <WeeklySchedule />
-        <UpcomingEvents />
-        <ChurchAnnouncements />
-        <MinistriesPreview />
-        <CampusFellowships />
-        <VolunteerOpportunities />
-        <LatestSermons />
-        <PrayerRequestForm />
-        <GivingSection />
-        <GuestForm />
-        <LatestBlogPost />
-        <Testimonials />
-        <GalleryPreview />
-        <VisionMission />
+        
+        <AnimatedSection animation="fade-up">
+          <DailyVerse />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up" delay={100}>
+          <QuickActions />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="scale">
+          <EnhancedStatsCounter />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <ServiceTimes />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="slide-left">
+          <WeeklySchedule />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <UpcomingEvents />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="slide-right">
+          <ChurchAnnouncements />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <LeadersPreview />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="scale">
+          <MinistriesPreview />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <CampusFellowships />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="slide-left">
+          <LatestSermons />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <PrayerRequestForm />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="slide-right">
+          <GivingSection />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <GuestForm />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="scale">
+          <LatestBlogPost />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <Testimonials />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="slide-left">
+          <GalleryPreview />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <ConnectWithUs />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="scale">
+          <VisionMission />
+        </AnimatedSection>
       </main>
       <Footer />
       <Toaster />
