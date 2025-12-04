@@ -7,6 +7,7 @@ import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AnimatedSection } from "@/components/AnimatedSection";
 
 interface Event {
   id: string;
@@ -80,11 +81,12 @@ const Events = () => {
         </section>
 
         {/* Events Grid */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="max-w-7xl mx-auto">
-              {events.length > 0 ? (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <AnimatedSection animation="fade-up">
+          <section className="py-20">
+            <div className="container mx-auto px-4">
+              <div className="max-w-7xl mx-auto">
+                {events.length > 0 ? (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {events.map((event) => (
                     <Card key={event.id} className="overflow-hidden group hover:shadow-xl transition-all duration-300 bg-card">
                       <div className="aspect-video overflow-hidden relative">
@@ -147,17 +149,19 @@ const Events = () => {
                     </Card>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground text-lg">No upcoming events at the moment. Check back soon!</p>
-                </div>
-              )}
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground text-lg">No upcoming events at the moment. Check back soon!</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </AnimatedSection>
 
         {/* CTA Section */}
-        <section className="py-20 bg-accent/10">
+        <AnimatedSection animation="scale">
+          <section className="py-20 bg-accent/10">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-4xl font-serif font-bold text-foreground mb-6">
@@ -173,10 +177,11 @@ const Events = () => {
                     Join WhatsApp Group
                   </Button>
                 </a>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </AnimatedSection>
       </main>
       <Footer />
     </div>

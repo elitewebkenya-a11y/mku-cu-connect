@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Users, Heart, Target, Award, BookOpen, Globe } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AnimatedSection } from "@/components/AnimatedSection";
 
 interface Leader {
   id: string;
@@ -69,35 +70,38 @@ const About = () => {
         </section>
 
         {/* Our Story */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-4xl font-serif font-bold text-center mb-12 text-foreground">Our Story</h2>
-              <div className="prose prose-lg max-w-none">
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  Mount Kenya University Christian Union is a vibrant community of students committed to living 
-                  out the knowledge of God on campus and beyond. Founded with a vision to transform campus life 
-                  through authentic Christian fellowship, we have grown into a movement of over 500 active members.
-                </p>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  Our journey began with a small group of passionate students who wanted to create a space where 
-                  faith could flourish in the academic environment. Today, we continue that legacy through weekly 
-                  gatherings, discipleship programs, evangelism initiatives, and community outreach.
-                </p>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  We believe in nurturing not just academic excellence, but also spiritual growth that prepares 
-                  students for lifelong kingdom impact in their respective fields and communities.
-                </p>
+        <AnimatedSection animation="fade-up">
+          <section className="py-20">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-4xl font-serif font-bold text-center mb-12 text-foreground">Our Story</h2>
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                    Mount Kenya University Christian Union is a vibrant community of students committed to living 
+                    out the knowledge of God on campus and beyond. Founded with a vision to transform campus life 
+                    through authentic Christian fellowship, we have grown into a movement of over 500 active members.
+                  </p>
+                  <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                    Our journey began with a small group of passionate students who wanted to create a space where 
+                    faith could flourish in the academic environment. Today, we continue that legacy through weekly 
+                    gatherings, discipleship programs, evangelism initiatives, and community outreach.
+                  </p>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    We believe in nurturing not just academic excellence, but also spiritual growth that prepares 
+                    students for lifelong kingdom impact in their respective fields and communities.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </AnimatedSection>
 
         {/* Mission & Values Grid */}
-        <section className="py-20 bg-muted/50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <AnimatedSection animation="scale">
+          <section className="py-20 bg-muted/50">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <div className="grid md:grid-cols-3 gap-8 mb-16">
                 <Card className="p-8 text-center bg-card">
                   <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
                     <Target className="w-8 h-8 text-primary-foreground" />
@@ -127,21 +131,23 @@ const About = () => {
                     500+ active members, 1000+ lives touched through evangelism and missions.
                   </p>
                 </Card>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </AnimatedSection>
 
         {/* Leadership Team */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-4xl font-serif font-bold mb-4 text-foreground">Our Leadership Team</h2>
-                <p className="text-lg text-muted-foreground">
-                  Servant leaders committed to guiding MKU CU with wisdom and grace
-                </p>
-              </div>
+        <AnimatedSection animation="fade-up">
+          <section className="py-20">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-12">
+                  <h2 className="text-4xl font-serif font-bold mb-4 text-foreground">Our Leadership Team</h2>
+                  <p className="text-lg text-muted-foreground">
+                    Servant leaders committed to guiding MKU CU with wisdom and grace
+                  </p>
+                </div>
               
               {loading ? (
                 <div className="text-center">Loading leaders...</div>
@@ -190,48 +196,51 @@ const About = () => {
             </div>
           </div>
         </section>
+        </AnimatedSection>
 
         {/* What We Believe */}
-        <section className="py-20 bg-gradient-to-br from-primary via-primary/90 to-primary text-primary-foreground">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-4xl font-serif font-bold text-center mb-12">What We Believe</h2>
-              <div className="grid md:grid-cols-2 gap-8">
-                <Card className="p-6 bg-white/10 backdrop-blur-md border-white/20">
-                  <BookOpen className="w-8 h-8 text-white mb-4" />
-                  <h3 className="text-xl font-bold mb-3 text-white">The Bible</h3>
-                  <p className="text-white/80">
-                    We believe the Bible is God's inspired Word, our final authority for faith and practice.
-                  </p>
-                </Card>
-                
-                <Card className="p-6 bg-white/10 backdrop-blur-md border-white/20">
-                  <Heart className="w-8 h-8 text-white mb-4" />
-                  <h3 className="text-xl font-bold mb-3 text-white">Salvation</h3>
-                  <p className="text-white/80">
-                    Salvation is found only through faith in Jesus Christ and His finished work on the cross.
-                  </p>
-                </Card>
-                
-                <Card className="p-6 bg-white/10 backdrop-blur-md border-white/20">
-                  <Users className="w-8 h-8 text-white mb-4" />
-                  <h3 className="text-xl font-bold mb-3 text-white">Community</h3>
-                  <p className="text-white/80">
-                    We are called to live in authentic Christian community, supporting and encouraging one another.
-                  </p>
-                </Card>
-                
-                <Card className="p-6 bg-white/10 backdrop-blur-md border-white/20">
-                  <Globe className="w-8 h-8 text-white mb-4" />
-                  <h3 className="text-xl font-bold mb-3 text-white">The Great Commission</h3>
-                  <p className="text-white/80">
-                    We are commissioned to make disciples of all nations, sharing the Gospel boldly.
-                  </p>
-                </Card>
+        <AnimatedSection animation="slide-left">
+          <section className="py-20 bg-gradient-to-br from-primary via-primary/90 to-primary text-primary-foreground">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-4xl font-serif font-bold text-center mb-12">What We Believe</h2>
+                <div className="grid md:grid-cols-2 gap-8">
+                  <Card className="p-6 bg-white/10 backdrop-blur-md border-white/20">
+                    <BookOpen className="w-8 h-8 text-white mb-4" />
+                    <h3 className="text-xl font-bold mb-3 text-white">The Bible</h3>
+                    <p className="text-white/80">
+                      We believe the Bible is God's inspired Word, our final authority for faith and practice.
+                    </p>
+                  </Card>
+                  
+                  <Card className="p-6 bg-white/10 backdrop-blur-md border-white/20">
+                    <Heart className="w-8 h-8 text-white mb-4" />
+                    <h3 className="text-xl font-bold mb-3 text-white">Salvation</h3>
+                    <p className="text-white/80">
+                      Salvation is found only through faith in Jesus Christ and His finished work on the cross.
+                    </p>
+                  </Card>
+                  
+                  <Card className="p-6 bg-white/10 backdrop-blur-md border-white/20">
+                    <Users className="w-8 h-8 text-white mb-4" />
+                    <h3 className="text-xl font-bold mb-3 text-white">Community</h3>
+                    <p className="text-white/80">
+                      We are called to live in authentic Christian community, supporting and encouraging one another.
+                    </p>
+                  </Card>
+                  
+                  <Card className="p-6 bg-white/10 backdrop-blur-md border-white/20">
+                    <Globe className="w-8 h-8 text-white mb-4" />
+                    <h3 className="text-xl font-bold mb-3 text-white">The Great Commission</h3>
+                    <p className="text-white/80">
+                      We are commissioned to make disciples of all nations, sharing the Gospel boldly.
+                    </p>
+                  </Card>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </AnimatedSection>
       </main>
       <Footer />
     </div>
