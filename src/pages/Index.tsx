@@ -5,7 +5,7 @@ import { EnhancedStatsCounter } from "@/components/EnhancedStatsCounter";
 import { WeeklySchedule } from "@/components/WeeklySchedule";
 import { LatestSermons } from "@/components/LatestSermons";
 import { GivingSection } from "@/components/GivingSection";
-import { TodayTestimony } from "@/components/TodayTestimony";
+import { LatestBlogPost } from "@/components/LatestBlogPost";
 import { Testimonials } from "@/components/Testimonials";
 import { GalleryPreview } from "@/components/GalleryPreview";
 import { VisionMission } from "@/components/VisionMission";
@@ -22,7 +22,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Header />
       <main>
         <EnhancedHeroSlider />
@@ -39,7 +39,7 @@ const Index = () => {
         <PrayerRequestForm />
         <GivingSection />
         <GuestForm />
-        <TodayTestimony />
+        <LatestBlogPost />
         <Testimonials />
         <GalleryPreview />
         <VisionMission />

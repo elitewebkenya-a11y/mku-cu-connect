@@ -85,7 +85,7 @@ const Blog = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Header />
       <main>
         {/* Hero Section */}
@@ -143,7 +143,7 @@ const Blog = () => {
                     </div>
                     <div className="p-6 md:p-8 flex flex-col justify-center">
                       {filteredPosts[0]?.category && (
-                        <Badge className="w-fit mb-4 bg-gold text-navy">{filteredPosts[0].category}</Badge>
+                        <Badge className="w-fit mb-4 bg-secondary text-secondary-foreground">{filteredPosts[0].category}</Badge>
                       )}
                       <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4 line-clamp-2">
                         {filteredPosts[0]?.title}

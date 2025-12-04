@@ -1,16 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Pencil, Trash2 } from "lucide-react";
-import { Tables } from "@/integrations/supabase/types";
+import { Pencil, Trash2, Eye, Plus } from "lucide-react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
-type BlogPost = Tables<"blog_posts">;
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string;
+  featured_image: string | null;
+  is_published: boolean | null;
+  published_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
 
 export const BlogPostsManager = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -21,10 +33,38 @@ export const BlogPostsManager = () => {
     slug: "",
     excerpt: "",
     content: "",
-    category: "General",
     featured_image: "",
     is_published: true,
   });
+
+  const quillModules = useMemo(() => ({
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      [{ 'font': [] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
+      [{ 'align': [] }],
+      ['blockquote', 'code-block'],
+      ['link', 'image', 'video'],
+      ['clean']
+    ],
+  }), []);
+
+  const quillFormats = [
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike',
+    'color', 'background',
+    'script',
+    'list', 'bullet', 'indent',
+    'direction', 'align',
+    'blockquote', 'code-block',
+    'link', 'image', 'video'
+  ];
 
   useEffect(() => {
     fetchPosts();
@@ -33,11 +73,11 @@ export const BlogPostsManager = () => {
   const fetchPosts = async () => {
     const { data, error } = await supabase
       .from("blog_posts")
-      .select("*")
+      .select("id, title, slug, excerpt, content, featured_image, is_published, published_at, created_at, updated_at")
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Failed to fetch blog posts");
+      toast.error("Failed to fetch blog posts: " + error.message);
       return;
     }
 
@@ -58,8 +98,12 @@ export const BlogPostsManager = () => {
     try {
       const slug = formData.slug || generateSlug(formData.title);
       const dataToSubmit = {
-        ...formData,
+        title: formData.title,
         slug,
+        excerpt: formData.excerpt || null,
+        content: formData.content,
+        featured_image: formData.featured_image || null,
+        is_published: formData.is_published,
         published_at: formData.is_published ? new Date().toISOString() : null,
       };
 
@@ -96,7 +140,6 @@ export const BlogPostsManager = () => {
       slug: post.slug,
       excerpt: post.excerpt || "",
       content: post.content,
-      category: post.category || "General",
       featured_image: post.featured_image || "",
       is_published: post.is_published ?? true,
     });
@@ -126,7 +169,6 @@ export const BlogPostsManager = () => {
       slug: "",
       excerpt: "",
       content: "",
-      category: "General",
       featured_image: "",
       is_published: true,
     });
@@ -134,73 +176,104 @@ export const BlogPostsManager = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{editingId ? "Edit" : "Add"} Blog Post</CardTitle>
-          <CardDescription>Manage blog articles</CardDescription>
+      <Card className="border-border shadow-sm">
+        <CardHeader className="bg-muted/50 border-b border-border">
+          <div className="flex items-center gap-2">
+            {editingId ? <Pencil className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
+            <div>
+              <CardTitle className="text-lg">{editingId ? "Edit" : "Create New"} Blog Post</CardTitle>
+              <CardDescription>Write and publish blog articles</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Title *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Enter post title..."
                   required
+                  className="bg-background"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="slug">Slug (URL)</Label>
+                <Label htmlFor="slug">URL Slug</Label>
                 <Input
                   id="slug"
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                   placeholder="auto-generated-from-title"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="featured_image">Featured Image URL</Label>
-                <Input
-                  id="featured_image"
-                  type="url"
-                  value={formData.featured_image}
-                  onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
-                  placeholder="https://..."
+                  className="bg-background"
                 />
               </div>
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="excerpt">Excerpt</Label>
-              <Textarea
+              <Label htmlFor="featured_image">Featured Image URL</Label>
+              <Input
+                id="featured_image"
+                type="url"
+                value={formData.featured_image}
+                onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
+                placeholder="https://example.com/image.jpg"
+                className="bg-background"
+              />
+              {formData.featured_image && (
+                <div className="mt-2 rounded-lg overflow-hidden border border-border">
+                  <img
+                    src={formData.featured_image}
+                    alt="Preview"
+                    className="w-full h-40 object-cover"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="excerpt">Excerpt (Short Description)</Label>
+              <Input
                 id="excerpt"
                 value={formData.excerpt}
                 onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                rows={2}
+                placeholder="Brief summary of the post..."
+                className="bg-background"
               />
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="content">Content</Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                rows={10}
-                required
-              />
+              <Label>Content *</Label>
+              <div className="border border-border rounded-lg overflow-hidden bg-background">
+                <ReactQuill
+                  theme="snow"
+                  value={formData.content}
+                  onChange={(value) => setFormData({ ...formData, content: value })}
+                  modules={quillModules}
+                  formats={quillFormats}
+                  placeholder="Write your blog post content here..."
+                  className="min-h-[300px]"
+                />
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : editingId ? "Update" : "Create"}
+
+            <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
+              <Switch
+                id="is_published"
+                checked={formData.is_published}
+                onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
+              />
+              <Label htmlFor="is_published" className="cursor-pointer">
+                {formData.is_published ? "Published" : "Draft"}
+              </Label>
+            </div>
+
+            <div className="flex gap-3">
+              <Button type="submit" disabled={loading} className="gap-2">
+                {loading ? "Saving..." : editingId ? "Update Post" : "Publish Post"}
               </Button>
               {editingId && (
                 <Button type="button" variant="outline" onClick={resetForm}>
@@ -212,52 +285,96 @@ export const BlogPostsManager = () => {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Blog Posts</CardTitle>
+      <Card className="border-border shadow-sm">
+        <CardHeader className="bg-muted/50 border-b border-border">
+          <CardTitle className="text-lg">All Blog Posts</CardTitle>
+          <CardDescription>{posts.length} post(s) total</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Published</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {posts.map((post) => (
-                <TableRow key={post.id}>
-                  <TableCell className="font-medium">{post.title}</TableCell>
-                  <TableCell>{post.category}</TableCell>
-                  <TableCell>{post.is_published ? "Published" : "Draft"}</TableCell>
-                  <TableCell>
-                    {post.published_at ? new Date(post.published_at).toLocaleDateString() : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(post)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(post.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30">
+                  <TableHead>Title</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Published</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {posts.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                      No blog posts yet. Create your first post above!
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  posts.map((post) => (
+                    <TableRow key={post.id} className="hover:bg-muted/30">
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          {post.featured_image && (
+                            <img
+                              src={post.featured_image}
+                              alt=""
+                              className="w-10 h-10 rounded object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium text-foreground">{post.title}</p>
+                            <p className="text-xs text-muted-foreground">{post.slug}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          post.is_published 
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" 
+                            : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                        }`}>
+                          {post.is_published ? "Published" : "Draft"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {post.published_at 
+                          ? new Date(post.published_at).toLocaleDateString() 
+                          : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => window.open(`/blog/${post.slug}`, '_blank')}
+                            title="Preview"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleEdit(post)}
+                            title="Edit"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => handleDelete(post.id)}
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
