@@ -76,20 +76,20 @@ const worship = [
 
 const Media = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-navy via-navy-light to-navy">
+        <section className="relative py-20 bg-gradient-to-br from-primary via-primary/90 to-primary">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center text-white">
+            <div className="max-w-4xl mx-auto text-center text-primary-foreground">
               <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 animate-fade-in-up">
                 Media Library
               </h1>
-              <p className="text-xl text-gold-light mb-8 animate-fade-in-up">
+              <p className="text-xl text-primary-foreground/80 mb-8 animate-fade-in-up">
                 Watch sermons, testimonies, and worship sessions anytime, anywhere
               </p>
-              <Button size="lg" className="bg-gold hover:bg-gold/90 text-navy">
+              <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
                 <Youtube className="w-5 h-5 mr-2" />
                 Subscribe on YouTube
               </Button>
@@ -98,7 +98,7 @@ const Media = () => {
         </section>
 
         {/* Media Tabs */}
-        <section className="py-20">
+        <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="max-w-7xl mx-auto">
               <Tabs defaultValue="sermons" className="w-full">
@@ -112,7 +112,7 @@ const Media = () => {
                 <TabsContent value="sermons">
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {sermons.map((sermon, index) => (
-                      <Card key={index} className="overflow-hidden group hover:shadow-xl transition-all duration-300">
+                      <Card key={index} className="overflow-hidden group hover:shadow-xl transition-all duration-300 bg-card border-border">
                         <div className="relative aspect-video overflow-hidden">
                           <img
                             src={sermon.thumbnail}
@@ -128,7 +128,7 @@ const Media = () => {
                           </div>
                         </div>
                         <div className="p-6">
-                          <h3 className="text-xl font-bold mb-2 group-hover:text-navy-light transition-colors">
+                          <h3 className="text-xl font-bold mb-2 text-card-foreground group-hover:text-primary transition-colors">
                             {sermon.title}
                           </h3>
                           <p className="text-muted-foreground mb-4">{sermon.speaker}</p>
@@ -152,7 +152,7 @@ const Media = () => {
                 <TabsContent value="testimonies">
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {testimonies.map((testimony, index) => (
-                      <Card key={index} className="overflow-hidden group hover:shadow-xl transition-all duration-300">
+                      <Card key={index} className="overflow-hidden group hover:shadow-xl transition-all duration-300 bg-card border-border">
                         <div className="relative aspect-video overflow-hidden">
                           <img
                             src={testimony.thumbnail}
@@ -168,7 +168,7 @@ const Media = () => {
                           </div>
                         </div>
                         <div className="p-6">
-                          <h3 className="text-xl font-bold mb-2">{testimony.title}</h3>
+                          <h3 className="text-xl font-bold mb-2 text-card-foreground">{testimony.title}</h3>
                           <p className="text-muted-foreground mb-2">{testimony.person}</p>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Calendar className="w-4 h-4" />
@@ -184,7 +184,7 @@ const Media = () => {
                 <TabsContent value="worship">
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {worship.map((song, index) => (
-                      <Card key={index} className="overflow-hidden group hover:shadow-xl transition-all duration-300">
+                      <Card key={index} className="overflow-hidden group hover:shadow-xl transition-all duration-300 bg-card border-border">
                         <div className="relative aspect-video overflow-hidden">
                           <img
                             src={song.thumbnail}
@@ -200,7 +200,7 @@ const Media = () => {
                           </div>
                         </div>
                         <div className="p-6">
-                          <h3 className="text-xl font-bold mb-2">{song.title}</h3>
+                          <h3 className="text-xl font-bold mb-2 text-card-foreground">{song.title}</h3>
                           <p className="text-muted-foreground mb-2">{song.artist}</p>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Calendar className="w-4 h-4" />

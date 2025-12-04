@@ -132,6 +132,57 @@ All colors MUST be HSL.
     margin-top: 2rem;
     border-radius: 0.5rem;
   }
+
+  /* Rich text editor styles */
+  .ql-container {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 1rem;
+    min-height: 250px;
+  }
+
+  .ql-editor {
+    min-height: 250px;
+    color: hsl(var(--foreground));
+  }
+
+  .ql-toolbar {
+    border-color: hsl(var(--border)) !important;
+    background: hsl(var(--muted));
+  }
+
+  .ql-container {
+    border-color: hsl(var(--border)) !important;
+  }
+
+  .ql-editor.ql-blank::before {
+    color: hsl(var(--muted-foreground));
+    font-style: normal;
+  }
+
+  .dark .ql-toolbar {
+    background: hsl(var(--muted));
+  }
+
+  .dark .ql-stroke {
+    stroke: hsl(var(--foreground));
+  }
+
+  .dark .ql-fill {
+    fill: hsl(var(--foreground));
+  }
+
+  .dark .ql-picker-label {
+    color: hsl(var(--foreground));
+  }
+
+  .dark .ql-picker-options {
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+  }
+
+  .dark .ql-picker-item {
+    color: hsl(var(--foreground));
+  }
 }
 
 @layer utilities {
