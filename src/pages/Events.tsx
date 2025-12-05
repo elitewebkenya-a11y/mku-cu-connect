@@ -63,17 +63,18 @@ const Events = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-primary via-primary/90 to-primary">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center text-primary-foreground">
-              <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 animate-fade-in-up">
+        <section className="relative py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20" />
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto text-center text-white">
+              <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 animate-fade-in">
                 Upcoming Events
               </h1>
-              <p className="text-xl text-primary-foreground/80 mb-8 animate-fade-in-up">
+              <p className="text-xl text-white/80 mb-8 animate-fade-in">
                 Join us for life-changing gatherings, worship services, and fellowship opportunities
               </p>
             </div>
@@ -161,7 +162,7 @@ const Events = () => {
 
         {/* CTA Section */}
         <AnimatedSection animation="scale">
-          <section className="py-20 bg-accent/10">
+          <section className="py-20 bg-gradient-to-br from-primary/10 via-background to-accent/10">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-4xl font-serif font-bold text-foreground mb-6">

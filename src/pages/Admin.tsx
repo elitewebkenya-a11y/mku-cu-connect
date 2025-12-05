@@ -12,6 +12,8 @@ import {
   FellowshipsManager,
   VolunteersManager
 } from "@/components/admin";
+import { PrayerRequestsManager } from "@/components/admin/PrayerRequestsManager";
+import { CommentsManager } from "@/components/admin/CommentsManager";
 import { 
   Home, 
   Calendar, 
@@ -25,7 +27,9 @@ import {
   HandHelping,
   Menu,
   X,
-  LayoutDashboard
+  LayoutDashboard,
+  MessageCircleHeart,
+  MessageCircle
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -36,6 +40,8 @@ const menuItems = [
   { id: "announcements", label: "Announcements", icon: Megaphone },
   { id: "sermons", label: "Sermons", icon: Video },
   { id: "blog", label: "Blog Posts", icon: FileText },
+  { id: "comments", label: "Blog Comments", icon: MessageCircle },
+  { id: "prayers", label: "Prayer Requests", icon: MessageCircleHeart },
   { id: "leaders", label: "Leaders", icon: Users },
   { id: "ministries", label: "Ministries", icon: Church },
   { id: "fellowships", label: "Fellowships", icon: UsersRound },
@@ -59,6 +65,10 @@ const Admin = () => {
         return <SermonsManager />;
       case "blog":
         return <BlogPostsManager />;
+      case "comments":
+        return <CommentsManager />;
+      case "prayers":
+        return <PrayerRequestsManager />;
       case "leaders":
         return <LeadersManager />;
       case "ministries":
