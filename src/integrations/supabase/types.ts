@@ -110,6 +110,36 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          author_email: string | null
+          author_name: string
+          avatar_url: string | null
+          content: string
+          created_at: string
+          id: string
+          post_slug: string
+        }
+        Insert: {
+          author_email?: string | null
+          author_name: string
+          avatar_url?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          post_slug: string
+        }
+        Update: {
+          author_email?: string | null
+          author_name?: string
+          avatar_url?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          post_slug?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category: string | null
@@ -314,6 +344,33 @@ export type Database = {
           meeting_schedule?: string | null
           name?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      prayer_requests: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_anonymous: boolean | null
+          name: string | null
+          request: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          name?: string | null
+          request: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          name?: string | null
+          request?: string
         }
         Relationships: []
       }
