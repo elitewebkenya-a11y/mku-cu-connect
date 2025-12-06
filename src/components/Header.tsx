@@ -61,7 +61,6 @@ export const Header = () => {
               <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors">Home</Link>
               <Link to="/about" className="text-foreground hover:text-primary font-medium transition-colors">About</Link>
               <Link to="/events" className="text-foreground hover:text-primary font-medium transition-colors">Events</Link>
-              <Link to="/volunteer" className="text-foreground hover:text-primary font-medium transition-colors">Volunteer</Link>
               <Link to="/media" className="text-foreground hover:text-primary font-medium transition-colors">Media</Link>
               <Link to="/blog" className="text-foreground hover:text-primary font-medium transition-colors">Blog</Link>
               <Link to="/contact" className="text-foreground hover:text-primary font-medium transition-colors">Contact</Link>
@@ -93,20 +92,20 @@ export const Header = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="lg:hidden border-t bg-background">
-            <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
-              <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors py-2">Home</Link>
-              <Link to="/about" className="text-foreground hover:text-primary font-medium transition-colors py-2">About</Link>
-              <Link to="/events" className="text-foreground hover:text-primary font-medium transition-colors py-2">Events</Link>
-              <Link to="/volunteer" className="text-foreground hover:text-primary font-medium transition-colors py-2">Volunteer</Link>
-              <Link to="/media" className="text-foreground hover:text-primary font-medium transition-colors py-2">Media</Link>
-              <Link to="/blog" className="text-foreground hover:text-primary font-medium transition-colors py-2">Blog</Link>
-              <Link to="/contact" className="text-foreground hover:text-primary font-medium transition-colors py-2">Contact</Link>
-              <div className="pt-4 border-t space-y-3">
-                <Button className="w-full bg-gold hover:bg-gold/90 text-navy">Join MKU CU</Button>
-                <Button variant="outline" className="w-full border-2 border-primary text-primary">
-                  <Youtube className="w-4 h-4 mr-2" />
-                  Watch Live
-                </Button>
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-2">
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Home</Link>
+              <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">About</Link>
+              <Link to="/events" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Events</Link>
+              <Link to="/media" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Media</Link>
+              <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Blog</Link>
+              <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Contact</Link>
+              <div className="pt-3 border-t flex gap-2">
+                <Link to="/volunteer" onClick={() => setIsMenuOpen(false)} className="flex-1">
+                  <Button size="sm" className="w-full bg-gold hover:bg-gold/90 text-navy">Volunteer</Button>
+                </Link>
+                <Link to="/gallery" onClick={() => setIsMenuOpen(false)} className="flex-1">
+                  <Button size="sm" variant="outline" className="w-full">Gallery</Button>
+                </Link>
               </div>
             </nav>
           </div>
