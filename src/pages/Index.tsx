@@ -18,6 +18,7 @@ import { ChurchAnnouncements } from "@/components/ChurchAnnouncements";
 import { LeadersPreview } from "@/components/LeadersPreview";
 import { ConnectWithUs } from "@/components/ConnectWithUs";
 import { ServiceTimes } from "@/components/ServiceTimes";
+import { EventCalendarPopup } from "@/components/EventCalendarPopup";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -52,6 +53,10 @@ const Index = () => {
         
         <AnimatedSection animation="fade-up">
           <UpcomingEvents />
+        </AnimatedSection>
+
+        <AnimatedSection animation="fade-up">
+          <EventCalendarPopup />
         </AnimatedSection>
         
         <AnimatedSection animation="slide-right">

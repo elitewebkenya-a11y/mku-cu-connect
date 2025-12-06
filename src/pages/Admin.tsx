@@ -14,6 +14,7 @@ import {
 } from "@/components/admin";
 import { PrayerRequestsManager } from "@/components/admin/PrayerRequestsManager";
 import { CommentsManager } from "@/components/admin/CommentsManager";
+import { GalleryManager } from "@/components/admin/GalleryManager";
 import { 
   Home, 
   Calendar, 
@@ -29,7 +30,8 @@ import {
   X,
   LayoutDashboard,
   MessageCircleHeart,
-  MessageCircle
+  MessageCircle,
+  Image
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -37,11 +39,12 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   { id: "activities", label: "Weekly Activities", icon: Calendar },
   { id: "events", label: "Events", icon: CalendarDays },
+  { id: "gallery", label: "Gallery", icon: Image },
   { id: "announcements", label: "Announcements", icon: Megaphone },
   { id: "sermons", label: "Sermons", icon: Video },
   { id: "blog", label: "Blog Posts", icon: FileText },
-  { id: "comments", label: "Blog Comments", icon: MessageCircle },
-  { id: "prayers", label: "Prayer Requests", icon: MessageCircleHeart },
+  { id: "comments", label: "Comments", icon: MessageCircle },
+  { id: "prayers", label: "Prayers", icon: MessageCircleHeart },
   { id: "leaders", label: "Leaders", icon: Users },
   { id: "ministries", label: "Ministries", icon: Church },
   { id: "fellowships", label: "Fellowships", icon: UsersRound },
@@ -59,6 +62,8 @@ const Admin = () => {
         return <WeeklyActivitiesManager />;
       case "events":
         return <EventsManager />;
+      case "gallery":
+        return <GalleryManager />;
       case "announcements":
         return <AnnouncementsManager />;
       case "sermons":
