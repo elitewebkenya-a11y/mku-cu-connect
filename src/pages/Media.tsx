@@ -142,72 +142,38 @@ const Media = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        {/* Hero Section - Redesigned */}
-        <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-primary to-slate-800">
-          {/* Animated background */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-10 left-20 w-80 h-80 bg-primary-foreground rounded-full mix-blend-overlay filter blur-3xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
-          </div>
-
-          {/* Geometric shapes */}
-          <div className="absolute inset-0 overflow-hidden opacity-5">
-            <div className="absolute top-10 right-10 w-72 h-72 border border-white rounded-full"></div>
-            <div className="absolute bottom-20 left-10 w-96 h-96 border border-white rounded-full"></div>
+        {/* Hero Section - Church Appropriate */}
+        <section className="relative py-16 md:py-20 overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90">
+          {/* Subtle background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 right-10 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl"></div>
+            <div className="absolute bottom-10 left-10 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl"></div>
           </div>
 
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center">
+            <div className="max-w-3xl mx-auto text-center text-primary-foreground">
               {/* Badge */}
-              <div className="flex items-center justify-center gap-3 mb-8">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent to-white/50"></div>
-                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2 rounded-full border border-white/20">
-                  <Video className="w-4 h-4 text-white" />
-                  <span className="text-sm font-medium text-white tracking-wide">Media Library</span>
-                </div>
-                <div className="h-px w-12 bg-gradient-to-l from-transparent to-white/50"></div>
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 mb-6">
+                <Video className="w-4 h-4" />
+                <span className="text-sm font-medium">Sermons & Teachings</span>
               </div>
 
               {/* Main heading */}
-              <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight">
-                <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
-                  Watch & Be
-                </span>
-                <br />
-                <span className="bg-gradient-to-r from-yellow-200 via-white to-white/90 bg-clip-text text-transparent">
-                  Blessed
-                </span>
+              <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 tracking-tight text-white">
+                Media Library
               </h1>
 
-              <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
-                Experience powerful sermons, inspiring worship, and life-changing teachings from MKU Christian Union
+              <p className="text-lg text-white/90 mb-8 max-w-xl mx-auto">
+                Watch sermons, worship sessions, and teachings from MKU Christian Union
               </p>
 
               {/* CTA Button */}
               <a href="https://youtube.com/@mkucu" target="_blank" rel="noopener noreferrer">
-                <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white gap-2 px-8 py-6 text-base shadow-2xl hover:shadow-red-600/50 transition-all duration-300 hover:scale-105">
+                <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white gap-2 shadow-lg">
                   <Youtube className="w-5 h-5" />
                   Subscribe on YouTube
                 </Button>
               </a>
-
-              {/* Stats */}
-              <div className="flex flex-wrap justify-center gap-8 mt-16">
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">{sermons.length}+</div>
-                  <div className="text-white/70 text-xs uppercase tracking-wider">Videos</div>
-                </div>
-                <div className="w-px h-12 bg-white/20"></div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">Weekly</div>
-                  <div className="text-white/70 text-xs uppercase tracking-wider">Uploads</div>
-                </div>
-                <div className="w-px h-12 bg-white/20"></div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">HD</div>
-                  <div className="text-white/70 text-xs uppercase tracking-wider">Quality</div>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -252,22 +218,35 @@ const Media = () => {
             ) : (
               <div className="max-w-7xl mx-auto">
                 <Tabs defaultValue="all" className="w-full">
-                  <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-5 mb-12 h-auto bg-muted p-1 rounded-xl">
-                    <TabsTrigger value="all" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all">
+                  <TabsList className="w-full max-w-3xl mx-auto flex flex-wrap justify-center gap-2 mb-12 h-auto bg-transparent p-0">
+                    <TabsTrigger 
+                      value="all" 
+                      className="px-4 py-2 text-sm bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all"
+                    >
                       All Videos
                     </TabsTrigger>
-                    <TabsTrigger value="sermons" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all flex items-center gap-1.5">
-                      <BookOpen className="w-4 h-4" />
+                    <TabsTrigger 
+                      value="sermons" 
+                      className="px-4 py-2 text-sm bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all"
+                    >
                       Sermons
                     </TabsTrigger>
-                    <TabsTrigger value="bible-study" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all">
-                      Study
+                    <TabsTrigger 
+                      value="bible-study" 
+                      className="px-4 py-2 text-sm bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all"
+                    >
+                      Bible Study
                     </TabsTrigger>
-                    <TabsTrigger value="worship" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all flex items-center gap-1.5">
-                      <Music className="w-4 h-4" />
+                    <TabsTrigger 
+                      value="worship" 
+                      className="px-4 py-2 text-sm bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all"
+                    >
                       Worship
                     </TabsTrigger>
-                    <TabsTrigger value="testimony" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all">
+                    <TabsTrigger 
+                      value="testimony" 
+                      className="px-4 py-2 text-sm bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all"
+                    >
                       Testimony
                     </TabsTrigger>
                   </TabsList>
