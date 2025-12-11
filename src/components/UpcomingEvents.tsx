@@ -1,10 +1,9 @@
-import { Calendar, MapPin, Clock, Users, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface Event {
   id: string;
@@ -17,7 +16,6 @@ interface Event {
   category: string | null;
   image_url: string | null;
   registration_link: string | null;
-  is_featured: boolean | null;
 }
 
 export const UpcomingEvents = () => {
@@ -41,7 +39,6 @@ export const UpcomingEvents = () => {
       setEvents(data || []);
     } catch (error) {
       console.error("Error fetching events:", error);
-      toast.error("Failed to load events");
     } finally {
       setLoading(false);
     }
@@ -49,98 +46,80 @@ export const UpcomingEvents = () => {
 
   if (loading) {
     return (
-      <section className="py-12 md:py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center">Loading events...</div>
+      <section className="py-10 bg-background">
+        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+          Loading events...
         </div>
       </section>
     );
   }
 
-  if (events.length === 0) {
-    return null;
-  }
+  if (events.length === 0) return null;
 
   return (
-    <section className="py-12 md:py-16 bg-background">
+    <section className="py-10 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-8 md:mb-12">
-          <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full mb-4">
-            <Calendar className="w-5 h-5" />
-            <span className="text-sm md:text-base font-semibold">Upcoming Events</span>
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-3 py-1.5 rounded-full mb-3">
+            <Calendar className="w-4 h-4" />
+            <span className="text-xs font-semibold">Upcoming Events</span>
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4 text-foreground">
-            Join Us for Upcoming Events
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+            Join Us
           </h2>
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Be part of life-changing experiences and community gatherings
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto mb-6">
           {events.map((event) => (
             <Card
               key={event.id}
-              className="overflow-hidden hover:shadow-xl transition-all duration-300 group border-border bg-card"
+              className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-border bg-card"
             >
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-32 overflow-hidden">
                 <img
                   src={event.image_url || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80"}
                   alt={event.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 {event.category && (
-                  <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground">
+                  <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-0.5">
                     {event.category}
                   </Badge>
                 )}
               </div>
 
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-1 text-card-foreground group-hover:text-primary transition-colors">
+              <div className="p-4">
+                <h3 className="text-sm font-bold text-card-foreground group-hover:text-primary transition-colors line-clamp-1 mb-2">
                   {event.title}
                 </h3>
 
-                <div className="space-y-2 mb-4 mt-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4 text-primary" />
+                <div className="space-y-1.5 mb-3">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Calendar className="w-3 h-3 text-primary flex-shrink-0" />
                     <span>
                       {new Date(event.event_date).toLocaleDateString('en-US', { 
                         month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
+                        day: 'numeric'
                       })}
                     </span>
+                    <Clock className="w-3 h-3 text-primary flex-shrink-0 ml-1" />
+                    <span>{event.start_time}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4 text-primary" />
-                    <span>
-                      {event.start_time}
-                      {event.end_time && ` - ${event.end_time}`}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4 text-primary" />
-                    <span>{event.location}</span>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <MapPin className="w-3 h-3 text-primary flex-shrink-0" />
+                    <span className="line-clamp-1">{event.location}</span>
                   </div>
                 </div>
 
-                {event.description && (
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                    {event.description}
-                  </p>
-                )}
-
                 <a
-                  href={event.registration_link || "https://wa.me/254115475543?text=Hi%2C%20I%20want%20to%20register%20for%20the%20upcoming%20event"}
+                  href={event.registration_link || "https://wa.me/254115475543"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block"
                 >
-                  <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                    Register Now
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                  <Button size="sm" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8">
+                    Register
+                    <ArrowRight className="w-3 h-3 ml-1" />
                   </Button>
                 </a>
               </div>
@@ -150,9 +129,9 @@ export const UpcomingEvents = () => {
 
         <div className="text-center">
           <a href="/events">
-            <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+            <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
               View All Events
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight className="w-3 h-3 ml-1" />
             </Button>
           </a>
         </div>
