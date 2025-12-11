@@ -179,10 +179,10 @@ const Blog = () => {
           </section>
         )}
 
-        {/* Blog Posts List */}
+        {/* Blog Posts Grid */}
         <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <div className="flex items-baseline justify-between mb-6">
                 <h2 className="text-xl md:text-2xl font-bold">
                   {selectedCategory === "All" ? "Latest Stories" : selectedCategory}
@@ -193,43 +193,47 @@ const Blog = () => {
               </div>
               
               {filteredPosts.length > 0 ? (
-                <div className="space-y-4">
-                  {filteredPosts.slice(1).map((post) => (
-                    <Link key={post.id} to={`/blog/${post.slug}`}>
-                      <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300">
-                        <div className="flex gap-4 p-4">
-                          <div className="relative w-32 h-32 md:w-40 md:h-40 flex-shrink-0 overflow-hidden rounded-lg">
-                            <img
-                              src={post.featured_image || "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=400&q=80"}
-                              alt={post.title}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                            />
-                          </div>
-                          <div className="flex-1 flex flex-col justify-center min-w-0">
-                            {post.category && (
-                              <Badge variant="secondary" className="w-fit mb-2 text-xs">
-                                {post.category}
-                              </Badge>
-                            )}
-                            <h3 className="text-base md:text-lg font-bold mb-2 line-clamp-2 hover:text-primary transition-colors">
-                              {post.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground mb-3 line-clamp-2 hidden md:block">
-                              {post.excerpt}
-                            </p>
-                            {post.published_at && (
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                <Calendar className="w-3 h-3" />
-                                <span>
-                                  {new Date(post.published_at).toLocaleDateString('en-US', { 
-                                    month: 'short', 
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                  })}
-                                </span>
-                              </div>
-                            )}
-                          </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredPosts.slice(1).map((post, index) => (
+                    <Link 
+                      key={post.id} 
+                      to={`/blog/${post.slug}`}
+                      style={{
+                        animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`
+                      }}
+                    >
+                      <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full flex flex-col group">
+                        <div className="relative aspect-[16/10] overflow-hidden">
+                          <img
+                            src={post.featured_image || "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=600&q=80"}
+                            alt={post.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          {post.category && (
+                            <Badge className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm">
+                              {post.category}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="p-5 flex flex-col flex-grow">
+                          <h3 className="text-base md:text-lg font-bold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                            {post.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mb-4 line-clamp-3 flex-grow">
+                            {post.excerpt}
+                          </p>
+                          {post.published_at && (
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground pt-3 border-t">
+                              <Calendar className="w-3.5 h-3.5" />
+                              <span>
+                                {new Date(post.published_at).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric',
+                                  year: 'numeric'
+                                })}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </Card>
                     </Link>
@@ -247,6 +251,19 @@ const Blog = () => {
             </div>
           </div>
         </section>
+        
+        <style jsx>{`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
 
         {/* CTA Section */}
         <section className="py-12 md:py-16 bg-muted/30">
