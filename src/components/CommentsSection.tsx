@@ -10,24 +10,16 @@ import { formatDistanceToNow } from "date-fns";
 
 interface Comment {
   id: string;
-  author_name: string;
-  content: string;
-  avatar_url: string | null;
+  name: string;
+  message: string;
   created_at: string;
 }
 
 interface CommentsSectionProps {
-  postSlug: string;
+  postId: string; // renamed to match DB
 }
 
-const defaultAvatars = [
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80",
-];
-
-export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
+export const CommentsSection = ({ postId }: CommentsSectionProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
@@ -37,14 +29,14 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
 
   useEffect(() => {
     fetchComments();
-  }, [postSlug]);
+  }, [postId]);
 
   const fetchComments = async () => {
     try {
       const { data, error } = await supabase
         .from("comments")
         .select("*")
-        .eq("post_slug", postSlug)
+        .eq("post_id", postId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -67,14 +59,10 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
     setIsSubmitting(true);
 
     try {
-      const randomAvatar =
-        defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
-
       const { error } = await supabase.from("comments").insert({
-        post_slug: postSlug,
-        author_name: name.trim(),
-        content: newComment.trim(),
-        avatar_url: randomAvatar,
+        post_id: postId,
+        name: name.trim(),
+        message: newComment.trim(),
       });
 
       if (error) throw error;
@@ -101,14 +89,11 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
         </h2>
       </div>
 
-      {/* Comment Form */}
       {showCommentForm ? (
         <Card className="p-6 mb-8 bg-muted/50 border-border">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2 text-foreground">
-                Name *
-              </label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Name *</label>
               <Input
                 placeholder="Your name"
                 value={name}
@@ -117,11 +102,8 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
                 required
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium mb-2 text-foreground">
-                Comment *
-              </label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Comment *</label>
               <Textarea
                 placeholder="Share your thoughts..."
                 value={newComment}
@@ -150,6 +132,7 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
                   </>
                 )}
               </Button>
+
               <Button
                 type="button"
                 variant="outline"
@@ -172,7 +155,6 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
         </Button>
       )}
 
-      {/* Comments List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -180,30 +162,16 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
       ) : (
         <div className="space-y-6">
           {comments.map((comment) => (
-            <Card
-              key={comment.id}
-              className="p-6 hover:shadow-md transition-shadow bg-card border-border"
-            >
+            <Card key={comment.id} className="p-6 hover:shadow-md transition-shadow bg-card border-border">
               <div className="flex gap-4">
-                <img
-                  src={comment.avatar_url || defaultAvatars[0]}
-                  alt={comment.author_name}
-                  className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                />
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h4 className="font-bold text-base text-foreground">
-                      {comment.author_name}
-                    </h4>
+                    <h4 className="font-bold text-base text-foreground">{comment.name}</h4>
                     <span className="text-sm text-muted-foreground">
-                      {formatDistanceToNow(new Date(comment.created_at), {
-                        addSuffix: true,
-                      })}
+                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                     </span>
                   </div>
-                  <p className="text-base leading-relaxed text-foreground">
-                    {comment.content}
-                  </p>
+                  <p className="text-base leading-relaxed text-foreground">{comment.message}</p>
                 </div>
               </div>
             </Card>
@@ -214,9 +182,7 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
       {!isLoading && comments.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p className="text-lg">
-            No comments yet. Be the first to share your thoughts!
-          </p>
+          <p className="text-lg">No comments yet. Be the first to share your thoughts!</p>
         </div>
       )}
     </div>
