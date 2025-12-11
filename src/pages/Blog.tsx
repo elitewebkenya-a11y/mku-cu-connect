@@ -3,10 +3,11 @@ import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ArrowRight, BookOpen, Loader2, User } from "lucide-react";
+import { Calendar, ArrowRight, ChevronLeft, ChevronRight, BookOpen, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AnimatedSection } from "@/components/AnimatedSection";
 
 interface BlogPost {
   id: string;
@@ -21,15 +22,16 @@ interface BlogPost {
 }
 
 const categories = [
-  "All",
+  "All Posts",
   "Testimonies",
   "Teaching",
   "Devotional",
   "Campus Life",
+  "General"
 ];
 
 const Blog = () => {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("All Posts");
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +57,7 @@ const Blog = () => {
   };
 
   const filteredPosts = blogPosts.filter(post => {
-    return selectedCategory === "All" || post.category === selectedCategory;
+    return selectedCategory === "All Posts" || post.category === selectedCategory;
   });
 
   if (loading) {
@@ -74,36 +76,36 @@ const Blog = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        {/* Hero Section - Compact */}
-        <section className="py-10 md:py-14 bg-gradient-to-br from-primary via-primary/95 to-primary/90">
+        {/* Hero Section */}
+        <section className="relative py-12 md:py-16 bg-gradient-to-br from-primary via-primary/90 to-primary">
           <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto text-center text-primary-foreground">
-              <div className="inline-flex items-center gap-2 bg-white/15 px-3 py-1 rounded-full mb-3">
+            <div className="max-w-3xl mx-auto text-center text-primary-foreground">
+              <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full mb-4">
                 <BookOpen className="w-4 h-4" />
-                <span className="text-xs font-medium">Faith Stories & Testimonies</span>
+                <span className="text-sm font-medium">Testimonies & Stories</span>
               </div>
-              <h1 className="text-2xl md:text-3xl font-serif font-bold mb-2">
-                Stories of Transformation
+              <h1 className="text-3xl md:text-4xl font-serif font-bold mb-3">
+                Faith Stories
               </h1>
-              <p className="text-sm text-primary-foreground/80">
-                Discover how God is moving at MKU CU through real stories of faith
+              <p className="text-sm md:text-base text-primary-foreground/80">
+                Discover how God is transforming lives at MKU CU
               </p>
             </div>
           </div>
         </section>
 
-        {/* Filter Bar - Sticky */}
-        <div className="sticky top-[56px] md:top-[72px] z-40 bg-background/95 backdrop-blur border-b">
-          <div className="container mx-auto px-4 py-2.5">
-            <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+        {/* Filter Bar */}
+        <div className="sticky top-[72px] z-40 bg-background shadow-sm border-b">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex flex-wrap gap-2 justify-center">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                     selectedCategory === category
                       ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      : "bg-muted text-muted-foreground hover:bg-primary/10"
                   }`}
                 >
                   {category}
@@ -115,135 +117,133 @@ const Blog = () => {
 
         {/* Featured Post */}
         {filteredPosts.length > 0 && (
-          <section className="py-6 md:py-8 bg-muted/30">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto">
-                <Link to={`/blog/${filteredPosts[0]?.slug}`}>
-                  <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 shadow-sm">
-                    <div className="grid md:grid-cols-2 gap-0">
-                      <div className="aspect-video md:aspect-auto md:h-full overflow-hidden">
+          <AnimatedSection animation="fade-up">
+            <section className="py-8 bg-muted/50">
+              <div className="container mx-auto px-4">
+                <div className="max-w-4xl mx-auto">
+                  <Link to={`/blog/${filteredPosts[0]?.slug}`}>
+                    <Card className="overflow-hidden grid md:grid-cols-2 gap-0 hover:shadow-lg transition-shadow">
+                      <div className="aspect-video md:aspect-auto overflow-hidden">
                         <img
                           src={filteredPosts[0]?.featured_image || "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=800&q=80"}
                           alt={filteredPosts[0]?.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                         />
                       </div>
-                      <div className="p-5 md:p-6 flex flex-col justify-center">
-                        <div className="flex items-center gap-2 mb-3">
-                          {filteredPosts[0]?.category && (
-                            <Badge className="bg-primary/10 text-primary border-0 text-xs">
-                              {filteredPosts[0].category}
-                            </Badge>
-                          )}
-                          <span className="text-xs text-muted-foreground">Featured</span>
-                        </div>
-                        <h2 className="text-lg md:text-xl font-serif font-bold mb-2 text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                      <div className="p-5 flex flex-col justify-center">
+                        {filteredPosts[0]?.category && (
+                          <Badge className="w-fit mb-3 bg-secondary text-secondary-foreground text-xs">{filteredPosts[0].category}</Badge>
+                        )}
+                        <h2 className="text-xl md:text-2xl font-serif font-bold mb-3 line-clamp-2 text-foreground">
                           {filteredPosts[0]?.title}
                         </h2>
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                          {filteredPosts[0]?.excerpt}
-                        </p>
+                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{filteredPosts[0]?.excerpt}</p>
                         {filteredPosts[0]?.published_at && (
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              <span>
-                                {new Date(filteredPosts[0].published_at).toLocaleDateString('en-US', { 
-                                  month: 'short', 
-                                  day: 'numeric', 
-                                  year: 'numeric' 
-                                })}
-                              </span>
-                            </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                            <Calendar className="w-3 h-3" />
+                            <span>
+                              {new Date(filteredPosts[0].published_at).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                year: 'numeric' 
+                              })}
+                            </span>
                           </div>
                         )}
-                        <Button size="sm" className="w-fit text-xs">
+                        <Button size="sm" className="w-fit bg-primary hover:bg-primary/90 text-primary-foreground">
                           Read Story <ArrowRight className="w-3 h-3 ml-1" />
                         </Button>
                       </div>
-                    </div>
-                  </Card>
-                </Link>
+                    </Card>
+                  </Link>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </AnimatedSection>
         )}
 
         {/* Blog Posts Grid */}
-        <section className="py-8 md:py-10">
-          <div className="container mx-auto px-4">
-            <div className="max-w-5xl mx-auto">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg md:text-xl font-serif font-bold text-foreground">
-                  {selectedCategory === "All" ? "All Stories" : selectedCategory}
+        <AnimatedSection animation="scale">
+          <section className="py-10">
+            <div className="container mx-auto px-4">
+              <div className="max-w-5xl mx-auto">
+                <h2 className="text-xl md:text-2xl font-serif font-bold mb-6 text-foreground">
+                  {selectedCategory === "All Posts" ? "All Stories" : selectedCategory}
                 </h2>
-                <span className="text-xs text-muted-foreground">
-                  {filteredPosts.length} {filteredPosts.length === 1 ? 'story' : 'stories'}
-                </span>
+                
+                {filteredPosts.length > 0 ? (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredPosts.slice(1).map((post) => (
+                      <Link key={post.id} to={`/blog/${post.slug}`}>
+                        <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                          <div className="aspect-video overflow-hidden">
+                            <img
+                              src={post.featured_image || "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=600&q=80"}
+                              alt={post.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          </div>
+                          <div className="p-4 flex flex-col flex-grow">
+                            {post.category && (
+                              <Badge className="mb-2 bg-primary text-primary-foreground w-fit text-xs">{post.category}</Badge>
+                            )}
+                            <h3 className="text-sm font-bold text-card-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                              {post.title}
+                            </h3>
+                            <p className="text-xs text-muted-foreground mb-3 line-clamp-2 flex-grow">{post.excerpt}</p>
+                            {post.published_at && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Calendar className="w-3 h-3" />
+                                <span>
+                                  {new Date(post.published_at).toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric'
+                                  })}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-10">
+                    <BookOpen className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
+                    <p className="text-muted-foreground">No stories found in this category.</p>
+                  </div>
+                )}
+
+                {/* Pagination */}
+                {filteredPosts.length > 6 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <Button variant="outline" size="icon" className="h-8 w-8" disabled>
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" className="bg-primary text-primary-foreground h-8">1</Button>
+                    <Button variant="outline" size="sm" className="h-8">2</Button>
+                    <Button variant="outline" size="icon" className="h-8 w-8">
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
-              
-              {filteredPosts.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                  {filteredPosts.slice(1).map((post) => (
-                    <Link key={post.id} to={`/blog/${post.slug}`}>
-                      <Card className="overflow-hidden group hover:shadow-md transition-all duration-300 h-full flex flex-col border-0 shadow-sm">
-                        <div className="aspect-[4/3] overflow-hidden">
-                          <img
-                            src={post.featured_image || "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=600&q=80"}
-                            alt={post.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                        <div className="p-3 md:p-4 flex flex-col flex-grow">
-                          {post.category && (
-                            <Badge className="mb-2 bg-muted text-muted-foreground border-0 w-fit text-[10px]">
-                              {post.category}
-                            </Badge>
-                          )}
-                          <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-1.5">
-                            {post.title}
-                          </h3>
-                          <p className="text-xs text-muted-foreground mb-2 line-clamp-2 flex-grow hidden md:block">
-                            {post.excerpt}
-                          </p>
-                          {post.published_at && (
-                            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                              <Calendar className="w-2.5 h-2.5" />
-                              <span>
-                                {new Date(post.published_at).toLocaleDateString('en-US', { 
-                                  month: 'short', 
-                                  day: 'numeric'
-                                })}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </Card>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <BookOpen className="w-10 h-10 mx-auto mb-3 text-muted-foreground/50" />
-                  <p className="text-sm text-muted-foreground">No stories found in this category.</p>
-                </div>
-              )}
             </div>
-          </div>
-        </section>
+          </section>
+        </AnimatedSection>
 
         {/* CTA */}
         <section className="py-10 bg-primary/5">
           <div className="container mx-auto px-4">
-            <div className="max-w-lg mx-auto text-center">
-              <h2 className="text-lg md:text-xl font-serif font-bold text-foreground mb-2">
+            <div className="max-w-2xl mx-auto text-center">
+              <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground mb-3">
                 Share Your Testimony
               </h2>
               <p className="text-sm text-muted-foreground mb-4">
-                Has God done something amazing in your life? We'd love to hear and share your story.
+                Has God done something amazing in your life? We'd love to hear your story.
               </p>
               <a href="https://wa.me/254115475543?text=I%20want%20to%20share%20my%20testimony" target="_blank" rel="noopener noreferrer">
-                <Button size="sm">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   Share Your Story
                 </Button>
               </a>

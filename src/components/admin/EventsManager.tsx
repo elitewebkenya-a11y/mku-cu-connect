@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Calendar, MapPin, Clock } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 
 type Event = Tables<"events">;
@@ -24,7 +25,6 @@ export const EventsManager = () => {
     location: "",
     category: "General",
     registration_link: "",
-    image_url: "",
     is_featured: false,
   });
 
@@ -51,26 +51,21 @@ export const EventsManager = () => {
     setLoading(true);
 
     try {
-      const dataToSubmit = {
-        ...formData,
-        image_url: formData.image_url || null,
-      };
-
       if (editingId) {
         const { error } = await supabase
           .from("events")
-          .update(dataToSubmit)
+          .update(formData)
           .eq("id", editingId);
 
         if (error) throw error;
-        toast.success("Event updated");
+        toast.success("Event updated successfully");
       } else {
         const { error } = await supabase
           .from("events")
-          .insert([dataToSubmit]);
+          .insert([formData]);
 
         if (error) throw error;
-        toast.success("Event created");
+        toast.success("Event created successfully");
       }
 
       resetForm();
@@ -93,13 +88,12 @@ export const EventsManager = () => {
       location: event.location,
       category: event.category || "General",
       registration_link: event.registration_link || "",
-      image_url: event.image_url || "",
       is_featured: event.is_featured ?? false,
     });
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this event?")) return;
+    if (!confirm("Are you sure you want to delete this event?")) return;
 
     const { error } = await supabase
       .from("events")
@@ -107,11 +101,11 @@ export const EventsManager = () => {
       .eq("id", id);
 
     if (error) {
-      toast.error("Failed to delete");
+      toast.error("Failed to delete event");
       return;
     }
 
-    toast.success("Event deleted");
+    toast.success("Event deleted successfully");
     fetchEvents();
   };
 
@@ -126,139 +120,101 @@ export const EventsManager = () => {
       location: "",
       category: "General",
       registration_link: "",
-      image_url: "",
       is_featured: false,
     });
   };
 
   return (
-    <div className="space-y-4">
-      {/* Form Card */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            {editingId ? <Pencil className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
-            <div>
-              <CardTitle className="text-base">{editingId ? "Edit" : "Add"} Event</CardTitle>
-              <CardDescription className="text-xs">Manage upcoming events</CardDescription>
-            </div>
-          </div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>{editingId ? "Edit" : "Add"} Event</CardTitle>
+          <CardDescription>Manage upcoming church events</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-xs">Title *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                required
-                className="h-9 text-sm"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="event_date" className="text-xs">Date *</Label>
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Input
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="event_date">Date</Label>
                 <Input
                   id="event_date"
                   type="date"
                   value={formData.event_date}
                   onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
                   required
-                  className="h-9 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="category" className="text-xs">Category</Label>
-                <Input
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="h-9 text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="start_time" className="text-xs">Start Time *</Label>
+                <Label htmlFor="start_time">Start Time</Label>
                 <Input
                   id="start_time"
                   value={formData.start_time}
                   onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
                   placeholder="e.g., 10:00 AM"
                   required
-                  className="h-9 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="end_time" className="text-xs">End Time</Label>
+                <Label htmlFor="end_time">End Time</Label>
                 <Input
                   id="end_time"
                   value={formData.end_time}
                   onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
                   placeholder="e.g., 12:00 PM"
-                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  required
                 />
               </div>
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="location" className="text-xs">Location *</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                required
-                className="h-9 text-sm"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-xs">Description</Label>
+              <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={2}
-                className="text-sm resize-none"
+                rows={3}
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="image_url" className="text-xs">Image URL (thumbnail)</Label>
-              <Input
-                id="image_url"
-                type="url"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-                className="h-9 text-sm"
-              />
-              {formData.image_url && (
-                <img src={formData.image_url} alt="Preview" className="h-16 w-24 object-cover rounded mt-1" onError={(e) => e.currentTarget.style.display = 'none'} />
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="registration_link" className="text-xs">Registration Link</Label>
+              <Label htmlFor="registration_link">Registration Link</Label>
               <Input
                 id="registration_link"
                 type="url"
                 value={formData.registration_link}
                 onChange={(e) => setFormData({ ...formData, registration_link: e.target.value })}
                 placeholder="https://..."
-                className="h-9 text-sm"
               />
             </div>
-
-            <div className="flex gap-2 pt-2">
-              <Button type="submit" disabled={loading} size="sm">
+            <div className="flex gap-2">
+              <Button type="submit" disabled={loading}>
                 {loading ? "Saving..." : editingId ? "Update" : "Create"}
               </Button>
               {editingId && (
-                <Button type="button" variant="outline" onClick={resetForm} size="sm">
+                <Button type="button" variant="outline" onClick={resetForm}>
                   Cancel
                 </Button>
               )}
@@ -267,47 +223,50 @@ export const EventsManager = () => {
         </CardContent>
       </Card>
 
-      {/* Events List - Mobile friendly cards */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Events ({events.length})</CardTitle>
+      <Card>
+        <CardHeader>
+          <CardTitle>Events</CardTitle>
         </CardHeader>
-        <CardContent className="p-3 pt-0">
-          {events.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">No events yet</p>
-          ) : (
-            <div className="space-y-2">
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Time</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {events.map((event) => (
-                <div key={event.id} className="flex items-start justify-between gap-3 p-3 bg-muted/50 rounded-lg">
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-sm text-foreground truncate">{event.title}</h4>
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(event.event_date).toLocaleDateString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {event.start_time}
-                      </span>
-                      <span className="flex items-center gap-1 truncate">
-                        <MapPin className="w-3 h-3" />
-                        {event.location}
-                      </span>
+                <TableRow key={event.id}>
+                  <TableCell className="font-medium">{event.title}</TableCell>
+                  <TableCell>{new Date(event.event_date).toLocaleDateString()}</TableCell>
+                  <TableCell>{event.start_time}</TableCell>
+                  <TableCell>{event.location}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(event)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(event.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
-                  </div>
-                  <div className="flex gap-1 flex-shrink-0">
-                    <Button size="sm" variant="ghost" onClick={() => handleEdit(event)} className="h-8 w-8 p-0">
-                      <Pencil className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleDelete(event.id)} className="h-8 w-8 p-0 text-destructive hover:text-destructive">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                </div>
+                  </TableCell>
+                </TableRow>
               ))}
-            </div>
-          )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
