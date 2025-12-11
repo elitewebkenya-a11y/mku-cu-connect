@@ -31,18 +31,19 @@ import {
   LayoutDashboard,
   MessageCircleHeart,
   MessageCircle,
-  Image
+  Image,
+  ChevronRight
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { id: "activities", label: "Weekly Activities", icon: Calendar },
+  { id: "activities", label: "Activities", icon: Calendar },
   { id: "events", label: "Events", icon: CalendarDays },
   { id: "gallery", label: "Gallery", icon: Image },
   { id: "announcements", label: "Announcements", icon: Megaphone },
   { id: "sermons", label: "Sermons", icon: Video },
-  { id: "blog", label: "Blog Posts", icon: FileText },
+  { id: "blog", label: "Blog", icon: FileText },
   { id: "comments", label: "Comments", icon: MessageCircle },
   { id: "prayers", label: "Prayers", icon: MessageCircleHeart },
   { id: "leaders", label: "Leaders", icon: Users },
@@ -101,21 +102,27 @@ const Admin = () => {
     <div className="min-h-screen bg-muted/30">
       {/* Mobile Header */}
       <header className="lg:hidden sticky top-0 z-50 bg-card border-b border-border shadow-sm">
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-3 py-2">
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="h-9 w-9 p-0"
           >
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
           <div className="flex items-center gap-2">
-            <LayoutDashboard className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-foreground">Admin Panel</span>
+            <LayoutDashboard className="h-4 w-4 text-primary" />
+            <span className="font-semibold text-sm text-foreground">Admin</span>
           </div>
-          <Button onClick={() => navigate("/")} variant="outline" size="sm">
+          <Button onClick={() => navigate("/")} variant="ghost" size="sm" className="h-9 w-9 p-0">
             <Home className="w-4 h-4" />
           </Button>
+        </div>
+        {/* Current section indicator on mobile */}
+        <div className="px-3 pb-2 flex items-center gap-2 text-xs text-muted-foreground">
+          <ChevronRight className="w-3 h-3" />
+          <span className="font-medium text-foreground">{currentMenuItem?.label}</span>
         </div>
       </header>
 
@@ -123,23 +130,32 @@ const Admin = () => {
         {/* Sidebar */}
         <aside
           className={cn(
-            "fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-card border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0",
+            "fixed lg:sticky top-0 left-0 z-40 h-screen bg-card border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0",
+            "w-56 lg:w-52",
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
           {/* Desktop Header */}
-          <div className="hidden lg:flex items-center gap-3 p-6 border-b border-border">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <LayoutDashboard className="h-5 w-5 text-primary-foreground" />
+          <div className="hidden lg:flex items-center gap-2 p-4 border-b border-border">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <LayoutDashboard className="h-4 w-4 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-bold text-foreground">MKU CU Admin</h1>
-              <p className="text-xs text-muted-foreground">Content Manager</p>
+              <h1 className="font-bold text-sm text-foreground">MKU CU</h1>
+              <p className="text-xs text-muted-foreground">Admin Panel</p>
             </div>
           </div>
 
-          <ScrollArea className="h-[calc(100vh-180px)] lg:h-[calc(100vh-140px)]">
-            <nav className="p-4 space-y-1">
+          {/* Mobile Header in Sidebar */}
+          <div className="lg:hidden flex items-center justify-between p-3 border-b border-border">
+            <span className="font-semibold text-sm">Menu</span>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSidebarOpen(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <ScrollArea className="h-[calc(100vh-130px)] lg:h-[calc(100vh-120px)]">
+            <nav className="p-2 space-y-0.5">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -150,14 +166,14 @@ const Admin = () => {
                       setSidebarOpen(false);
                     }}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
+                      "w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                       activeTab === item.id
-                        ? "bg-primary text-primary-foreground shadow-md"
+                        ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                   >
-                    <Icon className="h-5 w-5 flex-shrink-0" />
-                    <span>{item.label}</span>
+                    <Icon className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{item.label}</span>
                   </button>
                 );
               })}
@@ -165,14 +181,15 @@ const Admin = () => {
           </ScrollArea>
 
           {/* Sidebar Footer */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-card">
+          <div className="absolute bottom-0 left-0 right-0 p-2 border-t border-border bg-card">
             <Button
               onClick={() => navigate("/")}
               variant="outline"
-              className="w-full justify-start gap-2"
+              size="sm"
+              className="w-full justify-start gap-2 text-xs"
             >
-              <Home className="h-4 w-4" />
-              Back to Website
+              <Home className="h-3 w-3" />
+              Back to Site
             </Button>
           </div>
         </aside>
@@ -186,23 +203,20 @@ const Admin = () => {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-screen">
-          {/* Page Header */}
-          <div className="sticky top-0 lg:top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-            <div className="px-6 py-4">
-              <div className="flex items-center gap-3">
+        <main className="flex-1 min-h-screen w-full">
+          {/* Desktop Page Header */}
+          <div className="hidden lg:block sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+            <div className="px-4 py-3">
+              <div className="flex items-center gap-2">
                 {currentMenuItem && (
                   <>
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <currentMenuItem.icon className="h-5 w-5 text-primary" />
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <currentMenuItem.icon className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-foreground">
+                      <h2 className="text-lg font-bold text-foreground">
                         {currentMenuItem.label}
                       </h2>
-                      <p className="text-sm text-muted-foreground">
-                        Manage your {currentMenuItem.label.toLowerCase()} content
-                      </p>
                     </div>
                   </>
                 )}
@@ -210,8 +224,8 @@ const Admin = () => {
             </div>
           </div>
 
-          {/* Content Area */}
-          <div className="p-6">
+          {/* Content Area - Mobile optimized padding */}
+          <div className="p-3 lg:p-4">
             {renderContent()}
           </div>
         </main>
