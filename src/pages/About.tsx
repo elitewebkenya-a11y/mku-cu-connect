@@ -55,23 +55,80 @@ const About = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        {/* Hero Section - Enhanced with overlay pattern */}
-        <section className="relative py-24 md:py-32 bg-gradient-to-br from-primary via-primary/95 to-primary/90 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE0YzMuMzEgMCA2IDIuNjkgNiA2cy0yLjY5IDYtNiA2LTYtMi42OS02LTYgMi42OS02IDYtNk0yNCAzOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTYiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-40"></div>
+        {/* Hero Section - Completely Redesigned */}
+        <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-primary to-slate-800">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary-foreground rounded-full mix-blend-overlay filter blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+          </div>
+          
+          {/* Geometric shapes */}
+          <div className="absolute inset-0 overflow-hidden opacity-10">
+            <div className="absolute -top-20 -right-20 w-96 h-96 border-2 border-white rounded-full"></div>
+            <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] border-2 border-white rounded-full"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/30 rounded-full"></div>
+          </div>
+
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center text-primary-foreground">
-              <div className="inline-block mb-6 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                <span className="text-sm font-medium flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Living the Knowledge of God
-                </span>
+            <div className="max-w-5xl mx-auto text-center">
+              {/* Decorative top element */}
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent to-white/50"></div>
+                <div className="flex items-center gap-2 px-6 py-3 bg-white/5 backdrop-blur-md rounded-full border border-white/10">
+                  <Sparkles className="w-5 h-5 text-yellow-300 animate-pulse" />
+                  <span className="text-white/90 text-sm tracking-wider uppercase font-medium">Est. 2008</span>
+                </div>
+                <div className="h-px w-12 bg-gradient-to-l from-transparent to-white/50"></div>
               </div>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 animate-fade-in-up tracking-tight">
-                About MKU Christian Union
+
+              {/* Main heading with gradient text */}
+              <h1 className="relative mb-8">
+                <span className="block text-white/60 text-lg md:text-xl font-medium tracking-wide mb-4 uppercase">
+                  Welcome to
+                </span>
+                <span className="block text-6xl md:text-8xl font-serif font-bold tracking-tight mb-4">
+                  <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
+                    MKU Christian
+                  </span>
+                </span>
+                <span className="block text-6xl md:text-8xl font-serif font-bold tracking-tight">
+                  <span className="bg-gradient-to-r from-white/90 via-yellow-200 to-white/90 bg-clip-text text-transparent">
+                    Union
+                  </span>
+                </span>
               </h1>
-              <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 animate-fade-in-up max-w-2xl mx-auto leading-relaxed">
-                A vibrant community transforming campus life through authentic Christian fellowship
+
+              {/* Tagline */}
+              <p className="text-xl md:text-3xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+                Living the Knowledge of God
               </p>
+
+              {/* Stats row */}
+              <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-white mb-2">500+</div>
+                  <div className="text-white/70 text-sm uppercase tracking-wider">Active Members</div>
+                </div>
+                <div className="w-px h-16 bg-white/20"></div>
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-white mb-2">15+</div>
+                  <div className="text-white/70 text-sm uppercase tracking-wider">Years Strong</div>
+                </div>
+                <div className="w-px h-16 bg-white/20"></div>
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-white mb-2">1000+</div>
+                  <div className="text-white/70 text-sm uppercase tracking-wider">Lives Impacted</div>
+                </div>
+              </div>
+
+              {/* Scroll indicator */}
+              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
+                  <div className="w-1 h-2 bg-white/50 rounded-full"></div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
