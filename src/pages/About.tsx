@@ -27,6 +27,7 @@ const defaultLeaders = [
 const About = () => {
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
 
   useEffect(() => {
     fetchLeaders();
@@ -56,7 +57,7 @@ const About = () => {
       <Header />
       <main>
         {/* Hero Section - Church-themed with peaceful imagery */}
-        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+        <section className="relative min-h-[50vh] md:min-h-[85vh] flex items-center justify-center overflow-hidden">
           {/* Background Image with overlay */}
           <div className="absolute inset-0">
             <img 
@@ -65,6 +66,14 @@ const About = () => {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+          </div>
+          
+          {/* Animated floating elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-2 h-2 bg-white/20 rounded-full animate-pulse"></div>
+            <div className="absolute top-40 right-20 w-3 h-3 bg-white/30 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute bottom-32 left-1/4 w-2 h-2 bg-white/25 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-white/20 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
           </div>
           
           {/* Soft light rays effect */}
@@ -80,35 +89,35 @@ const About = () => {
               </div>
 
               {/* Main heading */}
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-6 leading-tight">
+              <h1 className="text-4xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-4 md:mb-6 leading-tight">
                 MKU Christian Union
               </h1>
 
               {/* Tagline */}
-              <p className="text-xl md:text-3xl text-white/90 mb-8 font-light tracking-wide">
+              <p className="text-lg md:text-3xl text-white/90 mb-6 md:mb-8 font-light tracking-wide">
                 Living the Knowledge of God
               </p>
 
               {/* Divider */}
-              <div className="flex items-center justify-center gap-4 mb-10">
-                <div className="h-px w-16 bg-white/30"></div>
-                <Church className="w-5 h-5 text-white/70" />
-                <div className="h-px w-16 bg-white/30"></div>
+              <div className="flex items-center justify-center gap-4 mb-6 md:mb-10">
+                <div className="h-px w-12 md:w-16 bg-white/30"></div>
+                <Church className="w-4 h-4 md:w-5 md:h-5 text-white/70" />
+                <div className="h-px w-12 md:w-16 bg-white/30"></div>
               </div>
 
               {/* Stats */}
-              <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+              <div className="flex flex-wrap justify-center gap-6 md:gap-16">
                 <div className="text-center">
-                  <div className="text-4xl md:text-5xl font-bold text-white mb-2">500+</div>
-                  <div className="text-white/70 text-sm tracking-wide">Members</div>
+                  <div className="text-3xl md:text-5xl font-bold text-white mb-1 md:mb-2">500+</div>
+                  <div className="text-white/70 text-xs md:text-sm tracking-wide">Members</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl md:text-5xl font-bold text-white mb-2">15+</div>
-                  <div className="text-white/70 text-sm tracking-wide">Years</div>
+                  <div className="text-3xl md:text-5xl font-bold text-white mb-1 md:mb-2">15+</div>
+                  <div className="text-white/70 text-xs md:text-sm tracking-wide">Years</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl md:text-5xl font-bold text-white mb-2">1000+</div>
-                  <div className="text-white/70 text-sm tracking-wide">Lives Touched</div>
+                  <div className="text-3xl md:text-5xl font-bold text-white mb-1 md:mb-2">1000+</div>
+                  <div className="text-white/70 text-xs md:text-sm tracking-wide">Lives Touched</div>
                 </div>
               </div>
             </div>
@@ -212,42 +221,69 @@ const About = () => {
                     <p className="mt-4 text-muted-foreground">Loading our team...</p>
                   </div>
                 ) : displayLeaders ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                     {displayLeaders.map((leader) => (
-                      <div key={leader.id} className="group cursor-pointer">
-                        <div className="relative overflow-hidden rounded-lg aspect-[3/4] bg-muted">
+                      <div 
+                        key={leader.id} 
+                        className="group cursor-pointer"
+                        onClick={() => setSelectedLeader(leader)}
+                      >
+                        <div className="relative overflow-hidden rounded-2xl aspect-[3/4] bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg hover:shadow-2xl transition-all duration-300">
                           {/* Image */}
                           <img
                             src={leader.image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80"}
                             alt={leader.name}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             loading="lazy"
                           />
-                          {/* Overlay on hover */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                            <h3 className="text-white font-bold text-lg md:text-xl mb-1">{leader.name}</h3>
-                            <p className="text-white/90 text-sm md:text-base">{leader.position}</p>
+                          {/* Bottom gradient overlay - always visible */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                          
+                          {/* Text at bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                            <h3 className="text-white font-bold text-lg md:text-xl mb-1 drop-shadow-lg">{leader.name}</h3>
+                            <p className="text-primary-foreground/90 text-sm md:text-base font-medium bg-primary/80 backdrop-blur-sm px-3 py-1 rounded-full inline-block">
+                              {leader.position}
+                            </p>
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                     {defaultLeaders.map((leader, index) => (
-                      <div key={index} className="group cursor-pointer">
-                        <div className="relative overflow-hidden rounded-lg aspect-[3/4] bg-muted">
+                      <div 
+                        key={index} 
+                        className="group cursor-pointer"
+                        onClick={() => setSelectedLeader({
+                          id: String(index),
+                          name: leader.name,
+                          position: leader.role,
+                          bio: null,
+                          image_url: leader.image,
+                          email: null,
+                          display_order: index,
+                          is_active: true
+                        })}
+                      >
+                        <div className="relative overflow-hidden rounded-2xl aspect-[3/4] bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg hover:shadow-2xl transition-all duration-300">
                           {/* Image */}
                           <img
                             src={leader.image}
                             alt={leader.name}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             loading="lazy"
                           />
-                          {/* Overlay on hover */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                            <h3 className="text-white font-bold text-lg md:text-xl mb-1">{leader.name}</h3>
-                            <p className="text-white/90 text-sm md:text-base">{leader.role}</p>
+                          {/* Bottom gradient overlay - always visible */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                          
+                          {/* Text at bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                            <h3 className="text-white font-bold text-lg md:text-xl mb-1 drop-shadow-lg">{leader.name}</h3>
+                            <p className="text-primary-foreground/90 text-sm md:text-base font-medium bg-primary/80 backdrop-blur-sm px-3 py-1 rounded-full inline-block">
+                              {leader.role}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -320,6 +356,61 @@ const About = () => {
             </div>
           </section>
         </AnimatedSection>
+
+        {/* Leader Modal */}
+        {selectedLeader && (
+          <div 
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300"
+            onClick={() => setSelectedLeader(null)}
+          >
+            <div 
+              className="relative max-w-2xl w-full bg-background rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in duration-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setSelectedLeader(null)}
+                className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Image */}
+              <div className="relative h-96 md:h-[500px] overflow-hidden">
+                <img
+                  src={selectedLeader.image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=800&q=80"}
+                  alt={selectedLeader.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              </div>
+
+              {/* Content */}
+              <div className="p-8">
+                <h2 className="text-3xl md:text-4xl font-bold mb-2">{selectedLeader.name}</h2>
+                <p className="text-primary text-lg md:text-xl font-medium mb-4">{selectedLeader.position}</p>
+                
+                {selectedLeader.bio && (
+                  <p className="text-muted-foreground leading-relaxed mb-4">{selectedLeader.bio}</p>
+                )}
+                
+                {selectedLeader.email && (
+                  <a 
+                    href={`mailto:${selectedLeader.email}`}
+                    className="inline-flex items-center gap-2 text-primary hover:underline"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    {selectedLeader.email}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </div>
