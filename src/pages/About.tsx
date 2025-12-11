@@ -81,6 +81,13 @@ const About = () => {
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
+              {/* "About Us" label */}
+              <div className="flex justify-start mb-8">
+                <div className="bg-white/10 backdrop-blur-sm px-6 py-2 rounded-full border border-white/20">
+                  <span className="text-white/90 text-sm md:text-base font-medium tracking-wide">About Us</span>
+                </div>
+              </div>
+
               {/* Decorative cross icon */}
               <div className="flex justify-center mb-6">
                 <div className="p-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
@@ -122,6 +129,9 @@ const About = () => {
               </div>
             </div>
           </div>
+
+          {/* Bottom shadow for smooth transition */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
         </section>
 
         {/* Our Story */}
@@ -202,7 +212,7 @@ const About = () => {
           </section>
         </AnimatedSection>
 
-        {/* Leadership Team - Enhanced hover effect */}
+        {/* Leadership Team - Hidden text until hover */}
         <AnimatedSection animation="fade-up">
           <section className="py-20 md:py-28">
             <div className="container mx-auto px-4">
@@ -233,16 +243,14 @@ const About = () => {
                           <img
                             src={leader.image_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80"}
                             alt={leader.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-75"
                             loading="lazy"
                           />
-                          {/* Bottom gradient overlay - always visible */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                           
-                          {/* Text at bottom */}
-                          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-                            <h3 className="text-white font-bold text-lg md:text-xl mb-1 drop-shadow-lg">{leader.name}</h3>
-                            <p className="text-primary-foreground/90 text-sm md:text-base font-medium bg-primary/80 backdrop-blur-sm px-3 py-1 rounded-full inline-block">
+                          {/* Text overlay - hidden by default, shows on hover */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
+                            <h3 className="text-white font-bold text-lg md:text-xl mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{leader.name}</h3>
+                            <p className="text-white/90 text-sm md:text-base font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
                               {leader.position}
                             </p>
                           </div>
@@ -272,16 +280,14 @@ const About = () => {
                           <img
                             src={leader.image}
                             alt={leader.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-75"
                             loading="lazy"
                           />
-                          {/* Bottom gradient overlay - always visible */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                           
-                          {/* Text at bottom */}
-                          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-                            <h3 className="text-white font-bold text-lg md:text-xl mb-1 drop-shadow-lg">{leader.name}</h3>
-                            <p className="text-primary-foreground/90 text-sm md:text-base font-medium bg-primary/80 backdrop-blur-sm px-3 py-1 rounded-full inline-block">
+                          {/* Text overlay - hidden by default, shows on hover */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
+                            <h3 className="text-white font-bold text-lg md:text-xl mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{leader.name}</h3>
+                            <p className="text-white/90 text-sm md:text-base font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
                               {leader.role}
                             </p>
                           </div>
@@ -295,59 +301,61 @@ const About = () => {
           </section>
         </AnimatedSection>
 
-        {/* What We Believe */}
+        {/* What We Believe - White background with elegant styling */}
         <AnimatedSection animation="slide-left">
-          <section className="py-20 md:py-28 bg-primary text-primary-foreground relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
-              <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
+          <section className="py-20 md:py-28 bg-background relative overflow-hidden border-y border-border">
+            {/* Subtle decorative elements */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full filter blur-3xl"></div>
+              <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary rounded-full filter blur-3xl"></div>
             </div>
+            
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-16">
                   <h2 className="text-3xl md:text-5xl font-serif font-bold mb-4">What We Believe</h2>
-                  <div className="h-1 w-20 bg-white/30 rounded-full mx-auto mb-4"></div>
-                  <p className="text-white/90 text-lg max-w-2xl mx-auto">
+                  <div className="h-1 w-20 bg-primary rounded-full mx-auto mb-4"></div>
+                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                     Our core beliefs anchor us in truth and guide our journey of faith
                   </p>
                 </div>
                 <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-                  <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all">
-                    <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mb-5">
-                      <BookOpen className="w-7 h-7 text-white" />
+                  <Card className="p-8 hover:shadow-xl transition-all duration-300 border-2">
+                    <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5">
+                      <BookOpen className="w-7 h-7 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-white">The Bible</h3>
-                    <p className="text-white/90 leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3">The Bible</h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       We believe the Bible is God's inspired Word, our final authority for faith and practice, providing guidance for every aspect of life.
                     </p>
                   </Card>
                   
-                  <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all">
-                    <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mb-5">
-                      <Heart className="w-7 h-7 text-white" />
+                  <Card className="p-8 hover:shadow-xl transition-all duration-300 border-2">
+                    <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5">
+                      <Heart className="w-7 h-7 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-white">Salvation</h3>
-                    <p className="text-white/90 leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3">Salvation</h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       Salvation is found only through faith in Jesus Christ and His finished work on the cross, offering grace and redemption to all.
                     </p>
                   </Card>
                   
-                  <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all">
-                    <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mb-5">
-                      <Users className="w-7 h-7 text-white" />
+                  <Card className="p-8 hover:shadow-xl transition-all duration-300 border-2">
+                    <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5">
+                      <Users className="w-7 h-7 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-white">Community</h3>
-                    <p className="text-white/90 leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3">Community</h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       We are called to live in authentic Christian community, supporting and encouraging one another in love and truth.
                     </p>
                   </Card>
                   
-                  <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all">
-                    <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mb-5">
-                      <Globe className="w-7 h-7 text-white" />
+                  <Card className="p-8 hover:shadow-xl transition-all duration-300 border-2">
+                    <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-5">
+                      <Globe className="w-7 h-7 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-white">The Great Commission</h3>
-                    <p className="text-white/90 leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3">The Great Commission</h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       We are commissioned to make disciples of all nations, sharing the Gospel boldly and living out our faith daily.
                     </p>
                   </Card>
