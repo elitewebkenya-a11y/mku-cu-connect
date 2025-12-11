@@ -4,10 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Pencil, Trash2, Eye, Plus } from "lucide-react";
+import { Pencil, Trash2, Eye, Plus, FileText } from "lucide-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -39,31 +38,17 @@ export const BlogPostsManager = () => {
 
   const quillModules = useMemo(() => ({
     toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'font': [] }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline'],
       [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'indent': '-1' }, { 'indent': '+1' }],
-      [{ 'direction': 'rtl' }],
-      [{ 'align': [] }],
-      ['blockquote', 'code-block'],
-      ['link', 'image', 'video'],
+      ['link', 'image'],
       ['clean']
     ],
   }), []);
 
   const quillFormats = [
-    'header', 'font', 'size',
-    'bold', 'italic', 'underline', 'strike',
-    'color', 'background',
-    'script',
-    'list', 'bullet', 'indent',
-    'direction', 'align',
-    'blockquote', 'code-block',
-    'link', 'image', 'video'
+    'header', 'bold', 'italic', 'underline',
+    'list', 'bullet', 'link', 'image'
   ];
 
   useEffect(() => {
@@ -77,7 +62,7 @@ export const BlogPostsManager = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Failed to fetch blog posts: " + error.message);
+      toast.error("Failed to fetch posts");
       return;
     }
 
@@ -114,14 +99,14 @@ export const BlogPostsManager = () => {
           .eq("id", editingId);
 
         if (error) throw error;
-        toast.success("Blog post updated successfully");
+        toast.success("Post updated");
       } else {
         const { error } = await supabase
           .from("blog_posts")
           .insert([dataToSubmit]);
 
         if (error) throw error;
-        toast.success("Blog post created successfully");
+        toast.success("Post created");
       }
 
       resetForm();
@@ -146,7 +131,7 @@ export const BlogPostsManager = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this blog post?")) return;
+    if (!confirm("Delete this post?")) return;
 
     const { error } = await supabase
       .from("blog_posts")
@@ -154,11 +139,11 @@ export const BlogPostsManager = () => {
       .eq("id", id);
 
     if (error) {
-      toast.error("Failed to delete blog post");
+      toast.error("Failed to delete");
       return;
     }
 
-    toast.success("Blog post deleted successfully");
+    toast.success("Post deleted");
     fetchPosts();
   };
 
@@ -175,108 +160,107 @@ export const BlogPostsManager = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <Card className="border-border shadow-sm">
-        <CardHeader className="bg-muted/50 border-b border-border">
+    <div className="space-y-4">
+      {/* Form */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            {editingId ? <Pencil className="h-5 w-5 text-primary" /> : <Plus className="h-5 w-5 text-primary" />}
+            {editingId ? <Pencil className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
             <div>
-              <CardTitle className="text-lg">{editingId ? "Edit" : "Create New"} Blog Post</CardTitle>
-              <CardDescription>Write and publish blog articles</CardDescription>
+              <CardTitle className="text-base">{editingId ? "Edit" : "New"} Blog Post</CardTitle>
+              <CardDescription className="text-xs">Write and publish articles</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title" className="text-xs">Title *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="Enter post title..."
+                  placeholder="Post title..."
                   required
-                  className="bg-background"
+                  className="h-9 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="slug">URL Slug</Label>
+                <Label htmlFor="slug" className="text-xs">URL Slug</Label>
                 <Input
                   id="slug"
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  placeholder="auto-generated-from-title"
-                  className="bg-background"
+                  placeholder="auto-generated"
+                  className="h-9 text-sm"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="featured_image">Featured Image URL</Label>
+              <Label htmlFor="featured_image" className="text-xs">Featured Image URL</Label>
               <Input
                 id="featured_image"
                 type="url"
                 value={formData.featured_image}
                 onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
                 placeholder="https://example.com/image.jpg"
-                className="bg-background"
+                className="h-9 text-sm"
               />
               {formData.featured_image && (
-                <div className="mt-2 rounded-lg overflow-hidden border border-border">
-                  <img
-                    src={formData.featured_image}
-                    alt="Preview"
-                    className="w-full h-40 object-cover"
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
-                </div>
+                <img
+                  src={formData.featured_image}
+                  alt="Preview"
+                  className="h-20 w-full object-cover rounded mt-1"
+                  onError={(e) => (e.currentTarget.style.display = 'none')}
+                />
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="excerpt">Excerpt (Short Description)</Label>
+              <Label htmlFor="excerpt" className="text-xs">Excerpt</Label>
               <Input
                 id="excerpt"
                 value={formData.excerpt}
                 onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                placeholder="Brief summary of the post..."
-                className="bg-background"
+                placeholder="Brief summary..."
+                className="h-9 text-sm"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Content *</Label>
-              <div className="border border-border rounded-lg overflow-hidden bg-background">
+              <Label className="text-xs">Content *</Label>
+              <div className="border rounded-lg overflow-hidden bg-background">
                 <ReactQuill
                   theme="snow"
                   value={formData.content}
                   onChange={(value) => setFormData({ ...formData, content: value })}
                   modules={quillModules}
                   formats={quillFormats}
-                  placeholder="Write your blog post content here..."
-                  className="min-h-[300px]"
+                  placeholder="Write your post..."
+                  className="[&_.ql-container]:min-h-[150px] [&_.ql-editor]:min-h-[150px] text-sm"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
               <Switch
                 id="is_published"
                 checked={formData.is_published}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
               />
-              <Label htmlFor="is_published" className="cursor-pointer">
+              <Label htmlFor="is_published" className="cursor-pointer text-xs">
                 {formData.is_published ? "Published" : "Draft"}
               </Label>
             </div>
 
-            <div className="flex gap-3">
-              <Button type="submit" disabled={loading} className="gap-2">
-                {loading ? "Saving..." : editingId ? "Update Post" : "Publish Post"}
+            <div className="flex gap-2 pt-2">
+              <Button type="submit" disabled={loading} size="sm">
+                {loading ? "Saving..." : editingId ? "Update" : "Publish"}
               </Button>
               {editingId && (
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button type="button" variant="outline" onClick={resetForm} size="sm">
                   Cancel
                 </Button>
               )}
@@ -285,96 +269,68 @@ export const BlogPostsManager = () => {
         </CardContent>
       </Card>
 
-      <Card className="border-border shadow-sm">
-        <CardHeader className="bg-muted/50 border-b border-border">
-          <CardTitle className="text-lg">All Blog Posts</CardTitle>
-          <CardDescription>{posts.length} post(s) total</CardDescription>
+      {/* Posts List */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Posts ({posts.length})</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/30">
-                  <TableHead>Title</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Published</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {posts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                      No blog posts yet. Create your first post above!
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  posts.map((post) => (
-                    <TableRow key={post.id} className="hover:bg-muted/30">
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          {post.featured_image && (
-                            <img
-                              src={post.featured_image}
-                              alt=""
-                              className="w-10 h-10 rounded object-cover"
-                            />
-                          )}
-                          <div>
-                            <p className="font-medium text-foreground">{post.title}</p>
-                            <p className="text-xs text-muted-foreground">{post.slug}</p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          post.is_published 
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" 
-                            : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
-                        }`}>
-                          {post.is_published ? "Published" : "Draft"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-sm">
-                        {post.published_at 
-                          ? new Date(post.published_at).toLocaleDateString() 
-                          : "—"}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => window.open(`/blog/${post.slug}`, '_blank')}
-                            title="Preview"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleEdit(post)}
-                            title="Edit"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => handleDelete(post.id)}
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+        <CardContent className="p-3 pt-0">
+          {posts.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">No posts yet</p>
+          ) : (
+            <div className="space-y-2">
+              {posts.map((post) => (
+                <div key={post.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                  {post.featured_image && (
+                    <img
+                      src={post.featured_image}
+                      alt=""
+                      className="w-12 h-12 rounded object-cover flex-shrink-0"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-medium text-sm text-foreground truncate">{post.title}</h4>
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                        post.is_published 
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
+                          : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                      }`}>
+                        {post.is_published ? "Live" : "Draft"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">{post.slug}</p>
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => window.open(`/blog/${post.slug}`, '_blank')}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEdit(post)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      onClick={() => handleDelete(post.id)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
