@@ -28,6 +28,15 @@ const categories = [
   "Campus Life",
 ];
 
+// Category placeholder images - replace these URLs with your own generated images
+const categoryImages: Record<string, string> = {
+  "Testimonies": "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=800&q=80",
+  "Teaching": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=800&q=80",
+  "Devotional": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=800&q=80",
+  "Campus Life": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80",
+  "All": "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=800&q=80"
+};
+
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
@@ -82,7 +91,7 @@ const Blog = () => {
           {/* Background Image */}
           <div className="absolute inset-0">
             <img
-              src={filteredPosts[0]?.featured_image || "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=1600&q=80"}
+              src={filteredPosts[0]?.featured_image || categoryImages[selectedCategory] || categoryImages["All"]}
               alt="Hero background"
               className="w-full h-full object-cover"
             />
@@ -138,7 +147,7 @@ const Blog = () => {
                   <div className="grid md:grid-cols-2 gap-0">
                     <div className="relative aspect-[16/10] md:aspect-auto md:h-full overflow-hidden">
                       <img
-                        src={filteredPosts[0]?.featured_image || "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=800&q=80"}
+                        src={filteredPosts[0]?.featured_image || categoryImages[filteredPosts[0]?.category || "All"] || categoryImages["All"]}
                         alt={filteredPosts[0]?.title}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                       />
@@ -205,7 +214,7 @@ const Blog = () => {
                       <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full flex flex-col group">
                         <div className="relative aspect-[16/10] overflow-hidden">
                           <img
-                            src={post.featured_image || "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=600&q=80"}
+                            src={post.featured_image || categoryImages[post.category || "All"] || categoryImages["All"]}
                             alt={post.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
