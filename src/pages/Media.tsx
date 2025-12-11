@@ -3,7 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Calendar, Youtube, Loader2, Video } from "lucide-react";
+import { Play, Calendar, Youtube, Loader2, Video, TrendingUp, Clock, Music, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -48,13 +48,14 @@ const Media = () => {
   const bibleStudies = sermons.filter(s => s.category === "Bible Study");
   const testimonies = sermons.filter(s => s.category === "Testimony");
   const worship = sermons.filter(s => s.category === "Worship");
+  const featuredSermons = sermons.filter(s => s.is_featured);
 
-  const SermonCard = ({ sermon }: { sermon: Sermon }) => {
+  const SermonCard = ({ sermon, featured = false }: { sermon: Sermon; featured?: boolean }) => {
     const isPlaying = playingId === sermon.id;
     
     return (
-      <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 bg-card border-0 shadow-sm">
-        <div className="relative aspect-video overflow-hidden bg-muted">
+      <Card className={`overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-card border hover:border-primary/50 ${featured ? 'md:col-span-2 lg:col-span-2' : ''}`}>
+        <div className={`relative ${featured ? 'aspect-[16/7]' : 'aspect-video'} overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800`}>
           {isPlaying ? (
             <iframe
               src={`https://www.youtube.com/embed/${sermon.youtube_id}?autoplay=1`}
@@ -68,51 +69,72 @@ const Media = () => {
               <img
                 src={`https://img.youtube.com/vi/${sermon.youtube_id}/maxresdefault.jpg`}
                 alt={sermon.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 loading="lazy"
                 onError={(e) => {
                   e.currentTarget.src = `https://img.youtube.com/vi/${sermon.youtube_id}/hqdefault.jpg`;
                 }}
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+              
               <button
                 onClick={() => setPlayingId(sermon.id)}
-                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute inset-0 flex items-center justify-center group/play"
               >
-                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-                  <Play className="w-6 h-6 text-primary-foreground ml-1" fill="currentColor" />
+                <div className="w-20 h-20 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center transform group-hover/play:scale-110 transition-transform shadow-2xl ring-4 ring-white/20">
+                  <Play className="w-8 h-8 text-primary-foreground ml-1" fill="currentColor" />
                 </div>
               </button>
-              <div className="absolute top-2 left-2">
-                <div className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded">
-                  <Youtube className="w-3 h-3 inline mr-1" />
+              
+              <div className="absolute top-3 left-3 flex gap-2">
+                {sermon.is_featured && (
+                  <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1 shadow-lg">
+                    <TrendingUp className="w-3 h-3" />
+                    Featured
+                  </div>
+                )}
+                <div className="bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full flex items-center gap-1.5">
+                  <Youtube className="w-3 h-3" />
                   Video
                 </div>
               </div>
+
+              {sermon.sermon_date && (
+                <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                  <Clock className="w-3 h-3" />
+                  {new Date(sermon.sermon_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </div>
+              )}
             </>
           )}
         </div>
-        <div className="p-4">
-          <h3 className="font-bold text-sm md:text-base mb-1 text-foreground group-hover:text-primary transition-colors line-clamp-2">
+        <div className={`${featured ? 'p-6' : 'p-5'}`}>
+          <h3 className={`font-bold ${featured ? 'text-xl mb-3' : 'text-base mb-2'} text-foreground group-hover:text-primary transition-colors line-clamp-2`}>
             {sermon.title}
           </h3>
           {sermon.speaker && (
-            <p className="text-xs text-muted-foreground mb-2">{sermon.speaker}</p>
+            <p className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              {sermon.speaker}
+            </p>
           )}
-          {sermon.sermon_date && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Calendar className="w-3 h-3" />
-              <span>{new Date(sermon.sermon_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-            </div>
+          {sermon.description && featured && (
+            <p className="text-sm text-muted-foreground/80 line-clamp-2 mt-3">
+              {sermon.description}
+            </p>
           )}
         </div>
       </Card>
     );
   };
 
-  const EmptyState = () => (
-    <div className="text-center py-12">
-      <Video className="w-10 h-10 mx-auto mb-3 text-muted-foreground/50" />
-      <p className="text-sm text-muted-foreground">No videos in this category yet.</p>
+  const EmptyState = ({ icon: Icon, title }: { icon: any; title: string }) => (
+    <div className="text-center py-20">
+      <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+        <Icon className="w-10 h-10 text-muted-foreground/50" />
+      </div>
+      <p className="text-base font-medium text-muted-foreground">{title}</p>
+      <p className="text-sm text-muted-foreground/70 mt-2">Check back soon for new content</p>
     </div>
   );
 
@@ -120,55 +142,138 @@ const Media = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        {/* Hero Section */}
-        <section className="py-10 md:py-14 bg-gradient-to-br from-primary via-primary/95 to-primary/90">
-          <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto text-center text-primary-foreground">
-              <div className="inline-flex items-center gap-2 bg-white/15 px-3 py-1 rounded-full mb-3">
-                <Video className="w-4 h-4" />
-                <span className="text-xs font-medium">Media Library</span>
+        {/* Hero Section - Redesigned */}
+        <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-primary to-slate-800">
+          {/* Animated background */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-10 left-20 w-80 h-80 bg-primary-foreground rounded-full mix-blend-overlay filter blur-3xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
+          </div>
+
+          {/* Geometric shapes */}
+          <div className="absolute inset-0 overflow-hidden opacity-5">
+            <div className="absolute top-10 right-10 w-72 h-72 border border-white rounded-full"></div>
+            <div className="absolute bottom-20 left-10 w-96 h-96 border border-white rounded-full"></div>
+          </div>
+
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              {/* Badge */}
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent to-white/50"></div>
+                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2 rounded-full border border-white/20">
+                  <Video className="w-4 h-4 text-white" />
+                  <span className="text-sm font-medium text-white tracking-wide">Media Library</span>
+                </div>
+                <div className="h-px w-12 bg-gradient-to-l from-transparent to-white/50"></div>
               </div>
-              <h1 className="text-2xl md:text-3xl font-serif font-bold mb-2">
-                Watch & Be Blessed
+
+              {/* Main heading */}
+              <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight">
+                <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
+                  Watch & Be
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-yellow-200 via-white to-white/90 bg-clip-text text-transparent">
+                  Blessed
+                </span>
               </h1>
-              <p className="text-sm text-primary-foreground/80 mb-4">
-                Sermons, teachings, and worship from MKU CU
+
+              <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Experience powerful sermons, inspiring worship, and life-changing teachings from MKU Christian Union
               </p>
+
+              {/* CTA Button */}
               <a href="https://youtube.com/@mkucu" target="_blank" rel="noopener noreferrer">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  <Youtube className="w-4 h-4" />
+                <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white gap-2 px-8 py-6 text-base shadow-2xl hover:shadow-red-600/50 transition-all duration-300 hover:scale-105">
+                  <Youtube className="w-5 h-5" />
                   Subscribe on YouTube
                 </Button>
               </a>
+
+              {/* Stats */}
+              <div className="flex flex-wrap justify-center gap-8 mt-16">
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">{sermons.length}+</div>
+                  <div className="text-white/70 text-xs uppercase tracking-wider">Videos</div>
+                </div>
+                <div className="w-px h-12 bg-white/20"></div>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">Weekly</div>
+                  <div className="text-white/70 text-xs uppercase tracking-wider">Uploads</div>
+                </div>
+                <div className="w-px h-12 bg-white/20"></div>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">HD</div>
+                  <div className="text-white/70 text-xs uppercase tracking-wider">Quality</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Media Content */}
-        <section className="py-8 md:py-12">
+        {/* Featured Section */}
+        {featuredSermons.length > 0 && (
+          <section className="py-16 bg-muted/30">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex items-center gap-3 mb-8">
+                  <TrendingUp className="w-6 h-6 text-primary" />
+                  <h2 className="text-3xl font-serif font-bold text-foreground">Featured Content</h2>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {featuredSermons.slice(0, 2).map((sermon) => (
+                    <SermonCard key={sermon.id} sermon={sermon} featured />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Media Content with Tabs */}
+        <section className="py-16">
           <div className="container mx-auto px-4">
             {loading ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
+                <p className="text-sm text-muted-foreground">Loading amazing content...</p>
               </div>
             ) : sermons.length === 0 ? (
-              <div className="text-center py-16">
-                <Video className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                <h2 className="text-lg font-bold mb-2">No Videos Yet</h2>
-                <p className="text-sm text-muted-foreground">Check back soon for sermons and worship videos.</p>
+              <div className="text-center py-20">
+                <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+                  <Video className="w-12 h-12 text-muted-foreground/50" />
+                </div>
+                <h2 className="text-2xl font-bold mb-3">No Videos Yet</h2>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Our media library is coming soon. Check back later for sermons, worship sessions, and more!
+                </p>
               </div>
             ) : (
-              <div className="max-w-6xl mx-auto">
+              <div className="max-w-7xl mx-auto">
                 <Tabs defaultValue="all" className="w-full">
-                  <TabsList className="w-full max-w-lg mx-auto grid grid-cols-4 mb-8 h-auto">
-                    <TabsTrigger value="all" className="text-xs py-2">All</TabsTrigger>
-                    <TabsTrigger value="sermons" className="text-xs py-2">Sermons</TabsTrigger>
-                    <TabsTrigger value="bible-study" className="text-xs py-2">Study</TabsTrigger>
-                    <TabsTrigger value="worship" className="text-xs py-2">Worship</TabsTrigger>
+                  <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-5 mb-12 h-auto bg-muted p-1 rounded-xl">
+                    <TabsTrigger value="all" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all">
+                      All Videos
+                    </TabsTrigger>
+                    <TabsTrigger value="sermons" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4" />
+                      Sermons
+                    </TabsTrigger>
+                    <TabsTrigger value="bible-study" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all">
+                      Study
+                    </TabsTrigger>
+                    <TabsTrigger value="worship" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all flex items-center gap-1.5">
+                      <Music className="w-4 h-4" />
+                      Worship
+                    </TabsTrigger>
+                    <TabsTrigger value="testimony" className="text-sm py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all">
+                      Testimony
+                    </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="all">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {sermons.map((sermon) => (
                         <SermonCard key={sermon.id} sermon={sermon} />
                       ))}
@@ -177,32 +282,42 @@ const Media = () => {
 
                   <TabsContent value="sermons">
                     {sundaySermons.length > 0 ? (
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {sundaySermons.map((sermon) => (
                           <SermonCard key={sermon.id} sermon={sermon} />
                         ))}
                       </div>
-                    ) : <EmptyState />}
+                    ) : <EmptyState icon={BookOpen} title="No sermons available yet" />}
                   </TabsContent>
 
                   <TabsContent value="bible-study">
                     {bibleStudies.length > 0 ? (
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {bibleStudies.map((sermon) => (
                           <SermonCard key={sermon.id} sermon={sermon} />
                         ))}
                       </div>
-                    ) : <EmptyState />}
+                    ) : <EmptyState icon={BookOpen} title="No Bible studies available yet" />}
                   </TabsContent>
 
                   <TabsContent value="worship">
                     {worship.length > 0 ? (
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {worship.map((sermon) => (
                           <SermonCard key={sermon.id} sermon={sermon} />
                         ))}
                       </div>
-                    ) : <EmptyState />}
+                    ) : <EmptyState icon={Music} title="No worship videos available yet" />}
+                  </TabsContent>
+
+                  <TabsContent value="testimony">
+                    {testimonies.length > 0 ? (
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {testimonies.map((sermon) => (
+                          <SermonCard key={sermon.id} sermon={sermon} />
+                        ))}
+                      </div>
+                    ) : <EmptyState icon={Video} title="No testimonies available yet" />}
                   </TabsContent>
                 </Tabs>
               </div>
