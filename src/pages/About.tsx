@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
-import { Users, Heart, Target, Award, BookOpen, Globe, Sparkles, Cross, Church } from "lucide-react";
+import { Users, Heart, Target, Award, BookOpen, Globe, Sparkles, Church } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatedSection } from "@/components/AnimatedSection";
@@ -95,9 +95,7 @@ const About = () => {
 
               {/* Decorative cross icon */}
               <div className="flex justify-center mb-6">
-                <div className="p-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                  <Cross className="w-8 h-8 text-white" />
-                </div>
+                
               </div>
 
               {/* Main heading */}
