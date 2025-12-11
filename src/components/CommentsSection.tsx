@@ -32,7 +32,6 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,15 +42,15 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
   const fetchComments = async () => {
     try {
       const { data, error } = await supabase
-        .from('comments')
-        .select('*')
-        .eq('post_slug', postSlug)
-        .order('created_at', { ascending: false });
+        .from("comments")
+        .select("*")
+        .eq("post_slug", postSlug)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setComments(data || []);
     } catch (error) {
-      console.error('Error fetching comments:', error);
+      console.error("Error fetching comments:", error);
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +58,7 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name.trim() || !newComment.trim()) {
       toast.error("Please fill in your name and comment");
       return;
@@ -68,28 +67,25 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
     setIsSubmitting(true);
 
     try {
-      const randomAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
-      
-      const { error } = await supabase
-        .from('comments')
-        .insert({
-          post_slug: postSlug,
-          author_name: name.trim(),
-          author_email: email.trim() || null,
-          content: newComment.trim(),
-          avatar_url: randomAvatar,
-        });
+      const randomAvatar =
+        defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
+
+      const { error } = await supabase.from("comments").insert({
+        post_slug: postSlug,
+        author_name: name.trim(),
+        content: newComment.trim(),
+        avatar_url: randomAvatar,
+      });
 
       if (error) throw error;
 
       toast.success("Comment posted successfully!");
       setNewComment("");
       setName("");
-      setEmail("");
       setShowCommentForm(false);
       fetchComments();
     } catch (error) {
-      console.error('Error posting comment:', error);
+      console.error("Error posting comment:", error);
       toast.error("Failed to post comment. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -109,30 +105,23 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
       {showCommentForm ? (
         <Card className="p-6 mb-8 bg-muted/50 border-border">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2 text-foreground">Name *</label>
-                <Input
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="bg-background border-border"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2 text-foreground">Email (optional)</label>
-                <Input
-                  type="email"
-                  placeholder="your.email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-background border-border"
-                />
-              </div>
-            </div>
             <div>
-              <label className="block text-sm font-medium mb-2 text-foreground">Comment *</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">
+                Name *
+              </label>
+              <Input
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-background border-border"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-foreground">
+                Comment *
+              </label>
               <Textarea
                 placeholder="Share your thoughts..."
                 value={newComment}
@@ -142,9 +131,10 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
                 required
               />
             </div>
+
             <div className="flex gap-3">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSubmitting}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
@@ -160,8 +150,8 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
                   </>
                 )}
               </Button>
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 variant="outline"
                 onClick={() => setShowCommentForm(false)}
                 className="border-border"
@@ -172,7 +162,7 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
           </form>
         </Card>
       ) : (
-        <Button 
+        <Button
           onClick={() => setShowCommentForm(true)}
           variant="outline"
           className="mb-8 w-full sm:w-auto border-2 border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all"
@@ -190,18 +180,25 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
       ) : (
         <div className="space-y-6">
           {comments.map((comment) => (
-            <Card key={comment.id} className="p-6 hover:shadow-md transition-shadow bg-card border-border">
+            <Card
+              key={comment.id}
+              className="p-6 hover:shadow-md transition-shadow bg-card border-border"
+            >
               <div className="flex gap-4">
-                <img 
+                <img
                   src={comment.avatar_url || defaultAvatars[0]}
                   alt={comment.author_name}
                   className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h4 className="font-bold text-base text-foreground">{comment.author_name}</h4>
+                    <h4 className="font-bold text-base text-foreground">
+                      {comment.author_name}
+                    </h4>
                     <span className="text-sm text-muted-foreground">
-                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(comment.created_at), {
+                        addSuffix: true,
+                      })}
                     </span>
                   </div>
                   <p className="text-base leading-relaxed text-foreground">
@@ -217,7 +214,9 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
       {!isLoading && comments.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p className="text-lg">No comments yet. Be the first to share your thoughts!</p>
+          <p className="text-lg">
+            No comments yet. Be the first to share your thoughts!
+          </p>
         </div>
       )}
     </div>
