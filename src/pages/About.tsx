@@ -88,7 +88,7 @@ const About = () => {
             <div className="max-w-4xl mx-auto text-center">
               {/* "About Us" label */}
               <div className="justify-start mb-8 flex flex-col">
-                <div className="bg-white/10 backdrop-blur-sm px-6 py-2 rounded-full border border-white/20">
+                <div className="backdrop-blur-sm px-6 py-2 rounded-full border-white/20 bg-black/0 border-0">
                   <span className="text-white/90 text-sm md:text-base font-medium tracking-wide">About Us</span>
                 </div>
               </div>
