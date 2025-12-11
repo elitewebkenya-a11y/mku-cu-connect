@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { CommentsSection } from "@/components/CommentsSection";
-import { AnimatedSection } from "@/components/AnimatedSection";
-import { Calendar, Clock, User, Eye, Facebook, Twitter, Link as LinkIcon, ArrowRight, Loader2 } from "lucide-react";
+import { Calendar, Clock, Facebook, Twitter, Link as LinkIcon, ArrowRight, Loader2, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow, format } from "date-fns";
+import { format } from "date-fns";
 
 interface BlogPost {
   id: string;
@@ -20,6 +19,7 @@ interface BlogPost {
   excerpt: string | null;
   featured_image: string | null;
   tags: string[] | null;
+  category: string | null;
   is_published: boolean | null;
   published_at: string | null;
   created_at: string | null;
@@ -49,7 +49,6 @@ const BlogPost = () => {
       if (error) throw error;
       setPost(data);
 
-      // Fetch related posts
       if (data) {
         const { data: related } = await supabase
           .from('blog_posts')
@@ -70,7 +69,7 @@ const BlogPost = () => {
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success("Link copied to clipboard!");
+    toast.success("Link copied!");
   };
 
   const shareOnFacebook = () => {
@@ -88,8 +87,8 @@ const BlogPost = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="flex items-center justify-center py-40">
-          <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <main className="flex items-center justify-center py-32">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </main>
         <Footer />
       </div>
@@ -100,13 +99,11 @@ const BlogPost = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="container mx-auto px-4 py-20 text-center">
-          <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">Post Not Found</h1>
-          <p className="text-muted-foreground mb-8">Sorry, we couldn't find that blog post.</p>
+        <main className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-serif font-bold mb-3 text-foreground">Post Not Found</h1>
+          <p className="text-muted-foreground mb-6 text-sm">Sorry, we couldn't find that story.</p>
           <Link to="/blog">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              Back to Blog
-            </Button>
+            <Button size="sm">Back to Stories</Button>
           </Link>
         </main>
         <Footer />
@@ -119,216 +116,170 @@ const BlogPost = () => {
       <Header />
       
       <main>
-        {/* Hero Section */}
-        <AnimatedSection animation="fade-in">
-          <section className="py-8 md:py-16 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-10" />
-            <div className="container mx-auto px-4 relative z-10">
-              <div className="max-w-4xl mx-auto">
-                <Link to="/blog" className="inline-block mb-6">
-                  <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
-                    ← Back to Blog
-                  </Button>
-                </Link>
-                
-                {post.tags && post.tags.length > 0 && (
-                  <Badge className="mb-4 bg-secondary text-secondary-foreground text-sm">
-                    {post.tags[0]}
+        {/* Article Header */}
+        <article className="py-8 md:py-12">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
+              {/* Back Link */}
+              <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
+                <ChevronLeft className="w-4 h-4" />
+                Back to Stories
+              </Link>
+
+              {/* Category & Meta */}
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                {post.category && (
+                  <Badge className="bg-primary/10 text-primary border-0 text-xs">
+                    {post.category}
                   </Badge>
                 )}
-                
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6 leading-tight text-white">
-                  {post.title}
-                </h1>
-
-                <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm md:text-base text-white/70">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>
-                      {post.published_at 
-                        ? format(new Date(post.published_at), 'MMMM d, yyyy')
-                        : post.created_at 
-                          ? format(new Date(post.created_at), 'MMMM d, yyyy')
-                          : 'Recently'
-                      }
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  {post.published_at && (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{format(new Date(post.published_at), 'MMM d, yyyy')}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
                     <span>{Math.ceil(post.content.length / 1500)} min read</span>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-        </AnimatedSection>
 
-        {/* Featured Image */}
-        {post.featured_image && (
-          <AnimatedSection animation="scale">
-            <div className="w-full bg-muted">
-              <div className="container mx-auto px-4 py-8">
-                <div className="max-w-5xl mx-auto">
+              {/* Title */}
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold mb-4 text-foreground leading-tight">
+                {post.title}
+              </h1>
+
+              {/* Excerpt */}
+              {post.excerpt && (
+                <p className="text-base md:text-lg text-muted-foreground mb-6 leading-relaxed">
+                  {post.excerpt}
+                </p>
+              )}
+
+              {/* Share Buttons */}
+              <div className="flex items-center gap-2 mb-6 pb-6 border-b">
+                <span className="text-xs text-muted-foreground mr-1">Share:</span>
+                <Button 
+                  size="sm"
+                  variant="outline" 
+                  className="h-8 w-8 p-0"
+                  onClick={shareOnFacebook}
+                >
+                  <Facebook className="w-3.5 h-3.5" />
+                </Button>
+                <Button 
+                  size="sm"
+                  variant="outline" 
+                  className="h-8 w-8 p-0"
+                  onClick={shareOnTwitter}
+                >
+                  <Twitter className="w-3.5 h-3.5" />
+                </Button>
+                <Button 
+                  size="sm"
+                  variant="outline" 
+                  className="h-8 w-8 p-0"
+                  onClick={copyLink}
+                >
+                  <LinkIcon className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+
+              {/* Featured Image */}
+              {post.featured_image && (
+                <div className="mb-8 rounded-lg overflow-hidden">
                   <img 
                     src={post.featured_image} 
                     alt={post.title}
-                    className="w-full aspect-[2/1] object-cover rounded-lg shadow-lg"
+                    className="w-full aspect-[16/9] object-cover"
                   />
                 </div>
-              </div>
-            </div>
-          </AnimatedSection>
-        )}
+              )}
 
-        {/* Article Content */}
-        <AnimatedSection animation="fade-up">
-          <article className="py-12 md:py-16">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto">
-                <div className="grid lg:grid-cols-12 gap-8">
-                  {/* Sidebar - Share */}
-                  <aside className="lg:col-span-2">
-                    <div className="lg:sticky lg:top-24">
-                      <h3 className="font-bold text-sm mb-4 text-muted-foreground uppercase tracking-wide">Share</h3>
-                      <div className="flex lg:flex-col gap-2">
-                        <Button 
-                          size="sm"
-                          variant="outline" 
-                          className="flex-1 lg:w-full justify-start hover:bg-[#1877f2] hover:text-white hover:border-[#1877f2]"
-                          onClick={shareOnFacebook}
-                        >
-                          <Facebook className="w-4 h-4 lg:mr-2" />
-                          <span className="hidden lg:inline">Facebook</span>
-                        </Button>
-                        <Button 
-                          size="sm"
-                          variant="outline" 
-                          className="flex-1 lg:w-full justify-start hover:bg-[#1da1f2] hover:text-white hover:border-[#1da1f2]"
-                          onClick={shareOnTwitter}
-                        >
-                          <Twitter className="w-4 h-4 lg:mr-2" />
-                          <span className="hidden lg:inline">Twitter</span>
-                        </Button>
-                        <Button 
-                          size="sm"
-                          variant="outline" 
-                          className="flex-1 lg:w-full justify-start hover:bg-primary hover:text-white hover:border-primary"
-                          onClick={copyLink}
-                        >
-                          <LinkIcon className="w-4 h-4 lg:mr-2" />
-                          <span className="hidden lg:inline">Copy</span>
-                        </Button>
-                      </div>
-                    </div>
-                  </aside>
+              {/* Article Content */}
+              <div 
+                className="prose prose-sm md:prose-base max-w-none
+                  prose-headings:font-serif prose-headings:font-bold prose-headings:text-foreground
+                  prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3
+                  prose-p:text-foreground/90 prose-p:leading-relaxed prose-p:mb-4
+                  prose-blockquote:border-l-4 prose-blockquote:border-primary/30 prose-blockquote:pl-4 
+                  prose-blockquote:italic prose-blockquote:my-6 prose-blockquote:text-muted-foreground
+                  prose-ul:my-4 prose-ul:space-y-1
+                  prose-li:text-foreground/90
+                  prose-strong:text-foreground prose-strong:font-semibold
+                  prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                  prose-img:rounded-lg"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
 
-                  {/* Article Content */}
-                  <div className="lg:col-span-10">
-                    {post.excerpt && (
-                      <p className="text-xl leading-relaxed text-muted-foreground mb-8 italic">
-                        {post.excerpt}
-                      </p>
-                    )}
-                    
-                    <div 
-                      className="prose prose-lg max-w-none
-                        prose-headings:font-serif prose-headings:font-bold prose-headings:text-foreground
-                        prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:leading-tight
-                        prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6 prose-p:text-foreground
-                        prose-blockquote:border-l-4 prose-blockquote:border-secondary prose-blockquote:pl-6 
-                        prose-blockquote:italic prose-blockquote:text-xl prose-blockquote:my-8 prose-blockquote:text-muted-foreground
-                        prose-ul:my-6 prose-ul:space-y-3
-                        prose-li:text-lg prose-li:leading-relaxed prose-li:text-foreground
-                        prose-strong:text-foreground prose-strong:font-semibold
-                        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                        prose-img:rounded-lg prose-img:shadow-md"
-                      dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
-
-                    {/* Tags */}
-                    {post.tags && post.tags.length > 0 && (
-                      <div className="mt-12 pt-8 border-t border-border">
-                        <h3 className="text-sm font-bold mb-4 text-muted-foreground uppercase tracking-wide">Tags</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {post.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="bg-muted hover:bg-muted/80 text-foreground">
-                              #{tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Comments Section */}
-                    <CommentsSection postSlug={post.slug} />
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="mt-8 pt-6 border-t">
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-xs">
+                        #{tag}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
+              )}
+
+              {/* Comments Section */}
+              <div className="mt-10">
+                <CommentsSection postSlug={post.slug} />
               </div>
             </div>
-          </article>
-        </AnimatedSection>
+          </div>
+        </article>
 
         {/* Related Articles */}
         {relatedPosts.length > 0 && (
-          <AnimatedSection animation="fade-up">
-            <section className="py-16 md:py-20 bg-gradient-to-br from-muted via-background to-muted/50">
-              <div className="container mx-auto px-4">
-                <div className="max-w-6xl mx-auto">
-                  <h2 className="text-3xl md:text-4xl font-serif font-bold mb-8 md:mb-12 text-foreground">
-                    Related Articles
-                  </h2>
-                  
-                  <div className="grid md:grid-cols-3 gap-8">
-                    {relatedPosts.map((relatedPost) => (
-                      <Link key={relatedPost.id} to={`/blog/${relatedPost.slug}`}>
-                        <Card className="overflow-hidden group hover:shadow-xl transition-all duration-300 h-full flex flex-col bg-card border-border">
-                          <div className="aspect-video overflow-hidden">
-                            <img
-                              src={relatedPost.featured_image || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=600&q=80'}
-                              alt={relatedPost.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
+          <section className="py-10 bg-muted/30">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-xl font-serif font-bold mb-6 text-foreground">
+                  More Stories
+                </h2>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                  {relatedPosts.map((relatedPost) => (
+                    <Link key={relatedPost.id} to={`/blog/${relatedPost.slug}`}>
+                      <Card className="overflow-hidden group hover:shadow-md transition-all duration-300 h-full flex flex-col border-0 shadow-sm">
+                        <div className="aspect-[4/3] overflow-hidden">
+                          <img
+                            src={relatedPost.featured_image || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=600&q=80'}
+                            alt={relatedPost.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                        <div className="p-3 flex flex-col flex-grow">
+                          <h3 className="text-sm font-bold mb-1.5 group-hover:text-primary transition-colors line-clamp-2 text-foreground">
+                            {relatedPost.title}
+                          </h3>
+                          <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-auto">
+                            <Clock className="w-2.5 h-2.5" />
+                            <span>{Math.ceil((relatedPost.content?.length || 0) / 1500)} min</span>
                           </div>
-                          <div className="p-6 flex flex-col flex-grow">
-                            {relatedPost.tags && relatedPost.tags.length > 0 && (
-                              <Badge className="mb-3 bg-primary text-primary-foreground w-fit">
-                                {relatedPost.tags[0]}
-                              </Badge>
-                            )}
-                            <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors line-clamp-2 text-foreground">
-                              {relatedPost.title}
-                            </h3>
-                            {relatedPost.excerpt && (
-                              <p className="text-muted-foreground mb-4 line-clamp-2 flex-grow">
-                                {relatedPost.excerpt}
-                              </p>
-                            )}
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                <span>{Math.ceil((relatedPost.content?.length || 0) / 1500)} min read</span>
-                              </div>
-                            </div>
-                            <Button variant="link" className="p-0 text-primary w-fit mt-4">
-                              Read More <ArrowRight className="w-4 h-4 ml-1" />
-                            </Button>
-                          </div>
-                        </Card>
-                      </Link>
-                    ))}
-                  </div>
-
-                  <div className="text-center mt-12">
-                    <Link to="/blog">
-                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                        View All Articles
-                      </Button>
+                        </div>
+                      </Card>
                     </Link>
-                  </div>
+                  ))}
+                </div>
+
+                <div className="text-center mt-8">
+                  <Link to="/blog">
+                    <Button variant="outline" size="sm">
+                      View All Stories <ArrowRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
-            </section>
-          </AnimatedSection>
+            </div>
+          </section>
         )}
       </main>
       
