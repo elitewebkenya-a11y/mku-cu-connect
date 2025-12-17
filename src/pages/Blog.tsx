@@ -260,19 +260,6 @@ const Blog = () => {
             </div>
           </div>
         </section>
-        
-        <style jsx>{`
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}</style>
 
         {/* CTA Section */}
         <section className="py-12 md:py-16 bg-muted/30">
