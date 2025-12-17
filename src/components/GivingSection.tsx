@@ -9,11 +9,13 @@ import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
 
 const quickAmounts = [50, 100, 500, 1000];
+const givingTypes = ["Tithe", "Offering", "Mission"];
 
 export const GivingSection = () => {
   const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState("100");
   const [donorName, setDonorName] = useState("");
+  const [givingType, setGivingType] = useState("Tithe");
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
   const [currentReference, setCurrentReference] = useState<string | null>(null);
@@ -79,7 +81,12 @@ export const GivingSection = () => {
       const res = await fetch("https://remote.victoryschoolclub.co.ke/process-payment.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, amount: parseFloat(amount), donor_name: donorName, payment_type: "tithe" }),
+        body: JSON.stringify({ 
+          phone, 
+          amount: parseFloat(amount), 
+          donor_name: donorName, 
+          payment_type: givingType.toLowerCase() 
+        }),
       });
 
       const data = await res.json();
@@ -118,6 +125,7 @@ export const GivingSection = () => {
     setPhone("");
     setAmount("100");
     setDonorName("");
+    setGivingType("Tithe");
   };
 
   return (
@@ -199,14 +207,14 @@ export const GivingSection = () => {
                     </div>
                     <h4 className="text-2xl md:text-3xl font-bold mb-2 md:mb-3 text-navy">God Bless You!</h4>
                     <p className="text-gray-600 text-base md:text-lg mb-6 md:mb-8 max-w-md mx-auto px-4">
-                      Your offering has been received. Thank you for partnering with us in advancing God's Kingdom.
+                      Your {givingType.toLowerCase()} has been received. Thank you for partnering with us in advancing God's Kingdom.
                     </p>
                     <Button 
                       onClick={resetPayment} 
                       size="lg"
                       className="bg-navy hover:bg-navy/90"
                     >
-                      Make Another Offering
+                      Make Another Contribution
                     </Button>
                   </div>
                 ) : paymentStatus === "failed" ? (
@@ -254,6 +262,29 @@ export const GivingSection = () => {
                     </div>
 
                     <div className="space-y-5 md:space-y-6">
+                      <div>
+                        <Label className="text-gray-700 font-medium mb-2 block text-sm">
+                          Type of Contribution <span className="text-red-500">*</span>
+                        </Label>
+                        <div className="grid grid-cols-3 gap-2 md:gap-3">
+                          {givingTypes.map((type) => (
+                            <Button
+                              key={type}
+                              type="button"
+                              variant="outline"
+                              onClick={() => setGivingType(type)}
+                              className={`h-12 md:h-14 border-2 font-semibold transition-all text-sm md:text-base ${
+                                givingType === type
+                                  ? 'border-navy bg-navy text-white'
+                                  : 'border-gray-200 hover:border-navy'
+                              }`}
+                            >
+                              {type}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+
                       <div>
                         <Label className="text-gray-700 font-medium mb-2 block text-sm">
                           Your Name <span className="text-gray-400 font-normal">(Optional)</span>
@@ -316,7 +347,7 @@ export const GivingSection = () => {
                       {paymentStatus === "pending" && (
                         <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center">
                           <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-3" />
-                          <p className="text-blue-900 font-semibold mb-1">Processing Your Gift</p>
+                          <p className="text-blue-900 font-semibold mb-1">Processing Your {givingType}</p>
                           <p className="text-blue-700 text-sm">
                             Please check your phone and complete the payment
                           </p>
@@ -331,12 +362,12 @@ export const GivingSection = () => {
                         {isProcessing ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                            Processing Your Gift...
+                            Processing Your {givingType}...
                           </>
                         ) : (
                           <>
                             <Heart className="w-5 h-5 mr-2 fill-white" />
-                            Give Now
+                            Give {givingType} Now
                           </>
                         )}
                       </Button>
