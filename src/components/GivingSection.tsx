@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Heart, Smartphone, Loader2, CheckCircle, XCircle, Phone } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
 
@@ -31,31 +32,44 @@ export const GivingSection = () => {
     };
   }, []);
 
-  // Poll backend for payment status
+  // ✅ Poll Supabase directly for payment status
   const checkPaymentStatus = async (reference: string) => {
     try {
-      const res = await fetch(`https://remote.victoryschoolclub.co.ke/check-status.php?reference=${reference}`);
-      const data = await res.json();
+      const { data, error } = await supabase
+        .from("payments")
+        .select("status")
+        .eq("external_reference", reference)
+        .maybeSingle();
 
-      if (data.status === "success") {
-        setPaymentStatus("success");
-        toast.success("Payment successful! Thank you for your generous giving.");
-        pollIntervalRef.current && clearInterval(pollIntervalRef.current);
+      if (error) {
+        console.error("Supabase status check error:", error);
+        return;
       }
 
-      if (data.status === "failed") {
-        setPaymentStatus("failed");
-        toast.error("Payment was not completed. Please try again.");
-        pollIntervalRef.current && clearInterval(pollIntervalRef.current);
+      const status = data?.status || "pending";
+
+      if (status !== paymentStatus) {
+        setPaymentStatus(status as "pending" | "success" | "failed");
+
+        if (status === "success") {
+          toast.success("Payment successful! Thank you for your generous giving.");
+          pollIntervalRef.current && clearInterval(pollIntervalRef.current);
+        }
+
+        if (status === "failed") {
+          toast.error("Payment was not completed. Please try again.");
+          pollIntervalRef.current && clearInterval(pollIntervalRef.current);
+        }
       }
     } catch (err) {
       console.error("Status check error:", err);
     }
   };
 
-  // Initiate payment
+  // ✅ Initiate payment via PHP or API (keeps your existing flow)
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!phone || !amount || parseFloat(amount) <= 0) {
       toast.error("Please enter a valid phone number and amount");
       return;
@@ -79,10 +93,10 @@ export const GivingSection = () => {
       setPaymentStatus("pending");
       toast.info("STK push sent! Please check your phone and enter M-Pesa PIN.");
 
-      // Start polling every 5s
+      // Start polling Supabase every 5s
       pollIntervalRef.current = setInterval(() => checkPaymentStatus(data.reference), 5000);
 
-      // Stop polling after 2 minutes if no response
+      // Stop polling after 2 minutes
       setTimeout(() => {
         if (pollIntervalRef.current) {
           clearInterval(pollIntervalRef.current);
