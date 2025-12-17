@@ -242,12 +242,12 @@ export const GivingSection = () => {
                   <>
                     <div className="text-center mb-8">
                       <div className="inline-flex items-center gap-3 mb-4">
-                        <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center">
-                          <Smartphone className="w-7 h-7 text-green-600" />
+                        <div className="w-14 h-14 bg-navy/10 rounded-full flex items-center justify-center">
+                          <Heart className="w-7 h-7 text-navy fill-navy" />
                         </div>
                         <div className="text-left">
-                          <h3 className="text-2xl font-bold text-navy">Mobile Money</h3>
-                          <p className="text-gray-500 text-sm">Secure M-Pesa Payment</p>
+                          <h3 className="text-2xl font-bold text-navy">Support God's Work</h3>
+                          <p className="text-gray-500 text-sm">Give securely and conveniently</p>
                         </div>
                       </div>
                     </div>
@@ -267,7 +267,7 @@ export const GivingSection = () => {
 
                       <div>
                         <Label className="text-gray-700 font-medium mb-2 block text-sm">
-                          M-Pesa Phone Number <span className="text-red-500">*</span>
+                          Phone Number <span className="text-red-500">*</span>
                         </Label>
                         <Input 
                           value={phone} 
@@ -276,7 +276,7 @@ export const GivingSection = () => {
                           required
                           className="h-12 border-gray-200 focus:border-navy"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Enter the number registered with M-Pesa</p>
+                        <p className="text-xs text-gray-500 mt-1">We'll send a payment prompt to this number</p>
                       </div>
 
                       <div>
@@ -315,34 +315,34 @@ export const GivingSection = () => {
                       {paymentStatus === "pending" && (
                         <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center">
                           <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-3" />
-                          <p className="text-blue-900 font-semibold mb-1">Waiting for Payment</p>
+                          <p className="text-blue-900 font-semibold mb-1">Processing Your Gift</p>
                           <p className="text-blue-700 text-sm">
-                            Please check your phone and enter your M-Pesa PIN to complete the transaction
+                            Please check your phone and complete the payment
                           </p>
                         </div>
                       )}
 
                       <Button 
                         onClick={handlePayment}
-                        className="w-full h-14 text-lg font-semibold bg-green-600 hover:bg-green-700 shadow-lg"
+                        className="w-full h-14 text-lg font-semibold bg-navy hover:bg-navy/90 shadow-lg"
                         disabled={isProcessing}
                       >
                         {isProcessing ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                            Processing Payment...
+                            Processing Your Gift...
                           </>
                         ) : (
                           <>
-                            <Smartphone className="w-5 h-5 mr-2" />
-                            Send Payment Request
+                            <Heart className="w-5 h-5 mr-2 fill-white" />
+                            Give Now
                           </>
                         )}
                       </Button>
 
                       <div className="pt-4 border-t border-gray-200">
                         <p className="text-center text-sm text-gray-600 mb-4">
-                          Need alternative payment methods?
+                          Need other ways to give?
                         </p>
                         <Button 
                           asChild 
@@ -352,14 +352,16 @@ export const GivingSection = () => {
                         >
                           <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                             <Phone className="mr-2 w-4 h-4" />
-                            Contact Us for Bank Details
+                            Contact Us for More Options
                           </a>
                         </Button>
                       </div>
 
-                      <p className="text-xs text-center text-gray-500 pt-2">
-                        🔒 Secure payment powered by M-Pesa. Your transaction is encrypted and safe.
-                      </p>
+                      <div className="text-center pt-4">
+                        <p className="text-xs text-gray-400">
+                          Powered by <span className="font-semibold text-navy">Hydrocephcare Kenya</span>
+                        </p>
+                      </div>
                     </div>
                   </>
                 )}
