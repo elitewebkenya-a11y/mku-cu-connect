@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Heart, Smartphone, Loader2, CheckCircle, XCircle, Phone, BookOpen, Church, Sparkles, HandHeart } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Heart, Loader2, CheckCircle, XCircle, Phone, BookOpen, Church, Sparkles, HandHeart, CreditCard, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
@@ -16,6 +17,7 @@ export const GivingSection = () => {
   const [amount, setAmount] = useState("100");
   const [donorName, setDonorName] = useState("");
   const [givingType, setGivingType] = useState("Tithe");
+  const [purpose, setPurpose] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
   const [currentReference, setCurrentReference] = useState<string | null>(null);
@@ -85,7 +87,8 @@ export const GivingSection = () => {
           phone, 
           amount: parseFloat(amount), 
           donor_name: donorName, 
-          payment_type: givingType.toLowerCase() 
+          payment_type: givingType.toLowerCase(),
+          purpose: purpose
         }),
       });
 
@@ -126,6 +129,20 @@ export const GivingSection = () => {
     setAmount("100");
     setDonorName("");
     setGivingType("Tithe");
+    setPurpose("");
+  };
+
+  const getSuccessMessage = () => {
+    if (givingType === "Tithe") {
+      return "Your tithe has been received. Thank you for honoring God with your firstfruits.";
+    } else if (givingType === "Offering") {
+      return "Your offering has been received. Thank you for your generous heart towards God's work.";
+    } else if (givingType === "Mission") {
+      return purpose 
+        ? `Your contribution towards ${purpose} has been received. Thank you for supporting missions.`
+        : "Your mission contribution has been received. Thank you for supporting missions.";
+    }
+    return "Your contribution has been received. Thank you for partnering with us in advancing God's Kingdom.";
   };
 
   return (
@@ -207,7 +224,7 @@ export const GivingSection = () => {
                     </div>
                     <h4 className="text-2xl md:text-3xl font-bold mb-2 md:mb-3 text-navy">God Bless You!</h4>
                     <p className="text-gray-600 text-base md:text-lg mb-6 md:mb-8 max-w-md mx-auto px-4">
-                      Your {givingType.toLowerCase()} has been received. Thank you for partnering with us in advancing God's Kingdom.
+                      {getSuccessMessage()}
                     </p>
                     <Button 
                       onClick={resetPayment} 
@@ -285,6 +302,21 @@ export const GivingSection = () => {
                         </div>
                       </div>
 
+                      {givingType === "Mission" && (
+                        <div>
+                          <Label className="text-gray-700 font-medium mb-2 block text-sm">
+                            Mission Purpose <span className="text-gray-400 font-normal">(Optional)</span>
+                          </Label>
+                          <Textarea
+                            value={purpose}
+                            onChange={(e) => setPurpose(e.target.value)}
+                            placeholder="E.g., Limuru Mission, School Outreach, Evangelism..."
+                            className="min-h-[80px] border-gray-200 focus:border-navy resize-none"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Let us know what mission you're supporting</p>
+                        </div>
+                      )}
+
                       <div>
                         <Label className="text-gray-700 font-medium mb-2 block text-sm">
                           Your Name <span className="text-gray-400 font-normal">(Optional)</span>
@@ -347,7 +379,7 @@ export const GivingSection = () => {
                       {paymentStatus === "pending" && (
                         <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center">
                           <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-3" />
-                          <p className="text-blue-900 font-semibold mb-1">Processing Your {givingType}</p>
+                          <p className="text-blue-900 font-semibold mb-1">Processing Your Payment</p>
                           <p className="text-blue-700 text-sm">
                             Please check your phone and complete the payment
                           </p>
@@ -362,12 +394,12 @@ export const GivingSection = () => {
                         {isProcessing ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                            Processing Your {givingType}...
+                            Processing Payment...
                           </>
                         ) : (
                           <>
                             <Heart className="w-5 h-5 mr-2 fill-white" />
-                            Give {givingType} Now
+                            Give Now
                           </>
                         )}
                       </Button>
@@ -397,6 +429,67 @@ export const GivingSection = () => {
                     </div>
                   </>
                 )}
+              </Card>
+
+              {/* Alternative Payment Method - Till Number */}
+              <Card className="mt-4 md:mt-6 p-6 md:p-8 border-navy/10 bg-gradient-to-br from-green-50 to-emerald-50">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <CreditCard className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg md:text-xl font-bold text-navy mb-2">Alternative: Pay via M-Pesa Till</h4>
+                    <p className="text-sm md:text-base text-gray-700 mb-4">
+                      You can also give using our M-Pesa Till Number
+                    </p>
+                    
+                    <div className="bg-white rounded-lg p-4 md:p-5 border-2 border-green-200 mb-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm text-gray-600 font-medium">Till Number:</span>
+                        <span className="text-2xl md:text-3xl font-bold text-green-600">6960137</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h5 className="font-semibold text-navy flex items-center gap-2">
+                        <Info className="w-4 h-4" />
+                        How to Pay:
+                      </h5>
+                      <ol className="space-y-2 text-sm md:text-base text-gray-700">
+                        <li className="flex gap-3">
+                          <span className="font-bold text-navy flex-shrink-0">1.</span>
+                          <span>Go to <strong>M-Pesa</strong> on your phone</span>
+                        </li>
+                        <li className="flex gap-3">
+                          <span className="font-bold text-navy flex-shrink-0">2.</span>
+                          <span>Select <strong>Lipa na M-Pesa</strong></span>
+                        </li>
+                        <li className="flex gap-3">
+                          <span className="font-bold text-navy flex-shrink-0">3.</span>
+                          <span>Choose <strong>Buy Goods and Services</strong></span>
+                        </li>
+                        <li className="flex gap-3">
+                          <span className="font-bold text-navy flex-shrink-0">4.</span>
+                          <span>Enter Till Number: <strong className="text-green-600">6960137</strong></span>
+                        </li>
+                        <li className="flex gap-3">
+                          <span className="font-bold text-navy flex-shrink-0">5.</span>
+                          <span>Enter the <strong>amount</strong> you wish to give</span>
+                        </li>
+                        <li className="flex gap-3">
+                          <span className="font-bold text-navy flex-shrink-0">6.</span>
+                          <span>Enter your <strong>M-Pesa PIN</strong> to complete</span>
+                        </li>
+                      </ol>
+                    </div>
+
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-xs md:text-sm text-blue-800">
+                        <strong>Note:</strong> After payment, you'll receive an M-Pesa confirmation message. Please save it for your records.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </Card>
 
               {/* Image Card Below */}
