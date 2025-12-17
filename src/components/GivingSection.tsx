@@ -4,11 +4,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Heart, CreditCard, Building2, Phone, Loader2, CheckCircle, XCircle, Smartphone } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
 
 const quickAmounts = [100, 500, 1000, 5000];
+
+// Lovable Cloud edge functions URL
+const EDGE_FUNCTIONS_URL = "https://cteiidzqhrernptuubzx.supabase.co/functions/v1";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0ZWlpZHpxaHJlcm5wdHV1Ynp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMTQ1NDksImV4cCI6MjA3OTc5MDU0OX0.vvHVeKBaJTcDVwlEclFKd08vSi_eoJ8zvOMaAl8UiBU";
 
 export const GivingSection = () => {
   const [phone, setPhone] = useState("");
@@ -34,22 +37,17 @@ export const GivingSection = () => {
 
   const checkPaymentStatus = async (reference: string) => {
     try {
-      const { data, error } = await supabase.functions.invoke('payment-status', {
+      const response = await fetch(`${EDGE_FUNCTIONS_URL}/payment-status?reference=${encodeURIComponent(reference)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: null,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY
+        }
       });
 
-      // Since we can't pass query params easily, let's query the database directly
-      const { data: paymentData } = await supabase
-        .from('payments')
-        .select('status')
-        .eq('external_reference', reference)
-        .maybeSingle();
-
-      const status = paymentData?.status || 'pending';
+      const data = await response.json();
+      const status = data?.status || 'pending';
 
       if (status === 'success') {
         setPaymentStatus('success');
@@ -81,16 +79,25 @@ export const GivingSection = () => {
     setPaymentStatus('idle');
 
     try {
-      const { data, error } = await supabase.functions.invoke('initiate-payment', {
-        body: {
+      console.log('Initiating payment to:', `${EDGE_FUNCTIONS_URL}/initiate-payment`);
+      
+      const response = await fetch(`${EDGE_FUNCTIONS_URL}/initiate-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({
           phone,
           amount: parseFloat(amount),
           payment_type: 'tithe',
           donor_name: donorName || undefined
-        }
+        })
       });
 
-      if (error) throw error;
+      const data = await response.json();
+      console.log('Payment response:', data);
 
       if (data.status === 'success') {
         setCurrentReference(data.reference);
