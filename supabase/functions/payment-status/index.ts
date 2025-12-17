@@ -4,6 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
 };
 
 serve(async (req) => {
@@ -24,7 +25,16 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const supabase = createClient(supabaseUrl!, supabaseKey!);
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Supabase credentials not set');
+      return new Response(
+        JSON.stringify({ status: 'error', error: 'Service not configured' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data, error } = await supabase
       .from('payments')
@@ -44,10 +54,12 @@ serve(async (req) => {
       JSON.stringify({ status: data?.status || 'pending' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
+
+  } catch (error: unknown) {
     console.error('Status check error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ status: 'pending' }),
+      JSON.stringify({ status: 'pending', error: errorMessage }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
