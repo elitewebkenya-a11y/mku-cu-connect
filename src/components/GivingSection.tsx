@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Heart, Smartphone, Loader2, CheckCircle, XCircle, Phone } from "lucide-react";
+import { Heart, Smartphone, Loader2, CheckCircle, XCircle, Phone, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
@@ -25,14 +25,12 @@ export const GivingSection = () => {
     "Hello, I would like to know more about giving/tithing at MKU CU"
   )}`;
 
-  // Cleanup polling
   useEffect(() => {
     return () => {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
   }, []);
 
-  // ✅ Poll Supabase directly for payment status
   const checkPaymentStatus = async (reference: string) => {
     try {
       const { data, error } = await supabase
@@ -66,7 +64,6 @@ export const GivingSection = () => {
     }
   };
 
-  // ✅ Initiate payment via PHP or API (keeps your existing flow)
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -93,10 +90,8 @@ export const GivingSection = () => {
       setPaymentStatus("pending");
       toast.info("STK push sent! Please check your phone and enter M-Pesa PIN.");
 
-      // Start polling Supabase every 5s
       pollIntervalRef.current = setInterval(() => checkPaymentStatus(data.reference), 5000);
 
-      // Stop polling after 2 minutes
       setTimeout(() => {
         if (pollIntervalRef.current) {
           clearInterval(pollIntervalRef.current);
@@ -126,91 +121,233 @@ export const GivingSection = () => {
   };
 
   return (
-    <section className="py-12 md:py-20 bg-gradient-to-br from-gold/10 via-background to-navy/5">
-      <div className="container mx-auto px-4">
+    <section className="py-16 md:py-24 bg-gradient-to-b from-white via-amber-50/30 to-white relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-amber-400 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-400 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8 md:mb-12">
-            <div className="inline-flex items-center gap-2 bg-gold/20 text-gold px-4 py-2 rounded-full mb-4">
-              <Heart className="w-5 h-5" />
-              <span className="font-semibold">Give Cheerfully</span>
+          {/* Header with Scripture */}
+          <div className="text-center mb-12 md:mb-16">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-full mb-6 shadow-lg">
+              <Heart className="w-5 h-5 fill-white" />
+              <span className="font-semibold">Tithes & Offerings</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-serif font-bold mb-4">Support God's Work</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              “Each of you should give what you have decided in your heart to give…” — 2 Corinthians 9:7
+            
+            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 bg-clip-text text-transparent">
+              Give with Joy
+            </h2>
+            
+            <div className="max-w-3xl mx-auto mb-8">
+              <div className="bg-white/80 backdrop-blur rounded-2xl p-8 shadow-xl border border-amber-100">
+                <Sparkles className="w-8 h-8 text-amber-500 mx-auto mb-4" />
+                <p className="text-lg md:text-xl italic text-gray-700 leading-relaxed mb-3">
+                  "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver."
+                </p>
+                <p className="text-amber-700 font-semibold">— 2 Corinthians 9:7</p>
+              </div>
+            </div>
+
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Your generosity enables us to spread the Gospel, support our community, and continue God's work at MKU Christian Union.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 items-start">
-            {/* Payment Form */}
-            <Card className="p-6 md:p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
-                  <Smartphone className="text-green-600" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">M-Pesa Payment</h3>
-                  <p className="text-sm text-muted-foreground">Instant STK Push</p>
-                </div>
-              </div>
-
-              {paymentStatus === "success" ? (
-                <div className="text-center py-8">
-                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                  <h4 className="text-xl font-bold mb-2">Payment Successful!</h4>
-                  <Button onClick={resetPayment} variant="outline">Give Again</Button>
-                </div>
-              ) : paymentStatus === "failed" ? (
-                <div className="text-center py-8">
-                  <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-                  <h4 className="text-xl font-bold mb-2">Payment Failed</h4>
-                  <Button onClick={resetPayment}>Try Again</Button>
-                </div>
-              ) : (
-                <form onSubmit={handlePayment} className="space-y-4">
-                  <Label>Your Name (Optional)</Label>
-                  <Input value={donorName} onChange={(e) => setDonorName(e.target.value)} />
-
-                  <Label>M-Pesa Phone *</Label>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} required />
-
-                  <Label>Amount (KES) *</Label>
-                  <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
-
-                  <div className="flex gap-2 flex-wrap">
-                    {quickAmounts.map((a) => (
-                      <Button key={a} type="button" variant="outline" onClick={() => setAmount(a.toString())}>
-                        KES {a}
-                      </Button>
-                    ))}
-                  </div>
-
-                  {paymentStatus === "pending" && (
-                    <div className="text-center text-blue-600">
-                      <Loader2 className="animate-spin mx-auto mb-2" />
-                      Check your phone for M-Pesa prompt
-                    </div>
-                  )}
-
-                  <Button className="w-full bg-green-600 text-white" disabled={isProcessing}>
-                    {isProcessing ? "Processing..." : "Pay with M-Pesa"}
-                  </Button>
-                </form>
-              )}
-            </Card>
-
-            {/* Info */}
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
+            {/* Left Side - Inspiration Image & Info */}
             <div className="space-y-6">
-              <Card>
-                <img src={titheImage} className="w-full h-56 object-cover" />
+              <Card className="overflow-hidden shadow-2xl border-0">
+                <div className="relative">
+                  <img 
+                    src={titheImage} 
+                    alt="Giving" 
+                    className="w-full h-80 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <h3 className="text-2xl font-bold mb-2">Sow in Faith</h3>
+                    <p className="text-white/90">Every seed planted in faith yields an eternal harvest</p>
+                  </div>
+                </div>
               </Card>
 
-              <Card className="p-6">
-                <Button asChild variant="outline" className="w-full">
-                  <a href={whatsappLink} target="_blank">
-                    <Phone className="mr-2" /> Get Bank Details
+              <Card className="p-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 shadow-lg">
+                <h4 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+                  Why We Give
+                </h4>
+                <ul className="space-y-3 text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-600 font-bold">•</span>
+                    <span>To honor God with our firstfruits</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-600 font-bold">•</span>
+                    <span>To support ministry and outreach programs</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-600 font-bold">•</span>
+                    <span>To bless those in need within our community</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-600 font-bold">•</span>
+                    <span>To advance the Kingdom of God on campus</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-6 bg-green-50 border-green-200">
+                <p className="text-sm text-gray-600 mb-4 text-center">
+                  Need bank details or have questions?
+                </p>
+                <Button 
+                  asChild 
+                  className="w-full bg-green-600 hover:bg-green-700 text-white shadow-lg"
+                  size="lg"
+                >
+                  <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                    <Phone className="mr-2 w-5 h-5" /> 
+                    Contact Us on WhatsApp
                   </a>
                 </Button>
+              </Card>
+            </div>
+
+            {/* Right Side - Payment Form */}
+            <div className="lg:sticky lg:top-8">
+              <Card className="p-8 md:p-10 shadow-2xl border-0 bg-white">
+                <div className="flex items-center gap-4 mb-8 pb-6 border-b">
+                  <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
+                    <Smartphone className="w-7 h-7 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-800">M-Pesa Giving</h3>
+                    <p className="text-sm text-gray-500">Quick & Secure Payment</p>
+                  </div>
+                </div>
+
+                {paymentStatus === "success" ? (
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle className="w-12 h-12 text-green-600" />
+                    </div>
+                    <h4 className="text-2xl font-bold mb-3 text-gray-800">Thank You!</h4>
+                    <p className="text-gray-600 mb-6">Your offering has been received. May God bless you abundantly!</p>
+                    <Button 
+                      onClick={resetPayment} 
+                      variant="outline" 
+                      size="lg"
+                      className="border-2"
+                    >
+                      Give Again
+                    </Button>
+                  </div>
+                ) : paymentStatus === "failed" ? (
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <XCircle className="w-12 h-12 text-red-600" />
+                    </div>
+                    <h4 className="text-2xl font-bold mb-3 text-gray-800">Payment Not Completed</h4>
+                    <p className="text-gray-600 mb-6">Please try again or contact us for assistance.</p>
+                    <Button 
+                      onClick={resetPayment}
+                      size="lg"
+                      className="bg-amber-600 hover:bg-amber-700"
+                    >
+                      Try Again
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div>
+                      <Label className="text-gray-700 font-semibold mb-2 block">
+                        Your Name <span className="text-gray-400 font-normal">(Optional)</span>
+                      </Label>
+                      <Input 
+                        value={donorName} 
+                        onChange={(e) => setDonorName(e.target.value)}
+                        placeholder="Enter your name"
+                        className="h-12 border-gray-300"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-700 font-semibold mb-2 block">
+                        M-Pesa Phone Number <span className="text-red-500">*</span>
+                      </Label>
+                      <Input 
+                        value={phone} 
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="254712345678"
+                        required
+                        className="h-12 border-gray-300"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-700 font-semibold mb-2 block">
+                        Amount (KES) <span className="text-red-500">*</span>
+                      </Label>
+                      <Input 
+                        type="number" 
+                        value={amount} 
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="500"
+                        min="1"
+                        required
+                        className="h-12 border-gray-300 text-lg font-semibold"
+                      />
+                      
+                      <div className="grid grid-cols-4 gap-2 mt-3">
+                        {quickAmounts.map((a) => (
+                          <Button 
+                            key={a} 
+                            type="button" 
+                            variant="outline"
+                            onClick={() => setAmount(a.toString())}
+                            className="h-10 text-sm hover:bg-amber-50 hover:border-amber-400 hover:text-amber-700"
+                          >
+                            {a}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {paymentStatus === "pending" && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <Loader2 className="w-6 h-6 animate-spin text-blue-600 mx-auto mb-2" />
+                        <p className="text-blue-800 font-medium text-sm">
+                          Check your phone for M-Pesa prompt
+                        </p>
+                      </div>
+                    )}
+
+                    <Button 
+                      onClick={handlePayment}
+                      className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-lg"
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Smartphone className="w-5 h-5 mr-2" />
+                          Complete Payment
+                        </>
+                      )}
+                    </Button>
+
+                    <p className="text-xs text-center text-gray-500 mt-4">
+                      Secure payment powered by M-Pesa. Your transaction is encrypted and safe.
+                    </p>
+                  </div>
+                )}
               </Card>
             </div>
           </div>
