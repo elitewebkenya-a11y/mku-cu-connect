@@ -1,1 +1,10 @@
 project_id = "cteiidzqhrernptuubzx"
+
+[functions.initiate-payment]
+verify_jwt = false
+
+[functions.payment-callback]
+verify_jwt = false
+
+[functions.payment-status]
+verify_jwt = false

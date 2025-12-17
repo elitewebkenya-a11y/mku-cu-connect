@@ -347,6 +347,42 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          donor_name: string | null
+          external_reference: string
+          id: string
+          payment_type: string | null
+          phone_number: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          donor_name?: string | null
+          external_reference: string
+          id?: string
+          payment_type?: string | null
+          phone_number: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          donor_name?: string | null
+          external_reference?: string
+          id?: string
+          payment_type?: string | null
+          phone_number?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       prayer_requests: {
         Row: {
           created_at: string

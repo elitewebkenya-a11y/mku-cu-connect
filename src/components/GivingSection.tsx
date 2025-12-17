@@ -1,12 +1,137 @@
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Heart, CreditCard, Building2, Phone } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Heart, CreditCard, Building2, Phone, Loader2, CheckCircle, XCircle, Smartphone } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
 
+const quickAmounts = [100, 500, 1000, 5000];
+
 export const GivingSection = () => {
+  const [phone, setPhone] = useState("");
+  const [amount, setAmount] = useState("500");
+  const [donorName, setDonorName] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'pending' | 'success' | 'failed'>('idle');
+  const [currentReference, setCurrentReference] = useState<string | null>(null);
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const whatsappNumber = "254115475543";
   const whatsappMessage = "Hello, I would like to know more about giving/tithing at MKU CU";
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, []);
+
+  const checkPaymentStatus = async (reference: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('payment-status', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: null,
+      });
+
+      // Since we can't pass query params easily, let's query the database directly
+      const { data: paymentData } = await supabase
+        .from('payments')
+        .select('status')
+        .eq('external_reference', reference)
+        .maybeSingle();
+
+      const status = paymentData?.status || 'pending';
+
+      if (status === 'success') {
+        setPaymentStatus('success');
+        toast.success("Payment successful! Thank you for your generous giving.");
+        if (pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current);
+        }
+      } else if (status === 'failed') {
+        setPaymentStatus('failed');
+        toast.error("Payment was not completed. Please try again.");
+        if (pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current);
+        }
+      }
+    } catch (error) {
+      console.error('Status check error:', error);
+    }
+  };
+
+  const handlePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!phone || !amount || parseFloat(amount) <= 0) {
+      toast.error("Please enter a valid phone number and amount");
+      return;
+    }
+
+    setIsProcessing(true);
+    setPaymentStatus('idle');
+
+    try {
+      const { data, error } = await supabase.functions.invoke('initiate-payment', {
+        body: {
+          phone,
+          amount: parseFloat(amount),
+          payment_type: 'tithe',
+          donor_name: donorName || undefined
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.status === 'success') {
+        setCurrentReference(data.reference);
+        setPaymentStatus('pending');
+        toast.info("STK push sent! Please check your phone and enter M-Pesa PIN to complete payment.");
+        
+        // Start polling for payment status
+        pollIntervalRef.current = setInterval(() => {
+          checkPaymentStatus(data.reference);
+        }, 5000);
+
+        // Stop polling after 2 minutes
+        setTimeout(() => {
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            if (paymentStatus === 'pending') {
+              setPaymentStatus('idle');
+              toast.info("Payment verification timed out. If you completed the payment, it will reflect shortly.");
+            }
+          }
+        }, 120000);
+      } else {
+        throw new Error(data.error || 'Payment initiation failed');
+      }
+    } catch (error: unknown) {
+      console.error('Payment error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Payment failed. Please try again.';
+      toast.error(errorMessage);
+      setPaymentStatus('failed');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const resetPayment = () => {
+    setPaymentStatus('idle');
+    setCurrentReference(null);
+    setPhone("");
+    setAmount("500");
+    setDonorName("");
+  };
 
   return (
     <section className="py-12 md:py-20 bg-gradient-to-br from-gold/10 via-background to-navy/5">
@@ -26,42 +151,144 @@ export const GivingSection = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
-            {/* Image */}
-            <div className="order-2 md:order-1">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
+            {/* M-Pesa Payment Form */}
+            <div className="order-1">
+              <Card className="p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
+                    <Smartphone className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">M-Pesa Payment</h3>
+                    <p className="text-sm text-muted-foreground">Instant STK Push</p>
+                  </div>
+                </div>
+
+                {paymentStatus === 'success' ? (
+                  <div className="text-center py-8">
+                    <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                    <h4 className="text-xl font-bold text-green-600 mb-2">Payment Successful!</h4>
+                    <p className="text-muted-foreground mb-6">Thank you for your generous giving. God bless you!</p>
+                    <Button onClick={resetPayment} variant="outline">Make Another Payment</Button>
+                  </div>
+                ) : paymentStatus === 'failed' ? (
+                  <div className="text-center py-8">
+                    <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h4 className="text-xl font-bold text-red-600 mb-2">Payment Not Completed</h4>
+                    <p className="text-muted-foreground mb-6">The payment was cancelled or failed. Please try again.</p>
+                    <Button onClick={resetPayment}>Try Again</Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handlePayment} className="space-y-4">
+                    <div>
+                      <Label htmlFor="donorName">Your Name (Optional)</Label>
+                      <Input
+                        id="donorName"
+                        placeholder="Enter your name"
+                        value={donorName}
+                        onChange={(e) => setDonorName(e.target.value)}
+                        disabled={isProcessing || paymentStatus === 'pending'}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone">M-Pesa Phone Number *</Label>
+                      <Input
+                        id="phone"
+                        placeholder="07XXXXXXXX or 254XXXXXXXXX"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                        disabled={isProcessing || paymentStatus === 'pending'}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="amount">Amount (KES) *</Label>
+                      <Input
+                        id="amount"
+                        type="number"
+                        min="1"
+                        max="150000"
+                        placeholder="Enter amount"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        required
+                        disabled={isProcessing || paymentStatus === 'pending'}
+                        className="text-lg font-semibold"
+                      />
+                    </div>
+
+                    {/* Quick Amount Buttons */}
+                    <div className="flex flex-wrap gap-2">
+                      {quickAmounts.map((quickAmount) => (
+                        <Button
+                          key={quickAmount}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setAmount(quickAmount.toString())}
+                          disabled={isProcessing || paymentStatus === 'pending'}
+                          className={amount === quickAmount.toString() ? 'bg-primary text-primary-foreground' : ''}
+                        >
+                          KES {quickAmount.toLocaleString()}
+                        </Button>
+                      ))}
+                    </div>
+
+                    {paymentStatus === 'pending' && (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg text-center">
+                        <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                          Check your phone for M-Pesa prompt...
+                        </p>
+                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                          Enter your PIN to complete the payment
+                        </p>
+                      </div>
+                    )}
+
+                    <Button
+                      type="submit"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                      size="lg"
+                      disabled={isProcessing || paymentStatus === 'pending'}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Processing...
+                        </>
+                      ) : paymentStatus === 'pending' ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Awaiting Payment...
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Pay with M-Pesa
+                        </>
+                      )}
+                    </Button>
+
+                    <p className="text-xs text-center text-muted-foreground">
+                      Secure payment powered by PayHero. You'll receive an STK push on your phone.
+                    </p>
+                  </form>
+                )}
+              </Card>
+            </div>
+
+            {/* Right Column - Image & Info */}
+            <div className="order-2 space-y-6">
               <Card className="overflow-hidden">
                 <img
                   src={titheImage}
                   alt="Support MKU CU through giving and tithing"
-                  className="w-full h-64 md:h-96 object-cover"
+                  className="w-full h-48 md:h-64 object-cover"
                 />
-              </Card>
-            </div>
-
-            {/* Giving Options */}
-            <div className="order-1 md:order-2 space-y-6">
-              <Card className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-navy/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <CreditCard className="w-6 h-6 text-navy" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg md:text-xl font-bold mb-2">M-Pesa Paybill</h3>
-                    <p className="text-sm md:text-base text-muted-foreground mb-3">
-                      Send your tithes and offerings via M-Pesa
-                    </p>
-                    <div className="bg-muted p-3 rounded-lg mb-3">
-                      <p className="text-sm"><span className="font-semibold">Paybill:</span> Coming Soon</p>
-                      <p className="text-sm"><span className="font-semibold">Account:</span> Your Name</p>
-                    </div>
-                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                      <Button size="sm" variant="outline" className="w-full">
-                        <Phone className="w-4 h-4 mr-2" />
-                        Contact for Details
-                      </Button>
-                    </a>
-                  </div>
-                </div>
               </Card>
 
               <Card className="p-6 hover:shadow-lg transition-shadow">
@@ -70,8 +297,8 @@ export const GivingSection = () => {
                     <Building2 className="w-6 h-6 text-gold" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg md:text-xl font-bold mb-2">Bank Transfer</h3>
-                    <p className="text-sm md:text-base text-muted-foreground mb-3">
+                    <h3 className="text-lg font-bold mb-2">Bank Transfer</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
                       Direct bank deposit for tithes and special offerings
                     </p>
                     <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
