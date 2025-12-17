@@ -8,33 +8,19 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
     const url = new URL(req.url);
     const reference = url.searchParams.get('reference');
-
-    if (!reference) {
-      return new Response(
-        JSON.stringify({ status: 'error', error: 'No reference provided' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
-    }
+    if (!reference) return new Response(
+      JSON.stringify({ status:'error', error:'No reference provided' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status:400 }
+    );
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Supabase credentials not set');
-      return new Response(
-        JSON.stringify({ status: 'error', error: 'Service not configured' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-      );
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl!, supabaseKey!);
 
     const { data, error } = await supabase
       .from('payments')
@@ -44,23 +30,14 @@ serve(async (req) => {
 
     if (error) {
       console.error('Database error:', error);
-      return new Response(
-        JSON.stringify({ status: 'pending' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({status:'pending'}), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    return new Response(
-      JSON.stringify({ status: data?.status || 'pending' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({status:data?.status || 'pending'}), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
   } catch (error: unknown) {
-    console.error('Status check error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ status: 'pending', error: errorMessage }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({status:'pending', error:errorMessage}), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 });
+
