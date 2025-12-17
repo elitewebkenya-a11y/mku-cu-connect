@@ -8,11 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
 
-const quickAmounts = [100, 500, 1000, 5000];
+const quickAmounts = [50, 100, 500, 1000];
 
 export const GivingSection = () => {
   const [phone, setPhone] = useState("");
-  const [amount, setAmount] = useState("500");
+  const [amount, setAmount] = useState("100");
   const [donorName, setDonorName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
@@ -116,7 +116,7 @@ export const GivingSection = () => {
     setPaymentStatus("idle");
     setCurrentReference(null);
     setPhone("");
-    setAmount("500");
+    setAmount("100");
     setDonorName("");
   };
 
@@ -153,52 +153,52 @@ export const GivingSection = () => {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid lg:grid-cols-3 gap-8 items-start">
+          <div className="grid lg:grid-cols-3 gap-6 md:gap-8 items-start">
             
             {/* Left Column - Impact Cards */}
-            <div className="space-y-6">
-              <Card className="p-6 border-navy/10 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-navy/10 rounded-full flex items-center justify-center mb-4">
-                  <Church className="w-6 h-6 text-navy" />
+            <div className="space-y-4 md:space-y-6 order-2 lg:order-1">
+              <Card className="p-5 md:p-6 border-navy/10 hover:shadow-lg transition-shadow">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-navy/10 rounded-full flex items-center justify-center mb-3 md:mb-4">
+                  <Church className="w-5 h-5 md:w-6 md:h-6 text-navy" />
                 </div>
-                <h3 className="font-bold text-lg mb-2 text-navy">Ministry & Outreach</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <h3 className="font-bold text-base md:text-lg mb-2 text-navy">Ministry & Outreach</h3>
+                <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
                   Support campus evangelism, discipleship programs, and community missions that transform lives for Christ.
                 </p>
               </Card>
 
-              <Card className="p-6 border-navy/10 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-gold/10 rounded-full flex items-center justify-center mb-4">
-                  <BookOpen className="w-6 h-6 text-gold" />
+              <Card className="p-5 md:p-6 border-navy/10 hover:shadow-lg transition-shadow">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gold/10 rounded-full flex items-center justify-center mb-3 md:mb-4">
+                  <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-gold" />
                 </div>
-                <h3 className="font-bold text-lg mb-2 text-navy">Bible Teaching</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <h3 className="font-bold text-base md:text-lg mb-2 text-navy">Bible Teaching</h3>
+                <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
                   Enable quality biblical education, resources, and training that equip believers to grow in their faith.
                 </p>
               </Card>
 
-              <Card className="p-6 border-navy/10 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
-                  <HandHeart className="w-6 h-6 text-green-600" />
+              <Card className="p-5 md:p-6 border-navy/10 hover:shadow-lg transition-shadow">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500/10 rounded-full flex items-center justify-center mb-3 md:mb-4">
+                  <HandHeart className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
                 </div>
-                <h3 className="font-bold text-lg mb-2 text-navy">Student Support</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <h3 className="font-bold text-base md:text-lg mb-2 text-navy">Student Support</h3>
+                <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
                   Help students in need, provide resources, and create a welcoming environment for spiritual growth.
                 </p>
               </Card>
             </div>
 
             {/* Center Column - Payment Form */}
-            <div className="lg:col-span-2">
-              <Card className="p-8 md:p-10 shadow-xl border-navy/10">
+            <div className="lg:col-span-2 order-1 lg:order-2">
+              <Card className="p-6 md:p-8 lg:p-10 shadow-xl border-navy/10">
                 
                 {paymentStatus === "success" ? (
-                  <div className="text-center py-16">
-                    <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <CheckCircle className="w-16 h-16 text-green-600" />
+                  <div className="text-center py-12 md:py-16">
+                    <div className="w-20 h-20 md:w-24 md:h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                      <CheckCircle className="w-12 h-12 md:w-16 md:h-16 text-green-600" />
                     </div>
-                    <h4 className="text-3xl font-bold mb-3 text-navy">God Bless You!</h4>
-                    <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto">
+                    <h4 className="text-2xl md:text-3xl font-bold mb-2 md:mb-3 text-navy">God Bless You!</h4>
+                    <p className="text-gray-600 text-base md:text-lg mb-6 md:mb-8 max-w-md mx-auto px-4">
                       Your offering has been received. Thank you for partnering with us in advancing God's Kingdom.
                     </p>
                     <Button 
@@ -210,19 +210,19 @@ export const GivingSection = () => {
                     </Button>
                   </div>
                 ) : paymentStatus === "failed" ? (
-                  <div className="text-center py-16">
-                    <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <XCircle className="w-16 h-16 text-red-600" />
+                  <div className="text-center py-12 md:py-16">
+                    <div className="w-20 h-20 md:w-24 md:h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                      <XCircle className="w-12 h-12 md:w-16 md:h-16 text-red-600" />
                     </div>
-                    <h4 className="text-3xl font-bold mb-3 text-navy">Payment Not Complete</h4>
-                    <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto">
+                    <h4 className="text-2xl md:text-3xl font-bold mb-2 md:mb-3 text-navy">Payment Not Complete</h4>
+                    <p className="text-gray-600 text-base md:text-lg mb-6 md:mb-8 max-w-md mx-auto px-4">
                       The transaction was not completed. Please try again or contact us for assistance.
                     </p>
-                    <div className="flex gap-4 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
                       <Button 
                         onClick={resetPayment}
                         size="lg"
-                        className="bg-navy hover:bg-navy/90"
+                        className="bg-navy hover:bg-navy/90 w-full sm:w-auto"
                       >
                         Try Again
                       </Button>
@@ -230,6 +230,7 @@ export const GivingSection = () => {
                         asChild
                         variant="outline"
                         size="lg"
+                        className="w-full sm:w-auto"
                       >
                         <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                           <Phone className="mr-2 w-4 h-4" />
@@ -240,19 +241,19 @@ export const GivingSection = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="text-center mb-8">
-                      <div className="inline-flex items-center gap-3 mb-4">
-                        <div className="w-14 h-14 bg-navy/10 rounded-full flex items-center justify-center">
-                          <Heart className="w-7 h-7 text-navy fill-navy" />
+                    <div className="text-center mb-6 md:mb-8">
+                      <div className="inline-flex items-center gap-2 md:gap-3 mb-4">
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-navy/10 rounded-full flex items-center justify-center">
+                          <Heart className="w-6 h-6 md:w-7 md:h-7 text-navy fill-navy" />
                         </div>
                         <div className="text-left">
-                          <h3 className="text-2xl font-bold text-navy">Support God's Work</h3>
-                          <p className="text-gray-500 text-sm">Give securely and conveniently</p>
+                          <h3 className="text-xl md:text-2xl font-bold text-navy">Support God's Work</h3>
+                          <p className="text-gray-500 text-xs md:text-sm">Give securely and conveniently</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="space-y-5 md:space-y-6">
                       <div>
                         <Label className="text-gray-700 font-medium mb-2 block text-sm">
                           Your Name <span className="text-gray-400 font-normal">(Optional)</span>
@@ -287,20 +288,20 @@ export const GivingSection = () => {
                           type="number" 
                           value={amount} 
                           onChange={(e) => setAmount(e.target.value)}
-                          placeholder="500"
+                          placeholder="100"
                           min="1"
                           required
-                          className="h-14 border-gray-200 focus:border-navy text-xl font-semibold"
+                          className="h-12 md:h-14 border-gray-200 focus:border-navy text-lg md:text-xl font-semibold"
                         />
                         
-                        <div className="grid grid-cols-4 gap-3 mt-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3 mt-3 md:mt-4">
                           {quickAmounts.map((a) => (
                             <Button 
                               key={a} 
                               type="button" 
                               variant="outline"
                               onClick={() => setAmount(a.toString())}
-                              className={`h-12 border-2 font-semibold transition-all ${
+                              className={`h-10 md:h-12 border-2 font-semibold transition-all text-sm md:text-base ${
                                 amount === a.toString() 
                                   ? 'border-navy bg-navy text-white' 
                                   : 'border-gray-200 hover:border-navy'
@@ -368,22 +369,22 @@ export const GivingSection = () => {
               </Card>
 
               {/* Image Card Below */}
-              <Card className="mt-6 overflow-hidden shadow-lg border-navy/10">
+              <Card className="mt-4 md:mt-6 overflow-hidden shadow-lg border-navy/10">
                 <img 
                   src={titheImage} 
                   alt="Church Giving" 
-                  className="w-full h-64 object-cover"
+                  className="w-full h-48 md:h-64 object-cover"
                 />
               </Card>
             </div>
           </div>
 
           {/* Bottom Section - Additional Info */}
-          <div className="mt-16 text-center">
-            <div className="max-w-3xl mx-auto">
-              <Sparkles className="w-8 h-8 text-gold mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-navy mb-4">Every Gift Makes a Difference</h3>
-              <p className="text-gray-600 leading-relaxed">
+          <div className="mt-12 md:mt-16 text-center">
+            <div className="max-w-3xl mx-auto px-4">
+              <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-gold mx-auto mb-3 md:mb-4" />
+              <h3 className="text-xl md:text-2xl font-bold text-navy mb-3 md:mb-4">Every Gift Makes a Difference</h3>
+              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
                 Whether you give your tithes, offerings, or special contributions, know that your generosity is making an eternal impact. Together, we are living the knowledge of God and transforming lives across our campus and beyond.
               </p>
             </div>
