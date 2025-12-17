@@ -6,25 +6,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Normalize Kenyan phone numbers
 function normalizePhoneNumber(phone: string): string {
   phone = phone.trim().replace(/\D+/g, '');
-  
-  if (/^254\d{9}$/.test(phone)) {
-    return phone;
-  } else if (/^07\d{8}$/.test(phone)) {
-    return '254' + phone.substring(1);
-  } else if (/^011\d{7}$/.test(phone)) {
-    return '254' + phone.substring(1);
-  } else if (/^\+254\d{9}$/.test(phone)) {
-    return phone.substring(1);
-  }
+  if (/^254\d{9}$/.test(phone)) return phone;
+  if (/^07\d{8}$/.test(phone)) return '254' + phone.substring(1);
+  if (/^011\d{7}$/.test(phone)) return '254' + phone.substring(1);
+  if (/^\+254\d{9}$/.test(phone)) return phone.substring(1);
   return phone;
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
     const { phone, amount, payment_type, donor_name } = await req.json();
@@ -37,13 +30,17 @@ serve(async (req) => {
     }
 
     const normalizedPhone = normalizePhoneNumber(phone);
-    
-    const apiUsername = Deno.env.get('PAYHERO_API_USERNAME');
-    const apiPassword = Deno.env.get('PAYHERO_API_PASSWORD');
-    const channelId = parseInt(Deno.env.get('PAYHERO_CHANNEL_ID') || '3028');
 
-    if (!apiUsername || !apiPassword) {
-      console.error('PayHero credentials not configured');
+    // === PayHero credentials updated ===
+    const apiUsername = "PSmF5lQYDUEZt1gY1Lls";
+    const apiPassword = "Jr3Aqv3jykzqvdcBGKiX91F35gv7mxW1KREX8y1X";
+    const channelId = 3028;
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase environment variables');
       return new Response(
         JSON.stringify({ status: 'error', error: 'Payment service not configured' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -51,9 +48,6 @@ serve(async (req) => {
     }
 
     const externalReference = `TXN-${Date.now()}-${Math.floor(Math.random() * 9000) + 1000}`;
-    
-    // Get the function URL for callback
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const callbackUrl = `${supabaseUrl}/functions/v1/payment-callback`;
 
     const paymentData = {
@@ -80,36 +74,33 @@ serve(async (req) => {
     const responseData = await response.json();
     console.log('PayHero response:', response.status, responseData);
 
-    if (response.ok) {
-      // Save payment to database
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-      const supabase = createClient(supabaseUrl!, supabaseKey!);
-
-      const { error: dbError } = await supabase.from('payments').insert({
-        external_reference: externalReference,
-        phone_number: normalizedPhone,
-        amount: parseFloat(amount),
-        status: 'pending',
-        payment_type: payment_type || 'tithe',
-        donor_name: donor_name || null
-      });
-
-      if (dbError) {
-        console.error('Database error:', dbError);
-      }
-
-      return new Response(
-        JSON.stringify({ status: 'success', reference: externalReference }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } else {
+    if (!response.ok) {
       return new Response(
         JSON.stringify({ status: 'error', error: responseData.message || 'Payment initiation failed' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
+
+    // Save payment to Supabase
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { error: dbError } = await supabase.from('payments').insert({
+      external_reference: externalReference,
+      phone_number: normalizedPhone,
+      amount: parseFloat(amount),
+      status: 'pending',
+      payment_type: payment_type || 'tithe',
+      donor_name: donor_name || null
+    });
+
+    if (dbError) console.error('Database error:', dbError);
+
+    return new Response(
+      JSON.stringify({ status: 'success', reference: externalReference }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
   } catch (error: unknown) {
-    console.error('Error:', error);
+    console.error('Error initiating payment:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({ status: 'error', error: errorMessage }),
