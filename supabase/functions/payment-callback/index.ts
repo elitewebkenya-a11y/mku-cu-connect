@@ -1,81 +1,69 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+<?php
+// Allow CORS so your frontend can communicate with this API
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// Log all incoming requests for debugging
+$rawInput = file_get_contents('php://input');
+file_put_contents("callback_log.txt", date('Y-m-d H:i:s') . " - Raw Input: " . $rawInput . "\n", FILE_APPEND);
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+// Parse JSON payload
+$input = json_decode($rawInput, true);
+header('Content-Type: application/json');
 
-  try {
-    const input = await req.json();
-    console.log('Callback received:', JSON.stringify(input));
+// Validate input
+if (!$input || !isset($input['status']) || !$input['status']) {
+    echo json_encode(['error' => 'Invalid callback data']);
+    exit;
+}
 
-    if (!input || !input.status) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid callback data' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
-    }
+$response = $input['response'] ?? null;
+if (!$response) {
+    echo json_encode(['error' => 'Invalid callback data']);
+    exit;
+}
 
-    const response = input.response;
-    if (!response) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid callback data - no response' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
-    }
+// Determine the correct User_Reference and Status from payload
+$userReference = $response['User_Reference'] ?? ($response['ExternalReference'] ?? null);
+$statusText = $response['Status'] ?? null;
 
-    const userReference = response.User_Reference || response.ExternalReference;
-    const statusText = response.Status;
+if (!$userReference || !$statusText) {
+    file_put_contents("callback_log.txt", date('Y-m-d H:i:s') . " - ERROR: Missing 'User_Reference' or 'Status' in response.\n", FILE_APPEND);
+    echo json_encode(['error' => "Missing 'User_Reference' or 'Status' in response"]);
+    exit;
+}
 
-    if (!userReference || !statusText) {
-      console.error('Missing User_Reference or Status in response');
-      return new Response(
-        JSON.stringify({ error: "Missing 'User_Reference' or 'Status' in response" }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
-    }
+// Normalize status
+$statusText = strtolower($statusText); // "success", "failed", etc.
+$statusMap = [
+    'success'   => 'success',
+    'failed'    => 'failed',
+    'cancelled' => 'failed',
+    'pending'   => 'pending'
+];
+$status = $statusMap[$statusText] ?? 'pending';
 
-    const statusMap: Record<string, string> = {
-      'success': 'success',
-      'failed': 'failed',
-      'cancelled': 'failed',
-      'pending': 'pending'
-    };
+// Prepare file storage
+$paymentsDir = __DIR__ . "/payments";
+if (!file_exists($paymentsDir)) {
+    mkdir($paymentsDir, 0755, true);
+}
 
-    const status = statusMap[statusText.toLowerCase()] || 'pending';
+$file = "{$paymentsDir}/{$userReference}.json";
+if (!file_exists($file)) {
+    $data = ['reference' => $userReference];
+} else {
+    $data = json_decode(file_get_contents($file), true);
+}
 
-    // Update payment in database
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const supabase = createClient(supabaseUrl!, supabaseKey!);
+// Update payment data
+$data['status'] = $status;
+$data['updated_at'] = time();
 
-    const { error: updateError } = await supabase
-      .from('payments')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('external_reference', userReference);
+// Save back to file
+file_put_contents($file, json_encode($data));
 
-    if (updateError) {
-      console.error('Database update error:', updateError);
-    }
-
-    console.log(`Payment ${userReference} updated to status: ${status}`);
-
-    return new Response(
-      JSON.stringify({ status: true }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (error: unknown) {
-    console.error('Callback error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-    );
-  }
-});
+// Respond to PayHero
+echo json_encode(['status' => true]);
+?>
