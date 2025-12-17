@@ -3,17 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Heart,
-  CreditCard,
-  Building2,
-  Phone,
-  Loader2,
-  CheckCircle,
-  XCircle,
-  Smartphone,
-} from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Heart, Smartphone, Loader2, CheckCircle, XCircle, Phone } from "lucide-react";
 import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
 
@@ -24,53 +14,36 @@ export const GivingSection = () => {
   const [amount, setAmount] = useState("500");
   const [donorName, setDonorName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentStatus, setPaymentStatus] =
-    useState<"idle" | "pending" | "success" | "failed">("idle");
+  const [paymentStatus, setPaymentStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
   const [currentReference, setCurrentReference] = useState<string | null>(null);
 
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const whatsappNumber = "254115475543";
-  const whatsappMessage =
-    "Hello, I would like to know more about giving/tithing at MKU CU";
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    whatsappMessage
+    "Hello, I would like to know more about giving/tithing at MKU CU"
   )}`;
 
   // Cleanup polling
   useEffect(() => {
     return () => {
-      if (pollIntervalRef.current) {
-        clearInterval(pollIntervalRef.current);
-      }
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
   }, []);
 
-  // ✅ POLL PAYMENT STATUS FROM SUPABASE
+  // Poll backend for payment status
   const checkPaymentStatus = async (reference: string) => {
     try {
-      const { data, error } = await supabase
-        .from("payments")
-        .select("status")
-        .eq("external_reference", reference)
-        .maybeSingle();
+      const res = await fetch(`https://remote.victoryschoolclub.co.ke/check-status.php?reference=${reference}`);
+      const data = await res.json();
 
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      const status = data?.status || "pending";
-
-      if (status === "success") {
+      if (data.status === "success") {
         setPaymentStatus("success");
-        toast.success(
-          "Payment successful! Thank you for your generous giving."
-        );
+        toast.success("Payment successful! Thank you for your generous giving.");
         pollIntervalRef.current && clearInterval(pollIntervalRef.current);
       }
 
-      if (status === "failed") {
+      if (data.status === "failed") {
         setPaymentStatus("failed");
         toast.error("Payment was not completed. Please try again.");
         pollIntervalRef.current && clearInterval(pollIntervalRef.current);
@@ -80,10 +53,9 @@ export const GivingSection = () => {
     }
   };
 
-  // ✅ INITIATE PAYMENT VIA PHP (PayHero)
+  // Initiate payment
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!phone || !amount || parseFloat(amount) <= 0) {
       toast.error("Please enter a valid phone number and amount");
       return;
@@ -93,56 +65,37 @@ export const GivingSection = () => {
     setPaymentStatus("idle");
 
     try {
-      const response = await fetch(
-        "https://remote.victoryschoolclub.co.ke/process-payment.php",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            phone,
-            amount: parseFloat(amount),
-            donor_name: donorName || null,
-            payment_type: "tithe",
-          }),
-        }
-      );
+      const res = await fetch("https://remote.victoryschoolclub.co.ke/process-payment.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, amount: parseFloat(amount), donor_name: donorName, payment_type: "tithe" }),
+      });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok || data.status !== "success") {
-        throw new Error(data.error || "Payment initiation failed");
-      }
+      if (!res.ok || data.status !== "success") throw new Error(data.error || "Payment initiation failed");
 
       setCurrentReference(data.reference);
       setPaymentStatus("pending");
+      toast.info("STK push sent! Please check your phone and enter M-Pesa PIN.");
 
-      toast.info(
-        "STK push sent! Please check your phone and enter M-Pesa PIN."
-      );
+      // Start polling every 5s
+      pollIntervalRef.current = setInterval(() => checkPaymentStatus(data.reference), 5000);
 
-      // Start polling
-      pollIntervalRef.current = setInterval(() => {
-        checkPaymentStatus(data.reference);
-      }, 5000);
-
-      // Stop polling after 2 minutes
+      // Stop polling after 2 minutes if no response
       setTimeout(() => {
         if (pollIntervalRef.current) {
           clearInterval(pollIntervalRef.current);
           if (paymentStatus === "pending") {
             setPaymentStatus("idle");
-            toast.info(
-              "Payment verification timed out. If completed, it will reflect shortly."
-            );
+            toast.info("Payment verification timed out. If completed, it will reflect shortly.");
           }
         }
       }, 120000);
-    } catch (error: unknown) {
-      console.error("Payment error:", error);
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Payment failed. Please try again.";
+
+    } catch (err: unknown) {
+      console.error("Payment error:", err);
+      const message = err instanceof Error ? err.message : "Payment failed. Please try again.";
       toast.error(message);
       setPaymentStatus("failed");
     } finally {
@@ -168,12 +121,9 @@ export const GivingSection = () => {
               <Heart className="w-5 h-5" />
               <span className="font-semibold">Give Cheerfully</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-serif font-bold mb-4">
-              Support God's Work
-            </h2>
+            <h2 className="text-3xl md:text-5xl font-serif font-bold mb-4">Support God's Work</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              “Each of you should give what you have decided in your heart to
-              give…” — 2 Corinthians 9:7
+              “Each of you should give what you have decided in your heart to give…” — 2 Corinthians 9:7
             </p>
           </div>
 
@@ -186,28 +136,20 @@ export const GivingSection = () => {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold">M-Pesa Payment</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Instant STK Push
-                  </p>
+                  <p className="text-sm text-muted-foreground">Instant STK Push</p>
                 </div>
               </div>
 
               {paymentStatus === "success" ? (
                 <div className="text-center py-8">
                   <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                  <h4 className="text-xl font-bold mb-2">
-                    Payment Successful!
-                  </h4>
-                  <Button onClick={resetPayment} variant="outline">
-                    Give Again
-                  </Button>
+                  <h4 className="text-xl font-bold mb-2">Payment Successful!</h4>
+                  <Button onClick={resetPayment} variant="outline">Give Again</Button>
                 </div>
               ) : paymentStatus === "failed" ? (
                 <div className="text-center py-8">
                   <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-                  <h4 className="text-xl font-bold mb-2">
-                    Payment Failed
-                  </h4>
+                  <h4 className="text-xl font-bold mb-2">Payment Failed</h4>
                   <Button onClick={resetPayment}>Try Again</Button>
                 </div>
               ) : (
