@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Normalize Kenyan phone numbers
+// Normalize Kenyan phone numbers to international format
 function normalizePhoneNumber(phone: string): string {
   phone = phone.trim().replace(/\D+/g, '');
   if (/^254\d{9}$/.test(phone)) return phone;
@@ -31,7 +31,7 @@ serve(async (req) => {
 
     const normalizedPhone = normalizePhoneNumber(phone);
 
-    // === PayHero credentials updated ===
+    // === PayHero credentials ===
     const apiUsername = "PSmF5lQYDUEZt1gY1Lls";
     const apiPassword = "Jr3Aqv3jykzqvdcBGKiX91F35gv7mxW1KREX8y1X";
     const channelId = 3028;
@@ -47,7 +47,10 @@ serve(async (req) => {
       );
     }
 
+    // Unique transaction reference
     const externalReference = `TXN-${Date.now()}-${Math.floor(Math.random() * 9000) + 1000}`;
+
+    // Callback URL pointing to Supabase function
     const callbackUrl = `${supabaseUrl}/functions/v1/payment-callback`;
 
     const paymentData = {
@@ -57,6 +60,7 @@ serve(async (req) => {
       provider: "m-pesa",
       external_reference: externalReference,
       customer_name: donor_name || "MKU CU Member",
+      payment_type: payment_type || 'tithe',
       callback_url: callbackUrl
     };
 
@@ -81,7 +85,7 @@ serve(async (req) => {
       );
     }
 
-    // Save payment to Supabase
+    // Save initial payment status in Supabase
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { error: dbError } = await supabase.from('payments').insert({
       external_reference: externalReference,
@@ -108,3 +112,4 @@ serve(async (req) => {
     );
   }
 });
+
