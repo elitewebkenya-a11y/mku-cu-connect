@@ -7,3 +7,6 @@ export { LeadersManager } from './LeadersManager';
 export { MinistriesManager } from './MinistriesManager';
 export { FellowshipsManager } from './FellowshipsManager';
 export { VolunteersManager } from './VolunteersManager';
+export { DailyScheduleManager } from './DailyScheduleManager';
+export { HomeFellowshipsManager } from './HomeFellowshipsManager';
+export { FAQsManager } from './FAQsManager';
