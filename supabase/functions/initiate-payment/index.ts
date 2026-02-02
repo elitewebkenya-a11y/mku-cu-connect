@@ -28,10 +28,10 @@ serve(async (req) => {
 
     const normalizedPhone = normalizePhoneNumber(phone);
 
-    // PayHero credentials
-    const apiUsername = "PSmF5lQYDUEZt1gY1Lls";
-    const apiPassword = "Jr3Aqv3jykzqvdcBGKiX91F35gv7mxW1KREX8y1X";
-    const channelId = 3028;
+    // PayHero credentials from secrets
+    const apiUsername = Deno.env.get('PAYHERO_API_USERNAME') || "PSmF5lQYDUEZt1gY1Lls";
+    const apiPassword = Deno.env.get('PAYHERO_API_PASSWORD') || "Jr3Aqv3jykzqvdcBGKiX91F35gv7mxW1KREX8y1X";
+    const channelId = parseInt(Deno.env.get('PAYHERO_CHANNEL_ID') || "3028");
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
