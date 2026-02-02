@@ -10,7 +10,10 @@ import {
   LeadersManager,
   MinistriesManager,
   FellowshipsManager,
-  VolunteersManager
+  VolunteersManager,
+  DailyScheduleManager,
+  HomeFellowshipsManager,
+  FAQsManager
 } from "@/components/admin";
 import { PrayerRequestsManager } from "@/components/admin/PrayerRequestsManager";
 import { CommentsManager } from "@/components/admin/CommentsManager";
@@ -32,13 +35,17 @@ import {
   MessageCircleHeart,
   MessageCircle,
   Image,
-  ChevronRight
+  ChevronRight,
+  ClipboardList,
+  HomeIcon,
+  HelpCircle
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { id: "activities", label: "Activities", icon: Calendar },
+  { id: "schedule", label: "Daily Schedule", icon: ClipboardList },
+  { id: "activities", label: "Weekly Activities", icon: Calendar },
   { id: "events", label: "Events", icon: CalendarDays },
   { id: "gallery", label: "Gallery", icon: Image },
   { id: "announcements", label: "Announcements", icon: Megaphone },
@@ -48,13 +55,15 @@ const menuItems = [
   { id: "prayers", label: "Prayers", icon: MessageCircleHeart },
   { id: "leaders", label: "Leaders", icon: Users },
   { id: "ministries", label: "Ministries", icon: Church },
-  { id: "fellowships", label: "Fellowships", icon: UsersRound },
+  { id: "fellowships", label: "Campus Fellowships", icon: UsersRound },
+  { id: "homefellowships", label: "Home Fellowships", icon: HomeIcon },
   { id: "volunteers", label: "Volunteers", icon: HandHelping },
+  { id: "faqs", label: "FAQs", icon: HelpCircle },
 ];
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("activities");
+  const [activeTab, setActiveTab] = useState("schedule");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -67,6 +76,8 @@ const Admin = () => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case "schedule":
+        return <DailyScheduleManager />;
       case "activities":
         return <WeeklyActivitiesManager />;
       case "events":
@@ -89,10 +100,14 @@ const Admin = () => {
         return <MinistriesManager />;
       case "fellowships":
         return <FellowshipsManager />;
+      case "homefellowships":
+        return <HomeFellowshipsManager />;
       case "volunteers":
         return <VolunteersManager />;
+      case "faqs":
+        return <FAQsManager />;
       default:
-        return <WeeklyActivitiesManager />;
+        return <DailyScheduleManager />;
     }
   };
 

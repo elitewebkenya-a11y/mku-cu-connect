@@ -60,6 +60,7 @@ export const Header = () => {
             <nav className="hidden lg:flex items-center gap-6">
               <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors">Home</Link>
               <Link to="/about" className="text-foreground hover:text-primary font-medium transition-colors">About</Link>
+              <Link to="/schedule" className="text-foreground hover:text-primary font-medium transition-colors">Schedule</Link>
               <Link to="/events" className="text-foreground hover:text-primary font-medium transition-colors">Events</Link>
               <Link to="/media" className="text-foreground hover:text-primary font-medium transition-colors">Media</Link>
               <Link to="/blog" className="text-foreground hover:text-primary font-medium transition-colors">Blog</Link>
@@ -95,6 +96,7 @@ export const Header = () => {
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-2">
               <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Home</Link>
               <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">About</Link>
+              <Link to="/schedule" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Schedule</Link>
               <Link to="/events" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Events</Link>
               <Link to="/media" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Media</Link>
               <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary font-medium transition-colors py-2">Blog</Link>

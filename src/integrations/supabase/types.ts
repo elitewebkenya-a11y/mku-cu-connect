@@ -140,6 +140,60 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_schedule: {
+        Row: {
+          activity_name: string
+          activity_type: string
+          created_at: string | null
+          day_of_week: string
+          description: string | null
+          display_order: number | null
+          end_time: string | null
+          facilitator: string | null
+          id: string
+          is_active: boolean | null
+          is_recurring: boolean | null
+          start_time: string
+          theme: string | null
+          updated_at: string | null
+          venue: string
+        }
+        Insert: {
+          activity_name: string
+          activity_type?: string
+          created_at?: string | null
+          day_of_week: string
+          description?: string | null
+          display_order?: number | null
+          end_time?: string | null
+          facilitator?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_recurring?: boolean | null
+          start_time: string
+          theme?: string | null
+          updated_at?: string | null
+          venue: string
+        }
+        Update: {
+          activity_name?: string
+          activity_type?: string
+          created_at?: string | null
+          day_of_week?: string
+          description?: string | null
+          display_order?: number | null
+          end_time?: string | null
+          facilitator?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_recurring?: boolean | null
+          start_time?: string
+          theme?: string | null
+          updated_at?: string | null
+          venue?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category: string | null
@@ -188,6 +242,39 @@ export type Database = {
         }
         Relationships: []
       }
+      faqs: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          question: string
+          updated_at: string | null
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          question: string
+          updated_at?: string | null
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          question?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       fellowships: {
         Row: {
           capacity: number | null
@@ -230,6 +317,51 @@ export type Database = {
           meeting_time?: string
           name?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      home_fellowships: {
+        Row: {
+          area: string
+          contact_link: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          leader_name: string | null
+          meeting_day: string
+          meeting_time: string
+          name: string
+          updated_at: string | null
+          venue: string | null
+        }
+        Insert: {
+          area: string
+          contact_link?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          leader_name?: string | null
+          meeting_day: string
+          meeting_time: string
+          name: string
+          updated_at?: string | null
+          venue?: string | null
+        }
+        Update: {
+          area?: string
+          contact_link?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          leader_name?: string | null
+          meeting_day?: string
+          meeting_time?: string
+          name?: string
+          updated_at?: string | null
+          venue?: string | null
         }
         Relationships: []
       }
@@ -476,6 +608,57 @@ export type Database = {
           updated_at?: string | null
           youtube_id?: string
           youtube_url?: string
+        }
+        Relationships: []
+      }
+      special_programs: {
+        Row: {
+          contact_person: string | null
+          contact_phone: string | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          program_type: string
+          registration_fee: number | null
+          registration_link: string | null
+          start_date: string | null
+          updated_at: string | null
+          venue: string | null
+        }
+        Insert: {
+          contact_person?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          program_type?: string
+          registration_fee?: number | null
+          registration_link?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+          venue?: string | null
+        }
+        Update: {
+          contact_person?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          program_type?: string
+          registration_fee?: number | null
+          registration_link?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+          venue?: string | null
         }
         Relationships: []
       }
