@@ -2,10 +2,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Updated with your actual Supabase credentials
-const SUPABASE_URL = "https://mcglwbcsyvtbmuegfamt.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jZ2x3YmNzeXZ0Ym11ZWdmYW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNTk1OTksImV4cCI6MjA3OTkzNTU5OX0.7r43O3zJOpucG4GfDG3X-z_BKLxd0my8BFSOrre-KDo";
+// Lovable Cloud Supabase credentials
+const SUPABASE_URL = "https://cteiidzqhrernptuubzx.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0ZWlpZHpxaHJlcm5wdHV1Ynp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMTQ1NDksImV4cCI6MjA3OTc5MDU0OX0.vvHVeKBaJTcDVwlEclFKd08vSi_eoJ8zvOMaAl8UiBU";
 
 // Import with:
 // import { supabase } from "@/integrations/supabase/client";
