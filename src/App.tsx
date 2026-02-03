@@ -18,6 +18,7 @@ const Volunteer = lazy(() => import("./pages/Volunteer"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Schedule = lazy(() => import("./pages/Schedule"));
+const Elections = lazy(() => import("./pages/Elections"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading component
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="/admin" element={<Admin />} />
               <Route path="/AdminLogin" element={<Admin />} />
               <Route path="/schedule" element={<Schedule />} />
+              <Route path="/elections" element={<Elections />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

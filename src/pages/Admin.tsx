@@ -13,7 +13,8 @@ import {
   VolunteersManager,
   DailyScheduleManager,
   HomeFellowshipsManager,
-  FAQsManager
+  FAQsManager,
+  ElectionsManager
 } from "@/components/admin";
 import { PrayerRequestsManager } from "@/components/admin/PrayerRequestsManager";
 import { CommentsManager } from "@/components/admin/CommentsManager";
@@ -38,7 +39,8 @@ import {
   ChevronRight,
   ClipboardList,
   HomeIcon,
-  HelpCircle
+  HelpCircle,
+  Vote
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -59,6 +61,7 @@ const menuItems = [
   { id: "homefellowships", label: "Home Fellowships", icon: HomeIcon },
   { id: "volunteers", label: "Volunteers", icon: HandHelping },
   { id: "faqs", label: "FAQs", icon: HelpCircle },
+  { id: "elections", label: "Elections", icon: Vote },
 ];
 
 const Admin = () => {
@@ -106,6 +109,8 @@ const Admin = () => {
         return <VolunteersManager />;
       case "faqs":
         return <FAQsManager />;
+      case "elections":
+        return <ElectionsManager />;
       default:
         return <DailyScheduleManager />;
     }

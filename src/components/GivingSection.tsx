@@ -1,516 +1,164 @@
-import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { Heart, CreditCard, Info, BookOpen, Church, HandHeart, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Heart, Loader2, CheckCircle, XCircle, Phone, BookOpen, Church, Sparkles, HandHeart, CreditCard, Info } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import titheImage from "@/assets/tithe-giving.jpg";
 
-const quickAmounts = [50, 100, 500, 1000];
-const givingTypes = ["Tithe", "Offering", "Mission"];
-
 export const GivingSection = () => {
-  const [phone, setPhone] = useState("");
-  const [amount, setAmount] = useState("100");
-  const [donorName, setDonorName] = useState("");
-  const [givingType, setGivingType] = useState("Tithe");
-  const [purpose, setPurpose] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
-  const [currentReference, setCurrentReference] = useState<string | null>(null);
-
-  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const whatsappNumber = "254115475543";
-  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    "Hello, I would like to know more about giving/tithing at MKU CU"
-  )}`;
-
-  useEffect(() => {
-    return () => {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-    };
-  }, []);
-
-  const checkPaymentStatus = async (reference: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("payments")
-        .select("status")
-        .eq("external_reference", reference)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Supabase status check error:", error);
-        return;
-      }
-
-      const status = data?.status || "pending";
-
-      if (status !== paymentStatus) {
-        setPaymentStatus(status as "pending" | "success" | "failed");
-
-        if (status === "success") {
-          toast.success("Payment successful! Thank you for your generous giving.");
-          pollIntervalRef.current && clearInterval(pollIntervalRef.current);
-        }
-
-        if (status === "failed") {
-          toast.error("Payment was not completed. Please try again.");
-          pollIntervalRef.current && clearInterval(pollIntervalRef.current);
-        }
-      }
-    } catch (err) {
-      console.error("Status check error:", err);
-    }
-  };
-
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!phone || !amount || parseFloat(amount) <= 0) {
-      toast.error("Please enter a valid phone number and amount");
-      return;
-    }
-
-    setIsProcessing(true);
-    setPaymentStatus("idle");
-
-    try {
-      const res = await fetch("https://remote.victoryschoolclub.co.ke/process-payment.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          phone, 
-          amount: parseFloat(amount), 
-          donor_name: donorName, 
-          payment_type: givingType.toLowerCase(),
-          purpose: purpose
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.status !== "success") throw new Error(data.error || "Payment initiation failed");
-
-      setCurrentReference(data.reference);
-      setPaymentStatus("pending");
-      toast.info("STK push sent! Please check your phone and enter M-Pesa PIN.");
-
-      pollIntervalRef.current = setInterval(() => checkPaymentStatus(data.reference), 5000);
-
-      setTimeout(() => {
-        if (pollIntervalRef.current) {
-          clearInterval(pollIntervalRef.current);
-          if (paymentStatus === "pending") {
-            setPaymentStatus("idle");
-            toast.info("Payment verification timed out. If completed, it will reflect shortly.");
-          }
-        }
-      }, 120000);
-
-    } catch (err: unknown) {
-      console.error("Payment error:", err);
-      const message = err instanceof Error ? err.message : "Payment failed. Please try again.";
-      toast.error(message);
-      setPaymentStatus("failed");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const resetPayment = () => {
-    setPaymentStatus("idle");
-    setCurrentReference(null);
-    setPhone("");
-    setAmount("100");
-    setDonorName("");
-    setGivingType("Tithe");
-    setPurpose("");
-  };
-
-  const getSuccessMessage = () => {
-    if (givingType === "Tithe") {
-      return "Your tithe has been received. Thank you for honoring God with your firstfruits.";
-    } else if (givingType === "Offering") {
-      return "Your offering has been received. Thank you for your generous heart towards God's work.";
-    } else if (givingType === "Mission") {
-      return purpose 
-        ? `Your contribution towards ${purpose} has been received. Thank you for supporting missions.`
-        : "Your mission contribution has been received. Thank you for supporting missions.";
-    }
-    return "Your contribution has been received. Thank you for partnering with us in advancing God's Kingdom.";
-  };
-
   return (
-    <section className="py-20 md:py-28 bg-gradient-to-b from-slate-50 via-white to-slate-50 relative">
+    <section className="py-16 md:py-24 bg-gradient-to-b from-muted/30 via-background to-muted/30">
       <div className="container mx-auto px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           
           {/* Header Section */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-navy/10 text-navy px-5 py-2 rounded-full mb-6">
-              <Heart className="w-4 h-4 fill-navy" />
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-2 rounded-full mb-6">
+              <Heart className="w-4 h-4 fill-primary" />
               <span className="font-semibold text-sm uppercase tracking-wide">Tithes & Offerings</span>
             </div>
             
-            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-navy">
+            <h2 className="text-3xl md:text-5xl font-serif font-bold mb-6 text-foreground">
               Give Cheerfully
             </h2>
             
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
               Your generous contributions help us spread the Gospel, support our community, and continue God's work at MKU Christian Union.
             </p>
 
             {/* Scripture Quote */}
-            <div className="max-w-4xl mx-auto">
-              <Card className="bg-gradient-to-br from-gold/5 to-navy/5 border-gold/20 p-8 md:p-12">
-                <BookOpen className="w-10 h-10 text-gold mx-auto mb-4" />
-                <blockquote className="text-xl md:text-2xl italic text-gray-800 leading-relaxed mb-4">
-                  "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver."
-                </blockquote>
-                <cite className="text-gold font-semibold text-lg">— 2 Corinthians 9:7</cite>
-              </Card>
-            </div>
+            <Card className="max-w-3xl mx-auto bg-gradient-to-br from-secondary/10 to-primary/5 border-secondary/20 p-6 md:p-10">
+              <BookOpen className="w-8 h-8 text-secondary mx-auto mb-4" />
+              <blockquote className="text-lg md:text-xl italic text-foreground leading-relaxed mb-3">
+                "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver."
+              </blockquote>
+              <cite className="text-secondary font-semibold">— 2 Corinthians 9:7</cite>
+            </Card>
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid lg:grid-cols-3 gap-6 md:gap-8 items-start">
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
             
             {/* Left Column - Impact Cards */}
-            <div className="space-y-4 md:space-y-6 order-2 lg:order-1">
-              <Card className="p-5 md:p-6 border-navy/10 hover:shadow-lg transition-shadow">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-navy/10 rounded-full flex items-center justify-center mb-3 md:mb-4">
-                  <Church className="w-5 h-5 md:w-6 md:h-6 text-navy" />
-                </div>
-                <h3 className="font-bold text-base md:text-lg mb-2 text-navy">Ministry & Outreach</h3>
-                <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
-                  Support campus evangelism, discipleship programs, and community missions that transform lives for Christ.
-                </p>
-              </Card>
-
-              <Card className="p-5 md:p-6 border-navy/10 hover:shadow-lg transition-shadow">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gold/10 rounded-full flex items-center justify-center mb-3 md:mb-4">
-                  <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-gold" />
-                </div>
-                <h3 className="font-bold text-base md:text-lg mb-2 text-navy">Bible Teaching</h3>
-                <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
-                  Enable quality biblical education, resources, and training that equip believers to grow in their faith.
-                </p>
-              </Card>
-
-              <Card className="p-5 md:p-6 border-navy/10 hover:shadow-lg transition-shadow">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500/10 rounded-full flex items-center justify-center mb-3 md:mb-4">
-                  <HandHeart className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
-                </div>
-                <h3 className="font-bold text-base md:text-lg mb-2 text-navy">Student Support</h3>
-                <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
-                  Help students in need, provide resources, and create a welcoming environment for spiritual growth.
-                </p>
-              </Card>
-            </div>
-
-            {/* Center Column - Payment Form */}
-            <div className="lg:col-span-2 order-1 lg:order-2">
-              <Card className="p-6 md:p-8 lg:p-10 shadow-xl border-navy/10">
-                
-                {paymentStatus === "success" ? (
-                  <div className="text-center py-12 md:py-16">
-                    <div className="w-20 h-20 md:w-24 md:h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-                      <CheckCircle className="w-12 h-12 md:w-16 md:h-16 text-green-600" />
-                    </div>
-                    <h4 className="text-2xl md:text-3xl font-bold mb-2 md:mb-3 text-navy">God Bless You!</h4>
-                    <p className="text-gray-600 text-base md:text-lg mb-6 md:mb-8 max-w-md mx-auto px-4">
-                      {getSuccessMessage()}
-                    </p>
-                    <Button 
-                      onClick={resetPayment} 
-                      size="lg"
-                      className="bg-navy hover:bg-navy/90"
-                    >
-                      Make Another Contribution
-                    </Button>
-                  </div>
-                ) : paymentStatus === "failed" ? (
-                  <div className="text-center py-12 md:py-16">
-                    <div className="w-20 h-20 md:w-24 md:h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-                      <XCircle className="w-12 h-12 md:w-16 md:h-16 text-red-600" />
-                    </div>
-                    <h4 className="text-2xl md:text-3xl font-bold mb-2 md:mb-3 text-navy">Payment Not Complete</h4>
-                    <p className="text-gray-600 text-base md:text-lg mb-6 md:mb-8 max-w-md mx-auto px-4">
-                      The transaction was not completed. Please try again or contact us for assistance.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
-                      <Button 
-                        onClick={resetPayment}
-                        size="lg"
-                        className="bg-navy hover:bg-navy/90 w-full sm:w-auto"
-                      >
-                        Try Again
-                      </Button>
-                      <Button 
-                        asChild
-                        variant="outline"
-                        size="lg"
-                        className="w-full sm:w-auto"
-                      >
-                        <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                          <Phone className="mr-2 w-4 h-4" />
-                          Get Help
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="text-center mb-6 md:mb-8">
-                      <div className="inline-flex items-center gap-2 md:gap-3 mb-4">
-                        <div className="w-12 h-12 md:w-14 md:h-14 bg-navy/10 rounded-full flex items-center justify-center">
-                          <Heart className="w-6 h-6 md:w-7 md:h-7 text-navy fill-navy" />
-                        </div>
-                        <div className="text-left">
-                          <h3 className="text-xl md:text-2xl font-bold text-navy">Support God's Work</h3>
-                          <p className="text-gray-500 text-xs md:text-sm">Give securely and conveniently</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-5 md:space-y-6">
-                      <div>
-                        <Label className="text-gray-700 font-medium mb-2 block text-sm">
-                          Type of Contribution <span className="text-red-500">*</span>
-                        </Label>
-                        <div className="grid grid-cols-3 gap-2 md:gap-3">
-                          {givingTypes.map((type) => (
-                            <Button
-                              key={type}
-                              type="button"
-                              variant="outline"
-                              onClick={() => setGivingType(type)}
-                              className={`h-12 md:h-14 border-2 font-semibold transition-all text-sm md:text-base ${
-                                givingType === type
-                                  ? 'border-navy bg-navy text-white'
-                                  : 'border-gray-200 hover:border-navy'
-                              }`}
-                            >
-                              {type}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {givingType === "Mission" && (
-                        <div>
-                          <Label className="text-gray-700 font-medium mb-2 block text-sm">
-                            Mission Purpose <span className="text-gray-400 font-normal">(Optional)</span>
-                          </Label>
-                          <Textarea
-                            value={purpose}
-                            onChange={(e) => setPurpose(e.target.value)}
-                            placeholder="E.g., Limuru Mission, School Outreach, Evangelism..."
-                            className="min-h-[80px] border-gray-200 focus:border-navy resize-none"
-                          />
-                          <p className="text-xs text-gray-500 mt-1">Let us know what mission you're supporting</p>
-                        </div>
-                      )}
-
-                      <div>
-                        <Label className="text-gray-700 font-medium mb-2 block text-sm">
-                          Your Name <span className="text-gray-400 font-normal">(Optional)</span>
-                        </Label>
-                        <Input 
-                          value={donorName} 
-                          onChange={(e) => setDonorName(e.target.value)}
-                          placeholder="Enter your name"
-                          className="h-12 border-gray-200 focus:border-navy"
-                        />
-                      </div>
-
-                      <div>
-                        <Label className="text-gray-700 font-medium mb-2 block text-sm">
-                          Phone Number <span className="text-red-500">*</span>
-                        </Label>
-                        <Input 
-                          value={phone} 
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder="254712345678"
-                          required
-                          className="h-12 border-gray-200 focus:border-navy"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">We'll send a payment prompt to this number</p>
-                      </div>
-
-                      <div>
-                        <Label className="text-gray-700 font-medium mb-2 block text-sm">
-                          Amount (KES) <span className="text-red-500">*</span>
-                        </Label>
-                        <Input 
-                          type="number" 
-                          value={amount} 
-                          onChange={(e) => setAmount(e.target.value)}
-                          placeholder="100"
-                          min="1"
-                          required
-                          className="h-12 md:h-14 border-gray-200 focus:border-navy text-lg md:text-xl font-semibold"
-                        />
-                        
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3 mt-3 md:mt-4">
-                          {quickAmounts.map((a) => (
-                            <Button 
-                              key={a} 
-                              type="button" 
-                              variant="outline"
-                              onClick={() => setAmount(a.toString())}
-                              className={`h-10 md:h-12 border-2 font-semibold transition-all text-sm md:text-base ${
-                                amount === a.toString() 
-                                  ? 'border-navy bg-navy text-white' 
-                                  : 'border-gray-200 hover:border-navy'
-                              }`}
-                            >
-                              {a.toLocaleString()}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {paymentStatus === "pending" && (
-                        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center">
-                          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-3" />
-                          <p className="text-blue-900 font-semibold mb-1">Processing Your Payment</p>
-                          <p className="text-blue-700 text-sm">
-                            Please check your phone and complete the payment
-                          </p>
-                        </div>
-                      )}
-
-                      <Button 
-                        onClick={handlePayment}
-                        className="w-full h-14 text-lg font-semibold bg-navy hover:bg-navy/90 shadow-lg"
-                        disabled={isProcessing}
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                            Processing Payment...
-                          </>
-                        ) : (
-                          <>
-                            <Heart className="w-5 h-5 mr-2 fill-white" />
-                            Give Now
-                          </>
-                        )}
-                      </Button>
-
-                      <div className="pt-4 border-t border-gray-200">
-                        <p className="text-center text-sm text-gray-600 mb-4">
-                          Need other ways to give?
-                        </p>
-                        <Button 
-                          asChild 
-                          variant="outline"
-                          className="w-full border-2"
-                          size="lg"
-                        >
-                          <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                            <Phone className="mr-2 w-4 h-4" />
-                            Contact Us for More Options
-                          </a>
-                        </Button>
-                      </div>
-
-                      <div className="text-center pt-4">
-                        <p className="text-xs text-gray-400">
-                          Powered by <span className="font-semibold text-navy">Hydrocephcare Kenya</span>
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </Card>
-
-              {/* Alternative Payment Method - Till Number */}
-              <Card className="mt-4 md:mt-6 p-6 md:p-8 border-navy/10 bg-gradient-to-br from-green-50 to-emerald-50">
+            <div className="space-y-4">
+              <Card className="p-5 border-border hover:shadow-lg transition-shadow bg-card">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <CreditCard className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Church className="w-6 h-6 text-primary" />
                   </div>
-                  <div className="flex-1">
-                    <h4 className="text-lg md:text-xl font-bold text-navy mb-2">Alternative: Pay via M-Pesa Till</h4>
-                    <p className="text-sm md:text-base text-gray-700 mb-4">
-                      You can also give using our M-Pesa Till Number
+                  <div>
+                    <h3 className="font-bold text-lg mb-2 text-foreground">Ministry & Outreach</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Support campus evangelism, discipleship programs, and community missions that transform lives for Christ.
                     </p>
-                    
-                    <div className="bg-white rounded-lg p-4 md:p-5 border-2 border-green-200 mb-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-gray-600 font-medium">Till Number:</span>
-                        <span className="text-2xl md:text-3xl font-bold text-green-600">6960137</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <h5 className="font-semibold text-navy flex items-center gap-2">
-                        <Info className="w-4 h-4" />
-                        How to Pay:
-                      </h5>
-                      <ol className="space-y-2 text-sm md:text-base text-gray-700">
-                        <li className="flex gap-3">
-                          <span className="font-bold text-navy flex-shrink-0">1.</span>
-                          <span>Go to <strong>M-Pesa</strong> on your phone</span>
-                        </li>
-                        <li className="flex gap-3">
-                          <span className="font-bold text-navy flex-shrink-0">2.</span>
-                          <span>Select <strong>Lipa na M-Pesa</strong></span>
-                        </li>
-                        <li className="flex gap-3">
-                          <span className="font-bold text-navy flex-shrink-0">3.</span>
-                          <span>Choose <strong>Buy Goods and Services</strong></span>
-                        </li>
-                        <li className="flex gap-3">
-                          <span className="font-bold text-navy flex-shrink-0">4.</span>
-                          <span>Enter Till Number: <strong className="text-green-600">6960137</strong></span>
-                        </li>
-                        <li className="flex gap-3">
-                          <span className="font-bold text-navy flex-shrink-0">5.</span>
-                          <span>Enter the <strong>amount</strong> you wish to give</span>
-                        </li>
-                        <li className="flex gap-3">
-                          <span className="font-bold text-navy flex-shrink-0">6.</span>
-                          <span>Enter your <strong>M-Pesa PIN</strong> to complete</span>
-                        </li>
-                      </ol>
-                    </div>
-
-                    <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-xs md:text-sm text-blue-800">
-                        <strong>Note:</strong> After payment, you'll receive an M-Pesa confirmation message. Please save it for your records.
-                      </p>
-                    </div>
                   </div>
                 </div>
               </Card>
 
-              {/* Image Card Below */}
-              <Card className="mt-4 md:mt-6 overflow-hidden shadow-lg border-navy/10">
+              <Card className="p-5 border-border hover:shadow-lg transition-shadow bg-card">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <BookOpen className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-2 text-foreground">Bible Teaching</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Enable quality biblical education, resources, and training that equip believers to grow in their faith.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-5 border-border hover:shadow-lg transition-shadow bg-card">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <HandHeart className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-2 text-foreground">Student Support</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Help students in need, provide resources, and create a welcoming environment for spiritual growth.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Image Card */}
+              <Card className="overflow-hidden shadow-lg border-border">
                 <img 
                   src={titheImage} 
                   alt="Church Giving" 
-                  className="w-full h-48 md:h-64 object-cover"
+                  className="w-full h-48 md:h-56 object-cover"
                 />
               </Card>
             </div>
-          </div>
 
-          {/* Bottom Section - Additional Info */}
-          <div className="mt-12 md:mt-16 text-center">
-            <div className="max-w-3xl mx-auto px-4">
-              <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-gold mx-auto mb-3 md:mb-4" />
-              <h3 className="text-xl md:text-2xl font-bold text-navy mb-3 md:mb-4">Every Gift Makes a Difference</h3>
-              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                Whether you give your tithes, offerings, or special contributions, know that your generosity is making an eternal impact. Together, we are living the knowledge of God and transforming lives across our campus and beyond.
-              </p>
+            {/* Right Column - M-Pesa Till Card */}
+            <div>
+              <Card className="p-6 md:p-8 border-border bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-14 h-14 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <CreditCard className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-bold text-foreground mb-1">Pay via M-Pesa Till</h3>
+                    <p className="text-muted-foreground text-sm">Quick, secure, and convenient giving</p>
+                  </div>
+                </div>
+                
+                <div className="bg-card rounded-xl p-5 border-2 border-green-200 dark:border-green-800 mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground font-medium">Till Number:</span>
+                    <span className="text-3xl md:text-4xl font-bold text-green-600">6960137</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">MKU Christian Union</p>
+                </div>
+
+                <div className="space-y-4">
+                  <h5 className="font-semibold text-foreground flex items-center gap-2">
+                    <Info className="w-4 h-4" />
+                    How to Pay:
+                  </h5>
+                  <ol className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="font-bold text-primary flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">1</span>
+                      <span>Go to <strong className="text-foreground">M-Pesa</strong> on your phone</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-primary flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">2</span>
+                      <span>Select <strong className="text-foreground">Lipa na M-Pesa</strong></span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-primary flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">3</span>
+                      <span>Choose <strong className="text-foreground">Buy Goods and Services</strong></span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-primary flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">4</span>
+                      <span>Enter Till Number: <strong className="text-green-600">6960137</strong></span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-primary flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">5</span>
+                      <span>Enter the <strong className="text-foreground">amount</strong> you wish to give</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-primary flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">6</span>
+                      <span>Enter your <strong className="text-foreground">M-Pesa PIN</strong> to complete</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <p className="text-xs text-muted-foreground">
+                    <strong className="text-foreground">Note:</strong> After payment, you'll receive an M-Pesa confirmation message. Please save it for your records.
+                  </p>
+                </div>
+              </Card>
+
+              {/* Bottom Message */}
+              <div className="text-center mt-8">
+                <Sparkles className="w-6 h-6 text-secondary mx-auto mb-3" />
+                <h4 className="text-lg font-bold text-foreground mb-2">Every Gift Makes a Difference</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Whether you give your tithes, offerings, or special contributions, your generosity is making an eternal impact.
+                </p>
+              </div>
             </div>
           </div>
 

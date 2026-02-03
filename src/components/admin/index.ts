@@ -10,3 +10,4 @@ export { VolunteersManager } from './VolunteersManager';
 export { DailyScheduleManager } from './DailyScheduleManager';
 export { HomeFellowshipsManager } from './HomeFellowshipsManager';
 export { FAQsManager } from './FAQsManager';
+export { ElectionsManager } from './ElectionsManager';

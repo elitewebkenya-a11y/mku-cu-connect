@@ -2,11 +2,9 @@ import { EnhancedHeroSlider } from "@/components/EnhancedHeroSlider";
 import { DailyVerse } from "@/components/DailyVerse";
 import { QuickActions } from "@/components/QuickActions";
 import { EnhancedStatsCounter } from "@/components/EnhancedStatsCounter";
-import { WeeklySchedule } from "@/components/WeeklySchedule";
 import { LatestSermons } from "@/components/LatestSermons";
 import { GivingSection } from "@/components/GivingSection";
 import { LatestBlogPost } from "@/components/LatestBlogPost";
-import { Testimonials } from "@/components/Testimonials";
 import { GalleryPreview } from "@/components/GalleryPreview";
 import { VisionMission } from "@/components/VisionMission";
 import { MinistriesPreview } from "@/components/MinistriesPreview";
@@ -52,10 +50,6 @@ const Index = () => {
           <SchedulePreview />
         </AnimatedSection>
         
-        <AnimatedSection animation="slide-left">
-          <WeeklySchedule />
-        </AnimatedSection>
-        
         <AnimatedSection animation="fade-up">
           <UpcomingEvents />
         </AnimatedSection>
@@ -98,10 +92,6 @@ const Index = () => {
         
         <AnimatedSection animation="scale">
           <LatestBlogPost />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <Testimonials />
         </AnimatedSection>
         
         <AnimatedSection animation="slide-left">
