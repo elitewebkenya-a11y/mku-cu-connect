@@ -2,8 +2,45 @@ import { Facebook, Instagram, Youtube, Twitter, Mail, Phone, MapPin } from "luci
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Please enter your email");
+      return;
+    }
+
+    setIsSubscribing(true);
+    try {
+      const { error } = await supabase.from("subscribers").insert({
+        email: email.trim(),
+      });
+
+      if (error) {
+        if (error.code === "23505") {
+          toast.info("You're already subscribed!", { duration: 3000 });
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success("Subscribed successfully! You'll receive updates.", { duration: 3000 });
+        setEmail("");
+      }
+    } catch (error) {
+      console.error("Subscription error:", error);
+      toast.error("Failed to subscribe. Please try again.");
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
   return (
     <footer className="bg-card border-t border-border text-foreground">
       <div className="container mx-auto px-4 py-8 md:py-12">
@@ -24,16 +61,16 @@ export const Footer = () => {
               evangelism, and missions at Mount Kenya University.
             </p>
             <div className="flex gap-3 justify-center md:justify-start">
-              <a href="https://wa.me/254115475543" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted hover:bg-secondary rounded-full flex items-center justify-center transition-colors">
+              <a href="https://wa.me/254704021286" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted hover:bg-secondary rounded-full flex items-center justify-center transition-colors">
                 <Facebook className="w-4 h-4" />
               </a>
-              <a href="https://wa.me/254115475543" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted hover:bg-secondary rounded-full flex items-center justify-center transition-colors">
+              <a href="https://wa.me/254704021286" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted hover:bg-secondary rounded-full flex items-center justify-center transition-colors">
                 <Instagram className="w-4 h-4" />
               </a>
               <a href="https://www.youtube.com/live/2nKqPUZFPCE?si=aS38jGEpbkIwBpHc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted hover:bg-secondary rounded-full flex items-center justify-center transition-colors">
                 <Youtube className="w-4 h-4" />
               </a>
-              <a href="https://wa.me/254115475543" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted hover:bg-secondary rounded-full flex items-center justify-center transition-colors">
+              <a href="https://wa.me/254704021286" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-muted hover:bg-secondary rounded-full flex items-center justify-center transition-colors">
                 <Twitter className="w-4 h-4" />
               </a>
             </div>
@@ -45,10 +82,11 @@ export const Footer = () => {
             <ul className="space-y-2 text-xs md:text-sm text-muted-foreground">
               <li><Link to="/about" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">About Us</Link></li>
               <li><Link to="/events" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">Events Calendar</Link></li>
+              <li><Link to="/schedule" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">Daily Schedule</Link></li>
               <li><Link to="/media" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">Media & Sermons</Link></li>
               <li><Link to="/blog" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">Blog</Link></li>
-              <li><Link to="/contact" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">Contact Us</Link></li>
-              <li><a href="https://wa.me/254115475543?text=I%20want%20to%20join%20MKU%20CU" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">Join MKU CU</a></li>
+              <li><Link to="/elections" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">Elections</Link></li>
+              <li><a href="https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors inline-block min-h-[44px] md:min-h-0 flex items-center justify-center md:justify-start">Join MKU CU</a></li>
             </ul>
           </div>
 
@@ -58,11 +96,11 @@ export const Footer = () => {
             <ul className="space-y-3 text-xs md:text-sm text-muted-foreground">
               <li className="flex items-start gap-2 justify-center md:justify-start">
                 <Phone className="w-4 h-4 mt-1 flex-shrink-0" />
-                <a href="https://wa.me/254115475543" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">+254 115 475543</a>
+                <a href="https://wa.me/254704021286" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">+254 704 021 286</a>
               </li>
               <li className="flex items-start gap-2 justify-center md:justify-start">
                 <Mail className="w-4 h-4 mt-1 flex-shrink-0" />
-                <a href="mailto:mkucu@mku.ac.ke" className="hover:text-primary transition-colors break-all">mkucu@mku.ac.ke</a>
+                <a href="mailto:mkucuthika@gmail.com" className="hover:text-primary transition-colors break-all">mkucuthika@gmail.com</a>
               </li>
               <li className="flex items-start gap-2 justify-center md:justify-start">
                 <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
@@ -75,16 +113,22 @@ export const Footer = () => {
           <div className="text-center md:text-left">
             <h3 className="font-serif font-bold text-base md:text-lg mb-3 md:mb-4 text-secondary">Stay Updated</h3>
             <p className="text-xs md:text-sm text-muted-foreground mb-4">Get weekly devotionals and event updates</p>
-            <div className="space-y-2">
+            <form onSubmit={handleSubscribe} className="space-y-2">
               <Input 
                 type="email" 
                 placeholder="Your email address" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="text-sm h-11"
               />
-              <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-sm h-11">
-                Subscribe
+              <Button 
+                type="submit"
+                disabled={isSubscribing}
+                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-sm h-11"
+              >
+                {isSubscribing ? "Subscribing..." : "Subscribe"}
               </Button>
-            </div>
+            </form>
             <p className="text-xs text-muted-foreground mt-2">We respect your privacy</p>
           </div>
         </div>

@@ -118,7 +118,10 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          parent_id: string | null
           post_slug: string
+          reply_count: number | null
+          thread_closed: boolean | null
         }
         Insert: {
           author_email?: string | null
@@ -127,7 +130,10 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          parent_id?: string | null
           post_slug: string
+          reply_count?: number | null
+          thread_closed?: boolean | null
         }
         Update: {
           author_email?: string | null
@@ -136,9 +142,20 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          parent_id?: string | null
           post_slug?: string
+          reply_count?: number | null
+          thread_closed?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       daily_schedule: {
         Row: {
@@ -191,6 +208,125 @@ export type Database = {
           theme?: string | null
           updated_at?: string | null
           venue?: string
+        }
+        Relationships: []
+      }
+      election_candidates: {
+        Row: {
+          created_at: string | null
+          election_id: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          manifesto: string | null
+          name: string
+          position: string
+          updated_at: string | null
+          votes_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          election_id: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          manifesto?: string | null
+          name: string
+          position: string
+          updated_at?: string | null
+          votes_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          election_id?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          manifesto?: string | null
+          name?: string
+          position?: string
+          updated_at?: string | null
+          votes_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "election_candidates_election_id_fkey"
+            columns: ["election_id"]
+            isOneToOne: false
+            referencedRelation: "elections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      election_votes: {
+        Row: {
+          candidate_id: string
+          created_at: string | null
+          election_id: string
+          id: string
+          voter_identifier: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string | null
+          election_id: string
+          id?: string
+          voter_identifier: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string | null
+          election_id?: string
+          id?: string
+          voter_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "election_votes_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "election_candidates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "election_votes_election_id_fkey"
+            columns: ["election_id"]
+            isOneToOne: false
+            referencedRelation: "elections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      elections: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_date: string
+          id: string
+          is_active: boolean | null
+          start_date: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_date: string
+          id?: string
+          is_active?: boolean | null
+          start_date: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string
+          id?: string
+          is_active?: boolean | null
+          start_date?: string
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -479,6 +615,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          link: string | null
+          message: string
+          recipient_email: string | null
+          title: string
+          type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message: string
+          recipient_email?: string | null
+          title: string
+          type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string
+          recipient_email?: string | null
+          title?: string
+          type?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -659,6 +828,33 @@ export type Database = {
           start_date?: string | null
           updated_at?: string | null
           venue?: string | null
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          email: string
+          id: string
+          is_active: boolean | null
+          name: string | null
+          push_token: string | null
+          subscribed_at: string | null
+        }
+        Insert: {
+          email: string
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          push_token?: string | null
+          subscribed_at?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          push_token?: string | null
+          subscribed_at?: string | null
         }
         Relationships: []
       }
