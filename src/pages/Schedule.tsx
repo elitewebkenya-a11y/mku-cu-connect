@@ -86,68 +86,6 @@ const dayThemes: Record<string, { theme: string; icon: React.ReactNode; color: s
   },
 };
 
-// Static schedule data - can be replaced with dynamic data from database
-const staticSchedule: Record<string, Array<{ name: string; time: string; venue: string; description?: string }>> = {
-  Monday: [
-    { name: "Morning Devotions", time: "5:00 AM - 6:00 AM", venue: "MLT Hall B / PEFA Church", description: "Prayer, worship, and devotional teaching" },
-    { name: "Lunch Hour Service", time: "During lunch break", venue: "PEFA Church", description: "Biblical teaching, worship, altar calls" },
-    { name: "Bethel Prayers", time: "7:00 PM - 8:00 PM", venue: "MLT Hall B", description: "Evening intercession and prayer" },
-  ],
-  Tuesday: [
-    { name: "Morning Devotions", time: "5:00 AM - 6:00 AM", venue: "MLT Hall B / PEFA Church" },
-    { name: "Lunch Hour Service", time: "During lunch break", venue: "PEFA Church" },
-    { name: "Bethel Prayers", time: "7:00 PM - 8:00 PM", venue: "MLT Hall B" },
-  ],
-  Wednesday: [
-    { name: "Morning Devotions", time: "5:00 AM - 6:00 AM", venue: "MLT Hall B / PEFA Church" },
-    { name: "Lunch Hour Service", time: "During lunch break", venue: "PEFA Church" },
-    { name: "Midweek Service", time: "Evening", venue: "Various (check announcements)", description: "Corporate prayer emphasis" },
-    { name: "Bethel Prayers", time: "7:00 PM - 8:00 PM", venue: "MLT Hall B" },
-  ],
-  Thursday: [
-    { name: "Morning Devotions", time: "5:00 AM - 6:00 AM", venue: "MLT Hall B / PEFA Church" },
-    { name: "Lunch Hour Service", time: "During lunch break", venue: "PEFA Church" },
-    { name: "Street Worship & Evangelism", time: "4:00 PM", venue: "CT Grounds / Thika Town", description: "Soul-winning, testimonies, street preaching" },
-    { name: "Bethel Prayers", time: "7:00 PM - 8:00 PM", venue: "MLT Hall B" },
-  ],
-  Friday: [
-    { name: "PEFA Church Cleaning", time: "7:00 AM", venue: "PEFA Church", description: "Community service" },
-    { name: "Morning Devotions", time: "5:00 AM - 6:00 AM", venue: "MLT Hall B / PEFA Church" },
-    { name: "Lunch Hour Service", time: "During lunch break", venue: "PEFA Church" },
-    { name: "Children's Ministry Outreach", time: "Afternoon", venue: "General Kago Primary School", description: "Gospel outreach to children" },
-    { name: "Bethel Prayers", time: "7:00 PM - 8:00 PM", venue: "MLT Hall B" },
-  ],
-  Saturday: [
-    { name: "Choir Practice", time: "Various", venue: "MLT Block NC5" },
-    { name: "Sound Ministry Rehearsals", time: "5:00 PM - 7:00 PM", venue: "Practice venues" },
-    { name: "Ministry Meetings", time: "Various", venue: "Check announcements" },
-  ],
-  Sunday: [
-    { name: "Sunday Service", time: "Multiple sessions", venue: "CC Upper Room / Basketball Court", description: "Full worship service with sermon" },
-    { name: "Live Streaming", time: "During service", venue: "YouTube & Facebook", description: "Watch online if you can't attend" },
-  ],
-};
-
-const homeFellowshipsStatic = [
-  { name: "School Area Home Fellowship", area: "School hostels/nearby", day: "Weekly", time: "6:00 PM - 8:00 PM" },
-  { name: "Runda Home Fellowship", area: "Runda area", day: "Weekly", time: "6:00 PM - 8:00 PM" },
-  { name: "Biafra Home Fellowship", area: "Biafra estate", day: "Weekly", time: "6:00 PM - 8:00 PM" },
-  { name: "Kiganjo/Kiang'ombe Home Fellowship", area: "Kiganjo/Kiang'ombe", day: "Weekly", time: "6:00 PM - 8:00 PM" },
-  { name: "Starehe Home Fellowship", area: "Starehe area", day: "Weekly", time: "6:00 PM - 8:00 PM" },
-  { name: "Mukiriti/Ziwani/Town Home Fellowship", area: "Mukiriti, Ziwani, Town center", day: "Weekly", time: "6:00 PM - 8:00 PM" },
-  { name: "Makongeni Home Fellowship", area: "Makongeni area", day: "Weekly", time: "6:00 PM - 8:00 PM" },
-];
-
-const faqsStatic = [
-  { q: "I'm a first-year student. How do I join MKUCU?", a: "Attend any of our services, fill the new members form, and connect with the ushers. You'll be guided from there!" },
-  { q: "Can I join multiple ministries?", a: "Yes! Many members serve in 2-3 ministries. Just ensure you can commit to the practice/meeting schedules." },
-  { q: "I can't afford mission fees. Can I still go?", a: "Yes! We encourage 'lipa mdogo mdogo' (installments). Also, speak to leadership about sponsorship or support." },
-  { q: "What if I miss a service?", a: "That's okay! Catch up via YouTube livestreams. Try to attend at least lunch hour and Sunday regularly." },
-  { q: "Are non-MKU students welcome?", a: "Absolutely! We welcome all believers. Fill the guest form and join us." },
-  { q: "I'm not Christian but curious. Can I attend?", a: "Yes! You're very welcome. Come with an open heart, and we'll be glad to answer your questions." },
-  { q: "How do I get prayer support?", a: "Contact Intercessory Ministry, Care Ministry, or your home fellowship leader. Prayer requests are confidential." },
-];
-
 const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState("Sunday");
   const [dbSchedule, setDbSchedule] = useState<DailyScheduleItem[]>([]);
@@ -178,43 +116,34 @@ const Schedule = () => {
   };
 
   const getCurrentDaySchedule = () => {
-    // First check database, then fall back to static
     const dbItems = dbSchedule.filter(item => item.day_of_week === selectedDay);
-    if (dbItems.length > 0) {
-      return dbItems.map(item => ({
-        name: item.activity_name,
-        time: item.end_time ? `${item.start_time} - ${item.end_time}` : item.start_time,
-        venue: item.venue,
-        description: item.description || undefined,
-      }));
-    }
-    return staticSchedule[selectedDay] || [];
+    return dbItems.map(item => ({
+      name: item.activity_name,
+      time: item.end_time ? `${item.start_time} - ${item.end_time}` : item.start_time,
+      venue: item.venue,
+      description: item.description || undefined,
+    }));
   };
 
   const getFellowships = () => {
-    if (dbFellowships.length > 0) {
-      return dbFellowships.map(f => ({
-        name: f.name,
-        area: f.area,
-        day: f.meeting_day,
-        time: f.meeting_time,
-      }));
-    }
-    return homeFellowshipsStatic;
+    return dbFellowships.map(f => ({
+      name: f.name,
+      area: f.area,
+      day: f.meeting_day,
+      time: f.meeting_time,
+      contact_link: f.contact_link,
+    }));
   };
 
   const getFaqs = () => {
-    if (dbFaqs.length > 0) {
-      return dbFaqs.map(f => ({ q: f.question, a: f.answer }));
-    }
-    return faqsStatic;
+    return dbFaqs.map(f => ({ q: f.question, a: f.answer }));
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="pt-20">
+      <main>
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground py-16 md:py-24">
           <div className="container mx-auto px-4 text-center">
@@ -288,26 +217,36 @@ const Schedule = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="space-y-4">
-                  {getCurrentDaySchedule().map((activity, index) => (
-                    <div key={index} className="flex gap-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="flex-shrink-0 w-24 text-sm text-muted-foreground">
-                        <Clock className="w-4 h-4 inline mr-1" />
-                        {activity.time}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold">{activity.name}</h4>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                          <MapPin className="w-3 h-3" />
-                          {activity.venue}
+                {loading ? (
+                  <div className="text-center py-8 text-muted-foreground">Loading schedule...</div>
+                ) : getCurrentDaySchedule().length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Calendar className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                    <p>No activities scheduled for {selectedDay}.</p>
+                    <p className="text-sm mt-1">Check the admin panel to add activities.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {getCurrentDaySchedule().map((activity, index) => (
+                      <div key={index} className="flex gap-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex-shrink-0 w-24 text-sm text-muted-foreground">
+                          <Clock className="w-4 h-4 inline mr-1" />
+                          {activity.time}
                         </div>
-                        {activity.description && (
-                          <p className="text-sm text-muted-foreground mt-2">{activity.description}</p>
-                        )}
+                        <div className="flex-1">
+                          <h4 className="font-semibold">{activity.name}</h4>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                            <MapPin className="w-3 h-3" />
+                            {activity.venue}
+                          </div>
+                          {activity.description && (
+                            <p className="text-sm text-muted-foreground mt-2">{activity.description}</p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -324,35 +263,44 @@ const Schedule = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-              {getFellowships().map((fellowship, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold text-lg mb-2">{fellowship.name}</h3>
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-primary" />
-                        {fellowship.area}
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading fellowships...</div>
+            ) : getFellowships().length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                <p>No home fellowships available yet.</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+                {getFellowships().map((fellowship, index) => (
+                  <Card key={index} className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <h3 className="font-semibold text-lg mb-2">{fellowship.name}</h3>
+                      <div className="space-y-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-primary" />
+                          {fellowship.area}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-primary" />
+                          {fellowship.day}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-primary" />
+                          {fellowship.time}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-primary" />
-                        {fellowship.day}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-primary" />
-                        {fellowship.time}
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm" className="w-full mt-4" asChild>
-                      <a href="https://wa.me/254115475543?text=I%20want%20to%20join%20home%20fellowship" target="_blank" rel="noopener noreferrer">
-                        Join Fellowship
-                        <ChevronRight className="w-4 h-4 ml-1" />
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      <Button variant="outline" size="sm" className="w-full mt-4" asChild>
+                        <a href={fellowship.contact_link || "https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29"} target="_blank" rel="noopener noreferrer">
+                          Join Fellowship
+                          <ChevronRight className="w-4 h-4 ml-1" />
+                        </a>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -403,6 +351,13 @@ const Schedule = () => {
             </div>
 
             <div className="max-w-3xl mx-auto">
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading FAQs...</div>
+            ) : getFaqs().length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No FAQs available yet.</p>
+              </div>
+            ) : (
               <Accordion type="single" collapsible className="space-y-2">
                 {getFaqs().map((faq, index) => (
                   <AccordionItem key={index} value={`item-${index}`} className="bg-card rounded-lg border px-4">
@@ -415,6 +370,7 @@ const Schedule = () => {
                   </AccordionItem>
                 ))}
               </Accordion>
+            )}
             </div>
           </div>
         </section>

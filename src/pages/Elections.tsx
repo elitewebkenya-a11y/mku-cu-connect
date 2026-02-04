@@ -41,6 +41,30 @@ const Elections = () => {
 
   useEffect(() => {
     fetchElections();
+    
+    // Subscribe to realtime vote updates
+    const channel = supabase
+      .channel('election-votes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'election_candidates' },
+        () => {
+          // Refresh candidates when votes change
+          fetchElections();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'election_votes' },
+        () => {
+          fetchElections();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchElections = async () => {
