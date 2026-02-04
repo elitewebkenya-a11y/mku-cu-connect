@@ -15,12 +15,6 @@ interface DailyScheduleItem {
   venue: string;
 }
 
-const todaySchedule = [
-  { name: "Morning Devotions", time: "5:00 AM - 6:00 AM", venue: "MLT Hall B / PEFA Church" },
-  { name: "Lunch Hour Service", time: "During lunch", venue: "PEFA Church" },
-  { name: "Bethel Prayers", time: "7:00 PM - 8:00 PM", venue: "MLT Hall B" },
-];
-
 const dayIcons: Record<string, React.ReactNode> = {
   Sunday: <Sun className="w-5 h-5" />,
   Monday: <Heart className="w-5 h-5" />,
@@ -59,13 +53,11 @@ export const SchedulePreview = () => {
     }
   };
 
-  const displaySchedule = schedule.length > 0 
-    ? schedule.map(s => ({
-        name: s.activity_name,
-        time: s.end_time ? `${s.start_time} - ${s.end_time}` : s.start_time,
-        venue: s.venue,
-      }))
-    : todaySchedule;
+  const displaySchedule = schedule.map(s => ({
+    name: s.activity_name,
+    time: s.end_time ? `${s.start_time} - ${s.end_time}` : s.start_time,
+    venue: s.venue,
+  }));
 
   return (
     <section className="py-12 md:py-16 bg-muted/30">
@@ -95,6 +87,12 @@ export const SchedulePreview = () => {
             <CardContent className="p-0">
               {loading ? (
                 <div className="p-6 text-center text-muted-foreground">Loading schedule...</div>
+              ) : displaySchedule.length === 0 ? (
+                <div className="p-6 text-center text-muted-foreground">
+                  <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p>No activities scheduled for today.</p>
+                  <p className="text-sm">Check the full schedule for other days.</p>
+                </div>
               ) : (
                 <div className="divide-y">
                   {displaySchedule.map((activity, index) => (

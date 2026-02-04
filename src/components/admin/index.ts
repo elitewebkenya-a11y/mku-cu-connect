@@ -11,3 +11,4 @@ export { DailyScheduleManager } from './DailyScheduleManager';
 export { HomeFellowshipsManager } from './HomeFellowshipsManager';
 export { FAQsManager } from './FAQsManager';
 export { ElectionsManager } from './ElectionsManager';
+export { NotificationsManager } from './NotificationsManager';

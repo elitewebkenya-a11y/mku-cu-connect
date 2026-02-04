@@ -1,18 +1,62 @@
 import { useState } from "react";
-import { Menu, X, Youtube, Phone, Mail, Facebook, Instagram, Twitter } from "lucide-react";
+import { Menu, X, Youtube, Phone, Mail, Facebook, Instagram, Twitter, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import logo from "@/assets/mku-cu-logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationBell } from "@/components/NotificationBell";
+import { useScrollHeader } from "@/hooks/useScrollHeader";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
+
+const navGroups = {
+  main: [
+    { to: "/", label: "Home" },
+    { to: "/about", label: "About" },
+  ],
+  connect: {
+    label: "Connect",
+    items: [
+      { to: "/schedule", label: "Schedule", desc: "Daily & weekly activities" },
+      { to: "/events", label: "Events", desc: "Upcoming gatherings" },
+      { to: "/contact", label: "Contact", desc: "Get in touch" },
+    ],
+  },
+  media: {
+    label: "Media",
+    items: [
+      { to: "/media", label: "Sermons", desc: "Watch sermons" },
+      { to: "/blog", label: "Blog", desc: "Faith stories" },
+      { to: "/gallery", label: "Gallery", desc: "Photos & videos" },
+    ],
+  },
+  engage: {
+    label: "Engage",
+    items: [
+      { to: "/elections", label: "Elections", desc: "Vote for leaders" },
+      { to: "/volunteer", label: "Volunteer", desc: "Serve with us" },
+    ],
+  },
+};
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isVisible, isAtTop } = useScrollHeader();
 
   return (
     <>
       {/* Top Bar */}
-      <div className="bg-primary text-primary-foreground py-2 hidden md:block">
+      <div className={cn(
+        "bg-primary text-primary-foreground py-2 hidden md:block transition-transform duration-300",
+        !isVisible && "-translate-y-full"
+      )}>
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center text-sm">
             <div className="flex items-center gap-6">
@@ -39,7 +83,11 @@ export const Header = () => {
       </div>
 
       {/* Main Header */}
-      <header className="bg-background shadow-md sticky top-0 z-50 border-b border-border">
+      <header className={cn(
+        "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-md fixed top-0 left-0 right-0 z-50 border-b border-border transition-all duration-300",
+        !isVisible && "-translate-y-full",
+        isVisible && !isAtTop && "shadow-lg"
+      )}>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-2">
             {/* Logo */}
@@ -59,18 +107,71 @@ export const Header = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-5">
-              <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors text-sm">Home</Link>
-              <Link to="/about" className="text-foreground hover:text-primary font-medium transition-colors text-sm">About</Link>
-              <Link to="/schedule" className="text-foreground hover:text-primary font-medium transition-colors text-sm">Schedule</Link>
-              <Link to="/events" className="text-foreground hover:text-primary font-medium transition-colors text-sm">Events</Link>
-              <Link to="/media" className="text-foreground hover:text-primary font-medium transition-colors text-sm">Media</Link>
-              <Link to="/blog" className="text-foreground hover:text-primary font-medium transition-colors text-sm">Blog</Link>
-              <Link to="/gallery" className="text-foreground hover:text-primary font-medium transition-colors text-sm">Gallery</Link>
-              <Link to="/elections" className="text-foreground hover:text-primary font-medium transition-colors text-sm">Elections</Link>
-              <Link to="/contact" className="text-foreground hover:text-primary font-medium transition-colors text-sm">Contact</Link>
-            </nav>
+            {/* Desktop Navigation with Dropdowns */}
+            <NavigationMenu className="hidden lg:flex">
+              <NavigationMenuList>
+                {navGroups.main.map(item => (
+                  <NavigationMenuItem key={item.to}>
+                    <Link to={item.to}>
+                      <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                        {item.label}
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                ))}
+                
+                {/* Connect Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Connect</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid gap-1 p-2 w-48">
+                      {navGroups.connect.items.map(item => (
+                        <li key={item.to}>
+                          <Link to={item.to} className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            <div className="text-sm font-medium">{item.label}</div>
+                            <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                {/* Media Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Media</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid gap-1 p-2 w-48">
+                      {navGroups.media.items.map(item => (
+                        <li key={item.to}>
+                          <Link to={item.to} className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            <div className="text-sm font-medium">{item.label}</div>
+                            <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                {/* Engage Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Engage</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid gap-1 p-2 w-48">
+                      {navGroups.engage.items.map(item => (
+                        <li key={item.to}>
+                          <Link to={item.to} className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            <div className="text-sm font-medium">{item.label}</div>
+                            <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
 
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center gap-2">
@@ -101,18 +202,28 @@ export const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t bg-background">
+          <div className="lg:hidden border-t bg-background max-h-[70vh] overflow-y-auto">
             <nav className="container mx-auto px-4 py-3 flex flex-col gap-1">
               <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Home</Link>
               <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">About</Link>
-              <Link to="/schedule" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Schedule</Link>
-              <Link to="/events" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Events</Link>
-              <Link to="/media" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Media</Link>
-              <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Blog</Link>
-              <Link to="/gallery" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Gallery</Link>
-              <Link to="/elections" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Elections</Link>
-              <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Contact</Link>
-              <Link to="/volunteer" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Volunteer</Link>
+              
+              {/* Connect Group */}
+              <div className="px-3 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Connect</div>
+              <Link to="/schedule" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Schedule</Link>
+              <Link to="/events" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Events</Link>
+              <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Contact</Link>
+              
+              {/* Media Group */}
+              <div className="px-3 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Media</div>
+              <Link to="/media" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Sermons</Link>
+              <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Blog</Link>
+              <Link to="/gallery" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Gallery</Link>
+              
+              {/* Engage Group */}
+              <div className="px-3 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Engage</div>
+              <Link to="/elections" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Elections</Link>
+              <Link to="/volunteer" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Volunteer</Link>
+              
               <div className="pt-3 mt-2 border-t flex gap-2">
                 <a href="https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29" target="_blank" rel="noopener noreferrer" className="flex-1">
                   <Button size="sm" className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">Join MKU CU</Button>
@@ -128,6 +239,9 @@ export const Header = () => {
           </div>
         )}
       </header>
+      
+      {/* Spacer for fixed header */}
+      <div className="h-14" />
     </>
   );
 };
