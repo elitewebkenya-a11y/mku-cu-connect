@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Menu, X, Youtube, Phone, Mail, Facebook, Instagram, Twitter, ChevronDown } from "lucide-react";
+import { Menu, X, Youtube, Phone, Mail, Facebook, Instagram, Twitter, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "@/assets/mku-cu-logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -15,17 +15,24 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const navGroups = {
   main: [
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
+    { to: "/visitors", label: "I'm New", highlight: true },
   ],
   connect: {
     label: "Connect",
     items: [
       { to: "/schedule", label: "Schedule", desc: "Daily & weekly activities" },
       { to: "/events", label: "Events", desc: "Upcoming gatherings" },
+      { to: "/ministries", label: "Ministries", desc: "Serve with your gifts" },
       { to: "/contact", label: "Contact", desc: "Get in touch" },
     ],
   },
@@ -48,14 +55,22 @@ const navGroups = {
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openMobileGroup, setOpenMobileGroup] = useState<string | null>(null);
   const { isVisible, isAtTop } = useScrollHeader();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const toggleMobileGroup = (group: string) => {
+    setOpenMobileGroup(openMobileGroup === group ? null : group);
+  };
 
   return (
     <>
-      {/* Top Bar */}
+      {/* Top Bar - Only on desktop */}
       <div className={cn(
-        "bg-primary text-primary-foreground py-2 hidden md:block transition-transform duration-300",
-        !isVisible && "-translate-y-full"
+        "bg-primary text-primary-foreground py-2 hidden lg:block transition-all duration-300",
+        !isVisible && "-translate-y-full opacity-0"
       )}>
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center text-sm">
@@ -84,24 +99,25 @@ export const Header = () => {
 
       {/* Main Header */}
       <header className={cn(
-        "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-md fixed top-0 left-0 right-0 z-50 border-b border-border transition-all duration-300",
+        "bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm fixed left-0 right-0 z-50 border-b border-border transition-all duration-300",
         !isVisible && "-translate-y-full",
-        isVisible && !isAtTop && "shadow-lg"
+        isVisible && !isAtTop && "shadow-lg",
+        isAtTop ? "top-0 lg:top-10" : "top-0"
       )}>
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-2">
+          <div className="flex items-center justify-between py-3">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link to="/" className="flex items-center gap-3 group">
               <img 
                 src={logo} 
                 alt="MKU CU Logo" 
-                className="w-10 h-10 object-contain transition-transform group-hover:scale-105"
+                className="w-10 h-10 md:w-12 md:h-12 object-contain transition-transform group-hover:scale-105"
               />
               <div>
-                <div className="font-serif font-bold text-base text-foreground group-hover:text-primary transition-colors">
+                <div className="font-serif font-bold text-base md:text-lg text-foreground group-hover:text-primary transition-colors">
                   MKU Christian Union
                 </div>
-                <div className="text-xs text-muted-foreground italic hidden md:block">
+                <div className="text-xs text-muted-foreground italic hidden sm:block">
                   Living the Knowledge of God
                 </div>
               </div>
@@ -109,11 +125,15 @@ export const Header = () => {
 
             {/* Desktop Navigation with Dropdowns */}
             <NavigationMenu className="hidden lg:flex">
-              <NavigationMenuList>
+              <NavigationMenuList className="gap-1">
                 {navGroups.main.map(item => (
                   <NavigationMenuItem key={item.to}>
                     <Link to={item.to}>
-                      <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                      <NavigationMenuLink className={cn(
+                        "group inline-flex h-10 w-max items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
+                        isActive(item.to) && "bg-accent text-accent-foreground",
+                        item.highlight && "bg-accent text-accent-foreground font-semibold"
+                      )}>
                         {item.label}
                       </NavigationMenuLink>
                     </Link>
@@ -122,14 +142,20 @@ export const Header = () => {
                 
                 {/* Connect Dropdown */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>Connect</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="h-10 px-4 py-2 rounded-lg">Connect</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid gap-1 p-2 w-48">
+                    <ul className="grid gap-1 p-3 w-56">
                       {navGroups.connect.items.map(item => (
                         <li key={item.to}>
-                          <Link to={item.to} className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                            <div className="text-sm font-medium">{item.label}</div>
-                            <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
+                          <Link 
+                            to={item.to} 
+                            className={cn(
+                              "block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                              isActive(item.to) && "bg-accent"
+                            )}
+                          >
+                            <div className="text-sm font-semibold mb-1">{item.label}</div>
+                            <p className="text-xs text-muted-foreground leading-snug">{item.desc}</p>
                           </Link>
                         </li>
                       ))}
@@ -139,14 +165,20 @@ export const Header = () => {
 
                 {/* Media Dropdown */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>Media</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="h-10 px-4 py-2 rounded-lg">Media</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid gap-1 p-2 w-48">
+                    <ul className="grid gap-1 p-3 w-56">
                       {navGroups.media.items.map(item => (
                         <li key={item.to}>
-                          <Link to={item.to} className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                            <div className="text-sm font-medium">{item.label}</div>
-                            <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
+                          <Link 
+                            to={item.to} 
+                            className={cn(
+                              "block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                              isActive(item.to) && "bg-accent"
+                            )}
+                          >
+                            <div className="text-sm font-semibold mb-1">{item.label}</div>
+                            <p className="text-xs text-muted-foreground leading-snug">{item.desc}</p>
                           </Link>
                         </li>
                       ))}
@@ -156,14 +188,20 @@ export const Header = () => {
 
                 {/* Engage Dropdown */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>Engage</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="h-10 px-4 py-2 rounded-lg">Engage</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid gap-1 p-2 w-48">
+                    <ul className="grid gap-1 p-3 w-56">
                       {navGroups.engage.items.map(item => (
                         <li key={item.to}>
-                          <Link to={item.to} className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                            <div className="text-sm font-medium">{item.label}</div>
-                            <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
+                          <Link 
+                            to={item.to} 
+                            className={cn(
+                              "block select-none rounded-lg p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                              isActive(item.to) && "bg-accent"
+                            )}
+                          >
+                            <div className="text-sm font-semibold mb-1">{item.label}</div>
+                            <p className="text-xs text-muted-foreground leading-snug">{item.desc}</p>
                           </Link>
                         </li>
                       ))}
@@ -178,9 +216,9 @@ export const Header = () => {
               <NotificationBell />
               <ThemeToggle />
               <a href="https://www.youtube.com/live/2nKqPUZFPCE" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm" className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                  <Youtube className="w-4 h-4 mr-1" />
-                  Live
+                <Button variant="outline" size="sm" className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground gap-2">
+                  <Youtube className="w-4 h-4" />
+                  Watch Live
                 </Button>
               </a>
             </div>
@@ -190,7 +228,7 @@ export const Header = () => {
               <NotificationBell />
               <ThemeToggle />
               <button
-                className="p-2"
+                className="p-2 rounded-lg hover:bg-accent transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -202,36 +240,122 @@ export const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t bg-background max-h-[70vh] overflow-y-auto">
-            <nav className="container mx-auto px-4 py-3 flex flex-col gap-1">
-              <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">Home</Link>
-              <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-3 px-3 rounded-lg">About</Link>
+          <div className="lg:hidden border-t bg-background/98 backdrop-blur-md max-h-[80vh] overflow-y-auto animate-in slide-in-from-top-2 duration-200">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
+              {/* Main Links */}
+              <Link 
+                to="/" 
+                onClick={() => setIsMenuOpen(false)} 
+                className={cn(
+                  "flex items-center justify-between py-3 px-4 rounded-xl font-medium transition-colors",
+                  isActive("/") ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+                )}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/about" 
+                onClick={() => setIsMenuOpen(false)} 
+                className={cn(
+                  "flex items-center justify-between py-3 px-4 rounded-xl font-medium transition-colors",
+                  isActive("/about") ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+                )}
+              >
+                About
+              </Link>
+              <Link 
+                to="/visitors" 
+                onClick={() => setIsMenuOpen(false)} 
+                className="flex items-center justify-between py-3 px-4 rounded-xl font-medium bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
+              >
+                I'm New Here
+                <ChevronRight className="w-4 h-4" />
+              </Link>
               
               {/* Connect Group */}
-              <div className="px-3 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Connect</div>
-              <Link to="/schedule" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Schedule</Link>
-              <Link to="/events" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Events</Link>
-              <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Contact</Link>
+              <Collapsible open={openMobileGroup === 'connect'} onOpenChange={() => toggleMobileGroup('connect')}>
+                <CollapsibleTrigger className="flex items-center justify-between w-full py-3 px-4 rounded-xl font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+                  <span>Connect</span>
+                  <ChevronDown className={cn("w-4 h-4 transition-transform", openMobileGroup === 'connect' && "rotate-180")} />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="ml-4 mt-1 space-y-1 animate-in slide-in-from-top-1">
+                  {navGroups.connect.items.map(item => (
+                    <Link 
+                      key={item.to}
+                      to={item.to} 
+                      onClick={() => setIsMenuOpen(false)} 
+                      className={cn(
+                        "flex flex-col py-3 px-4 rounded-xl transition-colors",
+                        isActive(item.to) ? "bg-primary/10 text-primary" : "hover:bg-accent"
+                      )}
+                    >
+                      <span className="font-medium">{item.label}</span>
+                      <span className="text-xs text-muted-foreground">{item.desc}</span>
+                    </Link>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
               
               {/* Media Group */}
-              <div className="px-3 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Media</div>
-              <Link to="/media" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Sermons</Link>
-              <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Blog</Link>
-              <Link to="/gallery" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Gallery</Link>
+              <Collapsible open={openMobileGroup === 'media'} onOpenChange={() => toggleMobileGroup('media')}>
+                <CollapsibleTrigger className="flex items-center justify-between w-full py-3 px-4 rounded-xl font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+                  <span>Media</span>
+                  <ChevronDown className={cn("w-4 h-4 transition-transform", openMobileGroup === 'media' && "rotate-180")} />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="ml-4 mt-1 space-y-1 animate-in slide-in-from-top-1">
+                  {navGroups.media.items.map(item => (
+                    <Link 
+                      key={item.to}
+                      to={item.to} 
+                      onClick={() => setIsMenuOpen(false)} 
+                      className={cn(
+                        "flex flex-col py-3 px-4 rounded-xl transition-colors",
+                        isActive(item.to) ? "bg-primary/10 text-primary" : "hover:bg-accent"
+                      )}
+                    >
+                      <span className="font-medium">{item.label}</span>
+                      <span className="text-xs text-muted-foreground">{item.desc}</span>
+                    </Link>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
               
               {/* Engage Group */}
-              <div className="px-3 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Engage</div>
-              <Link to="/elections" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Elections</Link>
-              <Link to="/volunteer" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary hover:bg-muted font-medium transition-colors py-2.5 px-3 rounded-lg ml-2">Volunteer</Link>
+              <Collapsible open={openMobileGroup === 'engage'} onOpenChange={() => toggleMobileGroup('engage')}>
+                <CollapsibleTrigger className="flex items-center justify-between w-full py-3 px-4 rounded-xl font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+                  <span>Engage</span>
+                  <ChevronDown className={cn("w-4 h-4 transition-transform", openMobileGroup === 'engage' && "rotate-180")} />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="ml-4 mt-1 space-y-1 animate-in slide-in-from-top-1">
+                  {navGroups.engage.items.map(item => (
+                    <Link 
+                      key={item.to}
+                      to={item.to} 
+                      onClick={() => setIsMenuOpen(false)} 
+                      className={cn(
+                        "flex flex-col py-3 px-4 rounded-xl transition-colors",
+                        isActive(item.to) ? "bg-primary/10 text-primary" : "hover:bg-accent"
+                      )}
+                    >
+                      <span className="font-medium">{item.label}</span>
+                      <span className="text-xs text-muted-foreground">{item.desc}</span>
+                    </Link>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
               
-              <div className="pt-3 mt-2 border-t flex gap-2">
-                <a href="https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29" target="_blank" rel="noopener noreferrer" className="flex-1">
-                  <Button size="sm" className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">Join MKU CU</Button>
+              {/* Bottom Actions */}
+              <div className="pt-4 mt-4 border-t space-y-3">
+                <a href="https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29" target="_blank" rel="noopener noreferrer" className="block">
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-2">
+                    Join MKU CU Community
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
                 </a>
-                <a href="https://www.youtube.com/live/2nKqPUZFPCE" target="_blank" rel="noopener noreferrer" className="flex-1">
-                  <Button size="sm" variant="outline" className="w-full">
-                    <Youtube className="w-4 h-4 mr-1" />
-                    Live
+                <a href="https://www.youtube.com/live/2nKqPUZFPCE" target="_blank" rel="noopener noreferrer" className="block">
+                  <Button variant="outline" className="w-full gap-2">
+                    <Youtube className="w-4 h-4" />
+                    Watch Live Service
                   </Button>
                 </a>
               </div>
@@ -241,7 +365,7 @@ export const Header = () => {
       </header>
       
       {/* Spacer for fixed header */}
-      <div className="h-14" />
+      <div className={cn("transition-all duration-300", isAtTop ? "h-14 lg:h-24" : "h-14")} />
     </>
   );
 };

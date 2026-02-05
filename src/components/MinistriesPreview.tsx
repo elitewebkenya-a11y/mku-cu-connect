@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 interface Ministry {
   id: string;
@@ -130,11 +130,11 @@ export const MinistriesPreview = () => {
           </div>
 
           <div className="text-center">
-            <a href="https://wa.me/254115475543?text=Hi%2C%20I%20want%20to%20learn%20more%20about%20ministries" target="_blank" rel="noopener noreferrer">
+            <Link to="/ministries">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 Explore All Ministries
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -191,11 +191,11 @@ export const MinistriesPreview = () => {
         </div>
 
         <div className="text-center">
-          <a href="https://wa.me/254115475543?text=Hi%2C%20I%20want%20to%20learn%20more%20about%20ministries" target="_blank" rel="noopener noreferrer">
+          <Link to="/ministries">
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
               Explore All Ministries
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
     </section>
