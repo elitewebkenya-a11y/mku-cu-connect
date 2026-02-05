@@ -69,27 +69,38 @@ export const NotificationBell = () => {
   };
 
   const markAsRead = async (id: string) => {
+    // Optimistically update UI first
+    setNotifications(prev =>
+      prev.map(n => n.id === id ? { ...n, is_read: true } : n)
+    );
+    setUnreadCount(prev => Math.max(0, prev - 1));
+    
     try {
-      await supabase
+      const { error } = await supabase
         .from("notifications")
         .update({ is_read: true })
         .eq("id", id);
       
-      setNotifications(prev =>
-        prev.map(n => n.id === id ? { ...n, is_read: true } : n)
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      if (error) throw error;
     } catch (error) {
       console.error("Error marking notification as read:", error);
+      // Revert on error
+      fetchNotifications();
     }
   };
 
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = (notification: Notification, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!notification.is_read) {
       markAsRead(notification.id);
     }
+    
     if (notification.link) {
-      window.location.href = notification.link;
+      // Use React Router navigation instead of page reload
+      window.history.pushState({}, '', notification.link);
+      window.dispatchEvent(new PopStateEvent('popstate'));
     }
     setIsOpen(false);
   };
@@ -128,7 +139,7 @@ export const NotificationBell = () => {
             notifications.map((notification) => (
               <button
                 key={notification.id}
-                onClick={() => handleNotificationClick(notification)}
+                onClick={(e) => handleNotificationClick(notification, e)}
                 className={`w-full p-3 text-left hover:bg-muted/50 transition-colors border-b border-border last:border-b-0 ${
                   !notification.is_read ? "bg-primary/5" : ""
                 }`}
