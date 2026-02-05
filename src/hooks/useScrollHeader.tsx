@@ -12,10 +12,10 @@ export const useScrollHeader = () => {
       // Check if at top
       setIsAtTop(currentScrollY < 10);
       
-      // Show header when scrolling up, hide when scrolling down
-      if (currentScrollY < lastScrollY || currentScrollY < 50) {
+      // Always show header when scrolling up, hide when scrolling down past threshold
+      if (currentScrollY < lastScrollY || currentScrollY < 100) {
         setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      } else if (currentScrollY > lastScrollY && currentScrollY > 200) {
         setIsVisible(false);
       }
       
@@ -26,5 +26,6 @@ export const useScrollHeader = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  return { isVisible, isAtTop };
+  // Always return visible as true for a constant header
+  return { isVisible: true, isAtTop };
 };
