@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface Notification {
   id: string;
@@ -19,10 +20,37 @@ interface Notification {
   created_at: string;
 }
 
+const DISMISSED_KEY = "mkucu_dismissed_notifications";
+
+// Get dismissed notification IDs from localStorage
+const getDismissedIds = (): Set<string> => {
+  try {
+    const stored = localStorage.getItem(DISMISSED_KEY);
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  } catch {
+    return new Set();
+  }
+};
+
+// Save dismissed notification IDs to localStorage
+const saveDismissedIds = (ids: Set<string>) => {
+  try {
+    localStorage.setItem(DISMISSED_KEY, JSON.stringify([...ids]));
+  } catch {
+    // localStorage not available
+  }
+};
+
 export const NotificationBell = () => {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
   const [isOpen, setIsOpen] = useState(false);
+
+  // Load dismissed IDs from localStorage on mount
+  useEffect(() => {
+    setDismissedIds(getDismissedIds());
+  }, []);
 
   useEffect(() => {
     fetchNotifications();
@@ -40,7 +68,6 @@ export const NotificationBell = () => {
         (payload) => {
           const newNotification = payload.new as Notification;
           setNotifications(prev => [newNotification, ...prev.slice(0, 9)]);
-          setUnreadCount(prev => prev + 1);
         }
       )
       .subscribe();
@@ -59,51 +86,47 @@ export const NotificationBell = () => {
         .limit(10);
 
       if (error) throw error;
-      
-      const notifs = (data as Notification[]) || [];
-      setNotifications(notifs);
-      setUnreadCount(notifs.filter(n => !n.is_read).length);
+      setNotifications((data as Notification[]) || []);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
   };
 
-  const markAsRead = async (id: string) => {
-    // Optimistically update UI first
-    setNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, is_read: true } : n)
-    );
-    setUnreadCount(prev => Math.max(0, prev - 1));
-    
-    try {
-      const { error } = await supabase
-        .from("notifications")
-        .update({ is_read: true })
-        .eq("id", id);
-      
-      if (error) throw error;
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-      // Revert on error
-      fetchNotifications();
-    }
-  };
+  // Filter out dismissed notifications for display
+  const visibleNotifications = notifications.filter(n => !dismissedIds.has(n.id));
+  const unreadCount = visibleNotifications.length;
 
-  const handleNotificationClick = (notification: Notification, e: React.MouseEvent) => {
+  const dismissNotification = useCallback((id: string) => {
+    setDismissedIds(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      saveDismissedIds(next);
+      return next;
+    });
+  }, []);
+
+  const handleNotificationClick = useCallback((notification: Notification, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (!notification.is_read) {
-      markAsRead(notification.id);
-    }
+    // Dismiss this notification for this device
+    dismissNotification(notification.id);
     
+    // Navigate without page refresh
     if (notification.link) {
-      // Use React Router navigation instead of page reload
-      window.history.pushState({}, '', notification.link);
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      navigate(notification.link);
     }
     setIsOpen(false);
-  };
+  }, [dismissNotification, navigate]);
+
+  const dismissAll = useCallback(() => {
+    const allIds = new Set(notifications.map(n => n.id));
+    setDismissedIds(prev => {
+      const next = new Set([...prev, ...allIds]);
+      saveDismissedIds(next);
+      return next;
+    });
+  }, [notifications]);
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -131,23 +154,21 @@ export const NotificationBell = () => {
           <h4 className="font-semibold text-foreground">Notifications</h4>
         </div>
         <div className="max-h-80 overflow-y-auto">
-          {notifications.length === 0 ? (
+          {visibleNotifications.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground text-sm">
-              No notifications yet
+              No new notifications
             </div>
           ) : (
-            notifications.map((notification) => (
+            visibleNotifications.map((notification) => (
               <button
                 key={notification.id}
                 onClick={(e) => handleNotificationClick(notification, e)}
-                className={`w-full p-3 text-left hover:bg-muted/50 transition-colors border-b border-border last:border-b-0 ${
-                  !notification.is_read ? "bg-primary/5" : ""
-                }`}
+                className="w-full p-3 text-left hover:bg-muted/50 transition-colors border-b border-border last:border-b-0 bg-primary/5"
               >
                 <div className="flex gap-3">
                   <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getTypeColor(notification.type)}`} />
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium line-clamp-1 ${!notification.is_read ? "text-foreground" : "text-muted-foreground"}`}>
+                    <p className="text-sm font-medium line-clamp-1 text-foreground">
                       {notification.title}
                     </p>
                     <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
@@ -162,19 +183,15 @@ export const NotificationBell = () => {
             ))
           )}
         </div>
-        {notifications.length > 0 && (
+        {visibleNotifications.length > 0 && (
           <div className="p-2 border-t border-border">
             <Button 
               variant="ghost" 
               size="sm" 
               className="w-full text-xs"
-              onClick={() => {
-                notifications.forEach(n => {
-                  if (!n.is_read) markAsRead(n.id);
-                });
-              }}
+              onClick={dismissAll}
             >
-              Mark all as read
+              Dismiss all
             </Button>
           </div>
         )}

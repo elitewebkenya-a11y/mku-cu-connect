@@ -3,11 +3,12 @@ import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowRight, Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AnimatedSection } from "@/components/AnimatedSection";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Event {
   id: string;
@@ -49,8 +50,29 @@ const Events = () => {
     }
   };
 
+  // Dynamic SEO for the events page
+  useSEO({
+    title: "Upcoming Events",
+    description: "Join MKU Christian Union for life-changing gatherings, worship services, and fellowship opportunities.",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+    type: "website",
+  });
+
   const upcomingEvents = events.filter((e) => e.event_date >= today);
   const pastEvents = events.filter((e) => e.event_date < today).reverse();
+
+  // Helper to share an event
+  const shareEvent = (event: Event) => {
+    const url = `${window.location.origin}/events#${event.id}`;
+    const text = `${event.title} - ${new Date(event.event_date).toLocaleDateString()} at ${event.location}`;
+    
+    if (navigator.share) {
+      navigator.share({ title: event.title, text, url });
+    } else {
+      navigator.clipboard.writeText(url);
+      toast.success("Event link copied!");
+    }
+  };
 
   if (loading) {
     return (
@@ -129,11 +151,23 @@ const Events = () => {
                               <span>{event.location}</span>
                             </div>
                           </div>
-                          <a href={event.registration_link || "#"} target="_blank" rel="noopener noreferrer">
-                            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                              Register Now <ArrowRight className="w-4 h-4 ml-2" />
+                          <div className="flex gap-2">
+                            {event.registration_link && (
+                              <a href={event.registration_link} target="_blank" rel="noopener noreferrer" className="flex-1">
+                                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                                  Register <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                              </a>
+                            )}
+                            <Button 
+                              variant="outline" 
+                              size="icon"
+                              onClick={() => shareEvent(event)}
+                              title="Share Event"
+                            >
+                              <Share2 className="w-4 h-4" />
                             </Button>
-                          </a>
+                          </div>
                         </div>
                       </Card>
                     ))}
