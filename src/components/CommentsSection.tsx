@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,16 +26,18 @@ interface CommentsSectionProps {
 
 const MAX_REPLIES = 7;
 
-export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
+export const CommentsSection = memo(({ postSlug }: CommentsSectionProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [newComment, setNewComment] = useState("");
-  const [authorName, setAuthorName] = useState("");
-  const [authorEmail, setAuthorEmail] = useState("");
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [expandedThreads, setExpandedThreads] = useState<Set<string>>(new Set());
+
+  // Use refs for form values to prevent re-renders while typing
+  const authorNameRef = useRef("");
+  const authorEmailRef = useRef("");
+  const commentContentRef = useRef("");
 
   useEffect(() => {
     fetchComments();
@@ -58,10 +60,14 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent, parentId?: string) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent, parentId?: string) => {
     e.preventDefault();
 
-    if (!authorName.trim() || !newComment.trim()) {
+    const authorName = authorNameRef.current.trim();
+    const authorEmail = authorEmailRef.current.trim();
+    const content = commentContentRef.current.trim();
+
+    if (!authorName || !content) {
       toast.error("Please fill in your name and comment");
       return;
     }
@@ -71,9 +77,9 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
     try {
       const { error } = await supabase.from("comments").insert({
         post_slug: postSlug,
-        author_name: authorName.trim(),
-        author_email: authorEmail.trim() || null,
-        content: newComment.trim(),
+        author_name: authorName,
+        author_email: authorEmail || null,
+        content: content,
         parent_id: parentId || null,
       });
 
@@ -97,9 +103,12 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
       }
 
       toast.success("Comment posted successfully!", { duration: 3000 });
-      setNewComment("");
-      setAuthorName("");
-      setAuthorEmail("");
+      
+      // Reset refs
+      authorNameRef.current = "";
+      authorEmailRef.current = "";
+      commentContentRef.current = "";
+      
       setShowCommentForm(false);
       setReplyingTo(null);
       fetchComments();
@@ -109,9 +118,9 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [postSlug, comments]);
 
-  const toggleThread = (commentId: string) => {
+  const toggleThread = useCallback((commentId: string) => {
     setExpandedThreads(prev => {
       const next = new Set(prev);
       if (next.has(commentId)) {
@@ -121,88 +130,106 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
       }
       return next;
     });
-  };
+  }, []);
 
   // Get top-level comments (no parent)
   const topLevelComments = comments.filter(c => !c.parent_id);
   
   // Get replies for a specific comment
-  const getReplies = (parentId: string) => comments.filter(c => c.parent_id === parentId);
+  const getReplies = useCallback((parentId: string) => comments.filter(c => c.parent_id === parentId), [comments]);
 
-  const CommentForm = ({ parentId, onCancel }: { parentId?: string; onCancel?: () => void }) => (
-    <Card className="p-4 md:p-5 mb-4 bg-muted/50 border-border">
-      <form onSubmit={(e) => handleSubmit(e, parentId)} className="space-y-4">
-        <div className="grid sm:grid-cols-2 gap-3">
+  // Uncontrolled form component to prevent keyboard issues on mobile
+  const CommentForm = memo(({ parentId, onCancel }: { parentId?: string; onCancel?: () => void }) => {
+    const nameInputRef = useRef<HTMLInputElement>(null);
+    const emailInputRef = useRef<HTMLInputElement>(null);
+    const contentInputRef = useRef<HTMLTextAreaElement>(null);
+
+    const onSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      // Sync refs before submit
+      authorNameRef.current = nameInputRef.current?.value || "";
+      authorEmailRef.current = emailInputRef.current?.value || "";
+      commentContentRef.current = contentInputRef.current?.value || "";
+      handleSubmit(e, parentId);
+    };
+
+    return (
+      <Card className="p-4 md:p-5 mb-4 bg-muted/50 border-border">
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium mb-1.5 text-foreground">Name *</label>
+              <Input
+                ref={nameInputRef}
+                placeholder="Your name"
+                defaultValue=""
+                className="bg-background border-border"
+                required
+                autoComplete="name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5 text-foreground">Email (optional)</label>
+              <Input
+                ref={emailInputRef}
+                type="email"
+                placeholder="Your email"
+                defaultValue=""
+                className="bg-background border-border"
+                autoComplete="email"
+              />
+            </div>
+          </div>
           <div>
-            <label className="block text-sm font-medium mb-1.5 text-foreground">Name *</label>
-            <Input
-              placeholder="Your name"
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              className="bg-background border-border"
+            <label className="block text-sm font-medium mb-1.5 text-foreground">
+              {parentId ? "Your Reply *" : "Comment *"}
+            </label>
+            <Textarea
+              ref={contentInputRef}
+              placeholder={parentId ? "Write your reply..." : "Share your thoughts..."}
+              defaultValue=""
+              rows={3}
+              className="bg-background border-border resize-none"
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1.5 text-foreground">Email (optional)</label>
-            <Input
-              type="email"
-              placeholder="Your email"
-              value={authorEmail}
-              onChange={(e) => setAuthorEmail(e.target.value)}
-              className="bg-background border-border"
-            />
-          </div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1.5 text-foreground">
-            {parentId ? "Your Reply *" : "Comment *"}
-          </label>
-          <Textarea
-            placeholder={parentId ? "Write your reply..." : "Share your thoughts..."}
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            rows={3}
-            className="bg-background border-border resize-none"
-            required
-          />
-        </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            size="sm"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                Posting...
-              </>
-            ) : (
-              <>
-                <Send className="w-4 h-4 mr-1.5" />
-                {parentId ? "Post Reply" : "Post Comment"}
-              </>
-            )}
-          </Button>
-
-          {onCancel && (
+          <div className="flex flex-wrap gap-2">
             <Button
-              type="button"
-              variant="outline"
+              type="submit"
+              disabled={isSubmitting}
               size="sm"
-              onClick={onCancel}
-              className="border-border"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              Cancel
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                  Posting...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-1.5" />
+                  {parentId ? "Post Reply" : "Post Comment"}
+                </>
+              )}
             </Button>
-          )}
-        </div>
-      </form>
-    </Card>
-  );
+
+            {onCancel && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onCancel}
+                className="border-border"
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
+        </form>
+      </Card>
+    );
+  });
 
   const CommentCard = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => {
     const replies = getReplies(comment.id);
@@ -331,4 +358,6 @@ export const CommentsSection = ({ postSlug }: CommentsSectionProps) => {
       )}
     </div>
   );
-};
+});
+
+CommentsSection.displayName = "CommentsSection";

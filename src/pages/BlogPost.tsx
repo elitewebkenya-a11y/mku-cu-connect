@@ -10,6 +10,7 @@ import { Calendar, Clock, Facebook, Twitter, Link2, ArrowRight, Loader2, Chevron
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { useSEO } from "@/hooks/useSEO";
 
 interface BlogPost {
   id: string;
@@ -66,6 +67,15 @@ const BlogPost = () => {
       setLoading(false);
     }
   };
+
+  // Dynamic SEO meta tags for sharing
+  useSEO({
+    title: post?.title || "Faith Story",
+    description: post?.excerpt || post?.content?.slice(0, 160) || "Read inspiring faith stories from MKU Christian Union",
+    image: post?.featured_image || "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1200&q=80",
+    url: typeof window !== 'undefined' ? window.location.href : undefined,
+    type: "article",
+  });
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
