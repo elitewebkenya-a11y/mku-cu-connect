@@ -124,63 +124,79 @@ const Admin = () => {
   const currentMenuItem = menuItems.find(item => item.id === activeTab);
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-50 bg-card border-b border-border shadow-sm">
-        <div className="flex items-center justify-between px-3 py-2">
+    <div className="min-h-screen bg-muted/30 touch-manipulation">
+      {/* Mobile Header - App-like */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm safe-area-top">
+        <div className="flex items-center justify-between px-4 h-14">
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="h-9 w-9 p-0"
+            className="h-10 w-10 rounded-xl active:scale-95 transition-transform"
           >
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
           <div className="flex items-center gap-2">
-            <LayoutDashboard className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-sm text-foreground">Admin</span>
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <LayoutDashboard className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="font-bold text-foreground">MKU CU Admin</span>
           </div>
-          <Button onClick={() => navigate("/")} variant="ghost" size="sm" className="h-9 w-9 p-0">
-            <Home className="w-4 h-4" />
+          <Button 
+            onClick={() => navigate("/")} 
+            variant="ghost" 
+            size="icon" 
+            className="h-10 w-10 rounded-xl active:scale-95 transition-transform"
+          >
+            <Home className="w-5 h-5" />
           </Button>
         </div>
-        {/* Current section indicator on mobile */}
-        <div className="px-3 pb-2 flex items-center gap-2 text-xs text-muted-foreground">
-          <ChevronRight className="w-3 h-3" />
-          <span className="font-medium text-foreground">{currentMenuItem?.label}</span>
+        {/* Current section indicator */}
+        <div className="px-4 pb-3 flex items-center gap-2 border-t border-border/50 pt-2 bg-muted/30">
+          {currentMenuItem && (
+            <>
+              <currentMenuItem.icon className="w-4 h-4 text-primary" />
+              <span className="font-semibold text-sm text-foreground">{currentMenuItem.label}</span>
+            </>
+          )}
         </div>
       </header>
 
-      <div className="flex">
-        {/* Sidebar */}
+      <div className="flex lg:pt-0 pt-[104px]">
+        {/* Sidebar - App-like on mobile */}
         <aside
           className={cn(
             "fixed lg:sticky top-0 left-0 z-40 h-screen bg-card border-r border-border transition-transform duration-300 ease-in-out lg:translate-x-0",
-            "w-56 lg:w-52",
+            "w-72 lg:w-56",
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
           {/* Desktop Header */}
-          <div className="hidden lg:flex items-center gap-2 p-4 border-b border-border">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <LayoutDashboard className="h-4 w-4 text-primary-foreground" />
+          <div className="hidden lg:flex items-center gap-3 p-4 border-b border-border">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+              <LayoutDashboard className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-bold text-sm text-foreground">MKU CU</h1>
+              <h1 className="font-bold text-foreground">MKU CU</h1>
               <p className="text-xs text-muted-foreground">Admin Panel</p>
             </div>
           </div>
 
           {/* Mobile Header in Sidebar */}
-          <div className="lg:hidden flex items-center justify-between p-3 border-b border-border">
-            <span className="font-semibold text-sm">Menu</span>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSidebarOpen(false)}>
-              <X className="h-4 w-4" />
+          <div className="lg:hidden flex items-center justify-between p-4 border-b border-border safe-area-top pt-6">
+            <span className="font-bold text-lg">Menu</span>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-10 w-10 rounded-xl active:scale-95 transition-transform" 
+              onClick={() => setSidebarOpen(false)}
+            >
+              <X className="h-5 w-5" />
             </Button>
           </div>
 
-          <ScrollArea className="h-[calc(100vh-130px)] lg:h-[calc(100vh-120px)]">
-            <nav className="p-2 space-y-0.5">
+          <ScrollArea className="h-[calc(100vh-180px)] lg:h-[calc(100vh-140px)]">
+            <nav className="p-3 space-y-1">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -191,14 +207,17 @@ const Admin = () => {
                       setSidebarOpen(false);
                     }}
                     className={cn(
-                      "w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                      "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]",
                       activeTab === item.id
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted/80"
                     )}
                   >
-                    <Icon className="h-4 w-4 flex-shrink-0" />
-                    <span className="truncate">{item.label}</span>
+                    <Icon className="h-5 w-5 flex-shrink-0" />
+                    <span>{item.label}</span>
+                    {activeTab === item.id && (
+                      <ChevronRight className="h-4 w-4 ml-auto" />
+                    )}
                   </button>
                 );
               })}
@@ -206,14 +225,13 @@ const Admin = () => {
           </ScrollArea>
 
           {/* Sidebar Footer */}
-          <div className="absolute bottom-0 left-0 right-0 p-2 border-t border-border bg-card">
+          <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border bg-card safe-area-bottom">
             <Button
               onClick={() => navigate("/")}
               variant="outline"
-              size="sm"
-              className="w-full justify-start gap-2 text-xs"
+              className="w-full justify-center gap-2 h-12 rounded-xl text-sm font-medium"
             >
-              <Home className="h-3 w-3" />
+              <Home className="h-4 w-4" />
               Back to Site
             </Button>
           </div>
@@ -222,7 +240,7 @@ const Admin = () => {
         {/* Mobile Overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            className="fixed inset-0 bg-black/60 z-30 lg:hidden backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -231,18 +249,16 @@ const Admin = () => {
         <main className="flex-1 min-h-screen w-full">
           {/* Desktop Page Header */}
           <div className="hidden lg:block sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-            <div className="px-4 py-3">
-              <div className="flex items-center gap-2">
+            <div className="px-6 py-4">
+              <div className="flex items-center gap-3">
                 {currentMenuItem && (
                   <>
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <currentMenuItem.icon className="h-4 w-4 text-primary" />
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <currentMenuItem.icon className="h-5 w-5 text-primary" />
                     </div>
-                    <div>
-                      <h2 className="text-lg font-bold text-foreground">
-                        {currentMenuItem.label}
-                      </h2>
-                    </div>
+                    <h2 className="text-xl font-bold text-foreground">
+                      {currentMenuItem.label}
+                    </h2>
                   </>
                 )}
               </div>
@@ -250,7 +266,7 @@ const Admin = () => {
           </div>
 
           {/* Content Area - Mobile optimized padding */}
-          <div className="p-3 lg:p-4">
+          <div className="p-4 lg:p-6">
             {renderContent()}
           </div>
         </main>

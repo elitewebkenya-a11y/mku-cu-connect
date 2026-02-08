@@ -46,9 +46,14 @@ export const SermonsManager = () => {
   };
 
   const extractYouTubeId = (url: string): string => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    // Handles multiple URL formats:
+    // - https://www.youtube.com/watch?v=VIDEO_ID
+    // - https://youtu.be/VIDEO_ID
+    // - https://www.youtube.com/embed/VIDEO_ID
+    // - https://www.youtube.com/live/VIDEO_ID?si=...
+    const regExp = /^.*(youtu\.be\/|youtube\.com\/(watch\?v=|embed\/|live\/|v\/|u\/\w\/|shorts\/))([^#&?]*).*/;
     const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : "";
+    return match && match[3]?.length === 11 ? match[3] : "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
