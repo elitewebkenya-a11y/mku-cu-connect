@@ -83,11 +83,90 @@ const socialLinks = [
 
 export const ConnectWithUs = () => {
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [distance, setDistance] = useState<string | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  
   const mapLink = "https://maps.app.goo.gl/Ci8S9Nhb25FSCrgX8";
+  
+  // MKU Thika coordinates (approximate - you can adjust these)
+  const churchLocation = { lat: -1.0333, lng: 37.0833 };
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in km
+    return distance;
+  };
+
+  const deg2rad = (deg: number) => {
+    return deg * (Math.PI / 180);
+  };
+
+  const formatDistance = (km: number) => {
+    if (km < 1) {
+      return `${Math.round(km * 1000)} meters away`;
+    } else {
+      return `${km.toFixed(1)} km away`;
+    }
+  };
+
+  const getUserLocation = () => {
+    setIsLoadingLocation(true);
+    setLocationError(null);
+
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      setIsLoadingLocation(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+        setUserLocation({ lat: userLat, lng: userLng });
+        
+        const dist = calculateDistance(
+          userLat,
+          userLng,
+          churchLocation.lat,
+          churchLocation.lng
+        );
+        setDistance(formatDistance(dist));
+        setIsLoadingLocation(false);
+      },
+      (error) => {
+        setIsLoadingLocation(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError("Location access denied. Please enable location permissions.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError("Location information unavailable.");
+            break;
+          case error.TIMEOUT:
+            setLocationError("Location request timed out.");
+            break;
+          default:
+            setLocationError("An error occurred while getting your location.");
+        }
+      }
+    );
+  };
 
   const handleContactClick = (method: typeof contactMethods[0]) => {
     if (method.type === "location") {
       setShowLocationModal(true);
+      // Request location when modal opens
+      getUserLocation();
     } else {
       window.open(method.link, "_blank");
     }
@@ -171,6 +250,75 @@ export const ConnectWithUs = () => {
           </DialogHeader>
           
           <div className="space-y-4">
+            {/* Location Permission Banner */}
+            {!userLocation && !locationError && (
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Navigation className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-sm text-foreground mb-1">
+                      {isLoadingLocation ? "Getting your location..." : "Enable Location Access"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {isLoadingLocation 
+                        ? "Please wait while we get your current location" 
+                        : "We'll show you the distance from your current location"}
+                    </p>
+                    {!isLoadingLocation && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-3 bg-blue-500 text-white hover:bg-blue-600 border-0"
+                        onClick={getUserLocation}
+                      >
+                        <Navigation className="w-3 h-3 mr-2" />
+                        Allow Location Access
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Location Error */}
+            {locationError && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-sm text-foreground mb-1">Location Access Denied</p>
+                    <p className="text-xs text-muted-foreground">{locationError}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-3"
+                      onClick={getUserLocation}
+                    >
+                      Try Again
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Distance Display */}
+            {userLocation && distance && (
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Navigation className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-foreground mb-1">Your Location Detected</p>
+                    <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                      {distance}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      from Mount Kenya University CU
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Map Preview */}
             <div className="relative w-full h-48 bg-muted rounded-lg overflow-hidden border border-border">
               <iframe
@@ -207,7 +355,6 @@ export const ConnectWithUs = () => {
                 className="w-full"
                 onClick={() => {
                   window.open(mapLink, "_blank");
-                  setShowLocationModal(false);
                 }}
               >
                 <Map className="w-4 h-4 mr-2" />
@@ -216,8 +363,12 @@ export const ConnectWithUs = () => {
               <Button
                 className="w-full bg-primary hover:bg-primary/90"
                 onClick={() => {
-                  window.open(mapLink, "_blank");
-                  setShowLocationModal(false);
+                  // Create directions URL with user's location if available
+                  let directionsUrl = mapLink;
+                  if (userLocation) {
+                    directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${churchLocation.lat},${churchLocation.lng}`;
+                  }
+                  window.open(directionsUrl, "_blank");
                 }}
               >
                 <Navigation className="w-4 h-4 mr-2" />
