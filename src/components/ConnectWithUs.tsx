@@ -140,7 +140,7 @@ export const ConnectWithUs = () => {
             <p className="text-muted-foreground mb-4">Follow us on social media</p>
             <div className="flex justify-center gap-4">
               {socialLinks.map((social, index) => (
-                
+                <a
                   key={index}
                   href={social.link}
                   target="_blank"
