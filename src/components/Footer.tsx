@@ -5,32 +5,34 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
 export const Footer = () => {
   const [email, setEmail] = useState("");
   const [isSubscribing, setIsSubscribing] = useState(false);
-
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) {
       toast.error("Please enter your email");
       return;
     }
-
     setIsSubscribing(true);
     try {
-      const { error } = await supabase.from("subscribers").insert({
-        email: email.trim(),
+      const {
+        error
+      } = await supabase.from("subscribers").insert({
+        email: email.trim()
       });
-
       if (error) {
         if (error.code === "23505") {
-          toast.info("You're already subscribed!", { duration: 3000 });
+          toast.info("You're already subscribed!", {
+            duration: 3000
+          });
         } else {
           throw error;
         }
       } else {
-        toast.success("Subscribed successfully! You'll receive updates.", { duration: 3000 });
+        toast.success("Subscribed successfully! You'll receive updates.", {
+          duration: 3000
+        });
         setEmail("");
       }
     } catch (error) {
@@ -40,9 +42,7 @@ export const Footer = () => {
       setIsSubscribing(false);
     }
   };
-
-  return (
-    <footer className="bg-card border-t border-border text-foreground">
+  return <footer className="bg-card border-t border-border text-foreground">
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
           {/* About */}
@@ -96,7 +96,7 @@ export const Footer = () => {
             <ul className="space-y-3 text-xs md:text-sm text-muted-foreground">
               <li className="flex items-start gap-2 justify-center md:justify-start">
                 <Phone className="w-4 h-4 mt-1 flex-shrink-0" />
-                <a href="https://wa.me/254704021286" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">+254 704 021 286</a>
+                <a href="https://wa.me/254704021286" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">+254 711 201 138</a>
               </li>
               <li className="flex items-start gap-2 justify-center md:justify-start">
                 <Mail className="w-4 h-4 mt-1 flex-shrink-0" />
@@ -114,18 +114,8 @@ export const Footer = () => {
             <h3 className="font-serif font-bold text-base md:text-lg mb-3 md:mb-4 text-secondary">Stay Updated</h3>
             <p className="text-xs md:text-sm text-muted-foreground mb-4">Get weekly devotionals and event updates</p>
             <form onSubmit={handleSubscribe} className="space-y-2">
-              <Input 
-                type="email" 
-                placeholder="Your email address" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="text-sm h-11"
-              />
-              <Button 
-                type="submit"
-                disabled={isSubscribing}
-                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-sm h-11"
-              >
+              <Input type="email" placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} className="text-sm h-11" />
+              <Button type="submit" disabled={isSubscribing} className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-sm h-11">
                 {isSubscribing ? "Subscribing..." : "Subscribe"}
               </Button>
             </form>
@@ -141,6 +131,5 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
