@@ -1,14 +1,24 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { 
   MessageCircle, 
   Phone, 
   Mail, 
   MapPin, 
   Facebook, 
-  Instagram, 
+  Twitter, 
   Youtube,
-  ExternalLink
+  ExternalLink,
+  Navigation,
+  Map
 } from "lucide-react";
 
 const contactMethods = [
@@ -17,96 +27,215 @@ const contactMethods = [
     title: "WhatsApp",
     description: "Quick responses",
     action: "Chat Now",
-    link: "https://wa.me/254700000000",
-    color: "bg-green-500/10 text-green-600 dark:text-green-400"
+    link: "https://wa.me/254711201138",
+    color: "bg-green-500/10 text-green-600 dark:text-green-400",
+    type: "external"
   },
   {
     icon: Phone,
     title: "Call Us",
-    description: "+254 700 000 000",
+    description: "0711201138",
     action: "Call",
-    link: "tel:+254700000000",
-    color: "bg-primary/10 text-primary"
+    link: "tel:+254711201138",
+    color: "bg-primary/10 text-primary",
+    type: "external"
   },
   {
     icon: Mail,
     title: "Email",
-    description: "info@mkucu.org",
+    description: "mkucuthika@gmail.com",
     action: "Send Email",
-    link: "mailto:info@mkucu.org",
-    color: "bg-secondary/10 text-secondary"
+    link: "mailto:mkucuthika@gmail.com",
+    color: "bg-secondary/10 text-secondary",
+    type: "external"
   },
   {
     icon: MapPin,
     title: "Location",
-    description: "MKU Main Campus",
+    description: "MKU Main Campus, Thika",
     action: "Get Directions",
-    link: "https://maps.google.com",
-    color: "bg-accent/10 text-accent"
+    link: "https://maps.app.goo.gl/Ci8S9Nhb25FSCrgX8",
+    color: "bg-accent/10 text-accent",
+    type: "location"
   }
 ];
 
 const socialLinks = [
-  { icon: Facebook, link: "#", label: "Facebook" },
-  { icon: Instagram, link: "#", label: "Instagram" },
-  { icon: Youtube, link: "#", label: "YouTube" },
+  { 
+    icon: Facebook, 
+    link: "https://facebook.com/MKUCUTHIKA", 
+    label: "Facebook",
+    handle: "MKU CU THIKA" 
+  },
+  { 
+    icon: Twitter, 
+    link: "https://twitter.com/MkuciThika", 
+    label: "Twitter",
+    handle: "@MkuciThika" 
+  },
+  { 
+    icon: Youtube, 
+    link: "https://youtube.com/@MKUCUThikaTv", 
+    label: "YouTube",
+    handle: "MKU CU Thika Tv" 
+  },
 ];
 
 export const ConnectWithUs = () => {
-  return (
-    <section className="py-16 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <MessageCircle className="w-4 h-4" />
-            Get In Touch
-          </div>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
-            Connect With Us
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            We'd love to hear from you. Reach out through any of these channels.
-          </p>
-        </div>
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const mapLink = "https://maps.app.goo.gl/Ci8S9Nhb25FSCrgX8";
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {contactMethods.map((method, index) => (
-            <Card key={index} className="group border-0 shadow-md hover:shadow-lg transition-all duration-300 bg-card overflow-hidden">
-              <CardContent className="p-6 text-center">
-                <div className={`w-14 h-14 rounded-full ${method.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-                  <method.icon className="w-7 h-7" />
-                </div>
-                <h3 className="font-semibold text-foreground mb-1">{method.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{method.description}</p>
-                <a href={method.link} target="_blank" rel="noopener noreferrer">
-                  <Button size="sm" variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+  const handleContactClick = (method: typeof contactMethods[0]) => {
+    if (method.type === "location") {
+      setShowLocationModal(true);
+    } else {
+      window.open(method.link, "_blank");
+    }
+  };
+
+  return (
+    <>
+      <section className="py-16 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <MessageCircle className="w-4 h-4" />
+              Get In Touch
+            </div>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
+              Connect With Us
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              We'd love to hear from you. Reach out through any of these channels.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {contactMethods.map((method, index) => (
+              <Card 
+                key={index} 
+                className="group border-0 shadow-md hover:shadow-lg transition-all duration-300 bg-card overflow-hidden"
+              >
+                <CardContent className="p-6 text-center">
+                  <div className={`w-14 h-14 rounded-full ${method.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
+                    <method.icon className="w-7 h-7" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-1">{method.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{method.description}</p>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                    onClick={() => handleContactClick(method)}
+                  >
                     {method.action}
                     <ExternalLink className="w-3 h-3 ml-2" />
                   </Button>
-                </a>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="text-center">
-          <p className="text-muted-foreground mb-4">Follow us on social media</p>
-          <div className="flex justify-center gap-4">
-            {socialLinks.map((social, index) => (
-              <a
-                key={index}
-                href={social.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary hover:shadow-md transition-all"
-                aria-label={social.label}
-              >
-                <social.icon className="w-5 h-5" />
-              </a>
+                </CardContent>
+              </Card>
             ))}
           </div>
+
+          <div className="text-center">
+            <p className="text-muted-foreground mb-4">Follow us on social media</p>
+            <div className="flex justify-center gap-4">
+              {socialLinks.map((social, index) => (
+                
+                  key={index}
+                  href={social.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary hover:shadow-md transition-all"
+                  aria-label={social.label}
+                  title={social.handle}
+                >
+                  <social.icon className="w-5 h-5" />
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Location Modal */}
+      <Dialog open={showLocationModal} onOpenChange={setShowLocationModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <MapPin className="w-5 h-5 text-primary" />
+              Our Location
+            </DialogTitle>
+            <DialogDescription>
+              Mount Kenya University Christian Union - Main Campus, Thika
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Map Preview */}
+            <div className="relative w-full h-48 bg-muted rounded-lg overflow-hidden border border-border">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.0234567890123!2d37.0833!3d-1.0333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMDInMDAuMCJTIDM3wrAwNScwMC4wIkU!5e0!3m2!1sen!2ske!4v1234567890123"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="MKU Christian Union Location"
+              />
+            </div>
+
+            {/* Address Details */}
+            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-sm text-foreground">Address</p>
+                  <p className="text-sm text-muted-foreground">
+                    Mount Kenya University<br />
+                    Main Campus, Thika<br />
+                    Thika, Kenya
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  window.open(mapLink, "_blank");
+                  setShowLocationModal(false);
+                }}
+              >
+                <Map className="w-4 h-4 mr-2" />
+                Open in Maps
+              </Button>
+              <Button
+                className="w-full bg-primary hover:bg-primary/90"
+                onClick={() => {
+                  window.open(mapLink, "_blank");
+                  setShowLocationModal(false);
+                }}
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                Get Directions
+              </Button>
+            </div>
+
+            {/* Close Button */}
+            <Button
+              variant="ghost"
+              className="w-full"
+              onClick={() => setShowLocationModal(false)}
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
