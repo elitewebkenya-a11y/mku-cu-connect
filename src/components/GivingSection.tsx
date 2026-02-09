@@ -1,10 +1,8 @@
 import { Heart, CreditCard, Info, BookOpen, Church, HandHeart, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import titheImage from "@/assets/tithe-giving.jpg";
-
 export const GivingSection = () => {
-  return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-muted/30 via-background to-muted/30">
+  return <section className="py-16 md:py-24 bg-gradient-to-b from-muted/30 via-background to-muted/30">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           
@@ -82,11 +80,7 @@ export const GivingSection = () => {
 
               {/* Image Card */}
               <Card className="overflow-hidden shadow-lg border-border">
-                <img 
-                  src={titheImage} 
-                  alt="Church Giving" 
-                  className="w-full h-48 md:h-56 object-cover"
-                />
+                <img src={titheImage} alt="Church Giving" className="w-full h-48 md:h-56 object-cover" />
               </Card>
             </div>
 
@@ -108,7 +102,7 @@ export const GivingSection = () => {
                     <span className="text-sm text-muted-foreground font-medium">Till Number:</span>
                     <span className="text-3xl md:text-4xl font-bold text-green-600">6960137</span>
                   </div>
-                  <p className="text-xs text-muted-foreground text-center">MKU Christian Union</p>
+                  <p className="text-xs text-muted-foreground text-center">BRIAN MUTUKU NDETO</p>
                 </div>
 
                 <div className="space-y-4">
@@ -164,6 +158,5 @@ export const GivingSection = () => {
 
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
