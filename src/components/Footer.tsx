@@ -126,7 +126,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t pt-6 md:pt-8 mt-6 md:mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4 text-xs md:text-sm text-muted-foreground text-center md:text-left">
-            <p>© 2025 Mount Kenya University Christian Union. All rights reserved.</p>
+            <p>© 2026 Mount Kenya University Christian Union. All rights reserved.</p>
             <p className="text-secondary italic">Living the Knowledge of God - John 17:2-3</p>
           </div>
         </div>

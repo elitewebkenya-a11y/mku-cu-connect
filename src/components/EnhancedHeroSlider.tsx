@@ -45,17 +45,17 @@ const slides = [
   },
   {
     id: 4,
-    title: "🌍 Limuru Sub-Mission 2025",
-    subtitle: '"Restored by His Mercy"',
-    verse: "1 Peter 1:3",
-    date: "📅 October 17-19, 2025",
-    location: "📍 Destiny Chapel Limuru",
+    title: "🌍 Missions & Evangelism 2026",
+    subtitle: '"Go into all the world"',
+    verse: "Mark 16:15",
+    date: "📅 Semester Missions",
+    location: "📍 Various Locations",
     activities: [
       "Door-to-Door Evangelism",
-      "Crusades & Revivals",
-      "School Outreach"
+      "Campus Outreach",
+      "Community Service"
     ],
-    tagline: "Be part of God's work in Limuru!",
+    tagline: "Be part of God's work this semester!",
     cta1: { text: "Learn More", link: "/events" },
     cta2: { text: "Support This Mission", link: "https://wa.me/254115475543?text=I%20want%20to%20support%20the%20Limuru%20mission" },
     image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1920&q=80",
