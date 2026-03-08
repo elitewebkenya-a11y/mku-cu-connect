@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_departments: {
+        Row: {
+          created_at: string | null
+          department: string
+          id: string
+          is_approved: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          department: string
+          id?: string
+          is_approved?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          department?: string
+          id?: string
+          is_approved?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           announcement_date: string

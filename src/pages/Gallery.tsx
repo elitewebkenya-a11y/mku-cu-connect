@@ -189,7 +189,7 @@ const Gallery = () => {
             >
               <ChevronRight className="w-8 h-8 md:w-10 md:h-10" />
             </button>
-            <div className="max-w-4xl max-h-[85vh] px-12" onClick={(e) => e.stopPropagation()}>
+            <div className="max-w-4xl max-h-[85vh] px-4 sm:px-12" onClick={(e) => e.stopPropagation()}>
               <img
                 src={filteredItems[selectedIndex].media_url}
                 alt={filteredItems[selectedIndex].title}
