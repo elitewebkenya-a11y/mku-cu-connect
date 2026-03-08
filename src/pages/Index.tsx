@@ -11,6 +11,7 @@ import { AnimatedSection } from "@/components/AnimatedSection";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { SEOHead } from "@/components/SEOHead";
 
 // Lazy load below-fold heavy sections
 const EventCalendarPopup = lazy(() => import("@/components/EventCalendarPopup").then(m => ({ default: m.EventCalendarPopup })));
@@ -31,6 +32,7 @@ const SectionFallback = () => <div className="py-8" />;
 const Index = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      <SEOHead page="home" />
       <Header />
       <main>
         <EnhancedHeroSlider />
