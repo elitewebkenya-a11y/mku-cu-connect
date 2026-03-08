@@ -251,7 +251,7 @@ const About = () => {
             <div className="max-w-3xl mx-auto">
               <Sparkles className="w-10 h-10 mx-auto mb-6 opacity-80" />
               <h2 className="text-3xl md:text-5xl font-serif font-bold mb-6">Join Our Community</h2>
-              <p className="text-lg text-primary-foreground/80 mb-8">
+              <p className="text-lg text-background/80 mb-8">
                 Whether you're looking for fellowship, spiritual growth, or a place to serve, there's a place for you at MKU CU.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
@@ -261,7 +261,7 @@ const About = () => {
                   </Button>
                 </Link>
                 <Link to="/events">
-                  <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+                  <Button size="lg" variant="outline" className="gap-2 border-background/30 text-background hover:bg-background/10">
                     <Calendar className="w-5 h-5" /> View Events
                   </Button>
                 </Link>
