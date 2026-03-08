@@ -63,12 +63,8 @@ const About = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-black/50 to-black/30" />
           </div>
-          <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-20">
+           <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-20">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm text-primary-foreground px-4 py-1.5 rounded-full text-sm font-medium mb-6 border border-primary/30">
-                <Church className="w-4 h-4" />
-                About Us
-              </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-4 leading-[1.1]">
                 MKU Christian<br />Union
               </h1>
@@ -250,12 +246,12 @@ const About = () => {
         </AnimatedSection>
 
         {/* CTA Section */}
-        <section className="py-20 md:py-28 bg-primary text-primary-foreground">
+        <section className="py-20 md:py-28 bg-gradient-to-br from-foreground to-foreground/90 text-background">
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-3xl mx-auto">
               <Sparkles className="w-10 h-10 mx-auto mb-6 opacity-80" />
               <h2 className="text-3xl md:text-5xl font-serif font-bold mb-6">Join Our Community</h2>
-              <p className="text-lg text-primary-foreground/80 mb-8">
+              <p className="text-lg text-background/80 mb-8">
                 Whether you're looking for fellowship, spiritual growth, or a place to serve, there's a place for you at MKU CU.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
@@ -265,7 +261,7 @@ const About = () => {
                   </Button>
                 </Link>
                 <Link to="/events">
-                  <Button size="lg" variant="outline" className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+                  <Button size="lg" variant="outline" className="gap-2 border-background/30 text-background hover:bg-background/10">
                     <Calendar className="w-5 h-5" /> View Events
                   </Button>
                 </Link>
