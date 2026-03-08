@@ -1,27 +1,32 @@
+import { lazy, Suspense } from "react";
 import { EnhancedHeroSlider } from "@/components/EnhancedHeroSlider";
 import { DailyVerse } from "@/components/DailyVerse";
 import { QuickActions } from "@/components/QuickActions";
 import { EnhancedStatsCounter } from "@/components/EnhancedStatsCounter";
-import { LatestSermons } from "@/components/LatestSermons";
-import { GivingSection } from "@/components/GivingSection";
-import { LatestBlogPost } from "@/components/LatestBlogPost";
-import { GalleryPreview } from "@/components/GalleryPreview";
-import { VisionMission } from "@/components/VisionMission";
-import { MinistriesPreview } from "@/components/MinistriesPreview";
-import { GuestForm } from "@/components/GuestForm";
-import { PrayerRequestForm } from "@/components/PrayerRequestForm";
-import { UpcomingEvents } from "@/components/UpcomingEvents";
-import { CampusFellowships } from "@/components/CampusFellowships";
-import { ChurchAnnouncements } from "@/components/ChurchAnnouncements";
-import { LeadersPreview } from "@/components/LeadersPreview";
-import { ConnectWithUs } from "@/components/ConnectWithUs";
 import { ServiceTimes } from "@/components/ServiceTimes";
 import { SchedulePreview } from "@/components/SchedulePreview";
-import { EventCalendarPopup } from "@/components/EventCalendarPopup";
+import { UpcomingEvents } from "@/components/UpcomingEvents";
+import { ChurchAnnouncements } from "@/components/ChurchAnnouncements";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+
+// Lazy load below-fold heavy sections
+const EventCalendarPopup = lazy(() => import("@/components/EventCalendarPopup").then(m => ({ default: m.EventCalendarPopup })));
+const VisionMission = lazy(() => import("@/components/VisionMission").then(m => ({ default: m.VisionMission })));
+const LeadersPreview = lazy(() => import("@/components/LeadersPreview").then(m => ({ default: m.LeadersPreview })));
+const MinistriesPreview = lazy(() => import("@/components/MinistriesPreview").then(m => ({ default: m.MinistriesPreview })));
+const CampusFellowships = lazy(() => import("@/components/CampusFellowships").then(m => ({ default: m.CampusFellowships })));
+const LatestSermons = lazy(() => import("@/components/LatestSermons").then(m => ({ default: m.LatestSermons })));
+const PrayerRequestForm = lazy(() => import("@/components/PrayerRequestForm").then(m => ({ default: m.PrayerRequestForm })));
+const GivingSection = lazy(() => import("@/components/GivingSection").then(m => ({ default: m.GivingSection })));
+const GuestForm = lazy(() => import("@/components/GuestForm").then(m => ({ default: m.GuestForm })));
+const LatestBlogPost = lazy(() => import("@/components/LatestBlogPost").then(m => ({ default: m.LatestBlogPost })));
+const GalleryPreview = lazy(() => import("@/components/GalleryPreview").then(m => ({ default: m.GalleryPreview })));
+const ConnectWithUs = lazy(() => import("@/components/ConnectWithUs").then(m => ({ default: m.ConnectWithUs })));
+
+const SectionFallback = () => <div className="py-8" />;
 
 const Index = () => {
   return (
@@ -55,56 +60,59 @@ const Index = () => {
         </AnimatedSection>
 
         <AnimatedSection animation="fade-up">
-          <EventCalendarPopup />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
           <ChurchAnnouncements />
         </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <VisionMission />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <LeadersPreview />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <MinistriesPreview />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <CampusFellowships />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <LatestSermons />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <PrayerRequestForm />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <GivingSection />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <GuestForm />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <LatestBlogPost />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <GalleryPreview />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="fade-up">
-          <ConnectWithUs />
-        </AnimatedSection>
+
+        {/* Below-fold lazy-loaded sections */}
+        <Suspense fallback={<SectionFallback />}>
+          <AnimatedSection animation="fade-up">
+            <EventCalendarPopup />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <VisionMission />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <LeadersPreview />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <MinistriesPreview />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <CampusFellowships />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <LatestSermons />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <PrayerRequestForm />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <GivingSection />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <GuestForm />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <LatestBlogPost />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <GalleryPreview />
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up">
+            <ConnectWithUs />
+          </AnimatedSection>
+        </Suspense>
       </main>
       <Footer />
       <Toaster />
