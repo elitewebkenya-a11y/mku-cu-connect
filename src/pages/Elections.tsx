@@ -10,6 +10,7 @@ import { Vote, Users, Calendar, CheckCircle, Loader2, AlertCircle, Shield } from
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Election {
   id: string;
@@ -38,6 +39,13 @@ const Elections = () => {
   const [hasVoted, setHasVoted] = useState<Record<string, boolean>>({});
   const [isVoting, setIsVoting] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
+
+  useSEO({
+    title: "MKUCU Elections — Vote for Your Leaders",
+    description: "Cast your vote in MKU Christian Union elections. Choose leaders who will guide our faith community.",
+    image: "https://images.unsplash.com/photo-1494172961521-33799ddd43a5?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/elections",
+  });
 
   useEffect(() => {
     fetchElections();

@@ -11,6 +11,7 @@ import {
   Heart, MapPin, Clock, Users, BookOpen, 
   MessageCircle, Calendar, Gift, ArrowRight, Send, Phone, Mail, User
 } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 const welcomeSteps = [
   {
@@ -82,6 +83,13 @@ const faqs = [
 ];
 
 const Visitors = () => {
+  useSEO({
+    title: "New Here? Welcome to MKU CU",
+    description: "Plan your visit to MKU Christian Union. Learn what to expect, service times, and register as a first-time visitor.",
+    image: "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/visitors",
+  });
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

@@ -10,6 +10,7 @@ import {
   Clock, User, Loader2, ArrowRight, Church,
   Volume2, Hand, UserPlus, Palette
 } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Ministry {
   id: string;
@@ -33,6 +34,13 @@ const iconMap: Record<string, any> = {
 const Ministries = () => {
   const [ministries, setMinistries] = useState<Ministry[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useSEO({
+    title: "Our Ministries — Serve With Purpose",
+    description: "Discover your calling at MKU Christian Union. Join Choir, Multimedia, Ushering, Intercessory, Missions & more.",
+    image: "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/ministries",
+  });
 
   useEffect(() => {
     const fetchMinistries = async () => {

@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { useSiteSetting } from "@/hooks/useSiteSettings";
+import { useSEO } from "@/hooks/useSEO";
 import { Link } from "react-router-dom";
 
 interface Leader {
@@ -30,6 +31,13 @@ const About = () => {
   const { data: vision } = useSiteSetting("vision", { title: "Our Vision", description: "" });
   const { data: mission } = useSiteSetting("mission", { title: "Our Mission", description: "" });
   const { data: stats } = useSiteSetting("stats", []);
+
+  useSEO({
+    title: "About Us — MKU Christian Union",
+    description: "Learn about Mount Kenya University Christian Union — our vision, mission, leadership, and faith community of 500+ students.",
+    image: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/about",
+  });
 
   useEffect(() => { fetchLeaders(); }, []);
 

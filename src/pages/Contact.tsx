@@ -8,8 +8,16 @@ import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Youtube, Twitter, Send
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 
 const Contact = () => {
+  useSEO({
+    title: "Contact Us",
+    description: "Get in touch with MKU Christian Union. Call, WhatsApp, email, or visit us at Mount Kenya University, Thika.",
+    image: "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/contact",
+  });
+
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", phone: "", subject: "", message: "" });
 
   const handleSubmit = (e: React.FormEvent) => {

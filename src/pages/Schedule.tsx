@@ -10,6 +10,7 @@ import {
   MessageCircle, ExternalLink, Sun, ChevronRight
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useSEO } from "@/hooks/useSEO";
 
 interface DailyScheduleItem {
   id: string;
@@ -91,6 +92,13 @@ const Schedule = () => {
   const [dbFellowships, setDbFellowships] = useState<HomeFellowship[]>([]);
   const [dbFaqs, setDbFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useSEO({
+    title: "Weekly Schedule & Home Fellowships",
+    description: "View the full weekly schedule of MKU Christian Union — worship services, prayer meetings, Bible studies, and home fellowships.",
+    image: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/schedule",
+  });
 
   useEffect(() => {
     fetchData();

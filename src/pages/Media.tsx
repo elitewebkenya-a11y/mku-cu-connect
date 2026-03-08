@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Youtube, Loader2, Video, TrendingUp, Clock, Music, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Sermon {
   id: string;
@@ -23,6 +24,13 @@ const Media = () => {
   const [loading, setLoading] = useState(true);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("All");
+
+  useSEO({
+    title: "Sermons & Teachings — Media",
+    description: "Watch sermons, worship sessions, and teachings from MKU Christian Union on YouTube.",
+    image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/media",
+  });
 
   useEffect(() => {
     fetchSermons();
