@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { AuthProvider } from "@/hooks/useAuth";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -42,6 +43,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <PWAInstallPrompt />
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
