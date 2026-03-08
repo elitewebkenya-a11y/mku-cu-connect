@@ -66,6 +66,7 @@ const Admin = () => {
   const { user, profile, isAdmin, loading, signOut, hasDepartmentAccess } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeTab, setActiveTab] = useState("settings");
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -96,8 +97,6 @@ const Admin = () => {
 
   // Filter menu items based on department access
   const menuItems = allMenuItems.filter(item => hasDepartmentAccess(item.id));
-  
-  const [activeTab, setActiveTab] = useState(menuItems[0]?.id || "settings");
 
   const renderContent = () => {
     // Check access before rendering
