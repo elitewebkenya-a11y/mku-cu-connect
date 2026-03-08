@@ -43,12 +43,14 @@ import {
   HomeIcon,
   HelpCircle,
   Vote,
-  BellRing
+  BellRing,
+  Presentation
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
+  { id: "hero", label: "Hero Slideshow", icon: Presentation },
   { id: "notifications", label: "Notifications", icon: BellRing },
   { id: "schedule", label: "Daily Schedule", icon: ClipboardList },
   { id: "activities", label: "Weekly Activities", icon: Calendar },
