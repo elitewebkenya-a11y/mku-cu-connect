@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useSiteSetting } from "@/hooks/useSiteSettings";
 
 interface Sermon {
   id: string;
@@ -20,6 +21,7 @@ interface Sermon {
 export const LatestSermons = () => {
   const [sermons, setSermons] = useState<Sermon[]>([]);
   const [loading, setLoading] = useState(true);
+  const { data: branding } = useSiteSetting("branding", { youtube_live_url: "https://www.youtube.com/live/2nKqPUZFPCE" });
 
   useEffect(() => {
     fetchSermons();
@@ -115,7 +117,7 @@ export const LatestSermons = () => {
         </div>
 
         <div className="text-center mt-8 md:mt-12 space-y-3 md:space-y-4">
-          <a href="https://www.youtube.com/live/2nKqPUZFPCE?si=aS38jGEpbkIwBpHc" target="_blank" rel="noopener noreferrer">
+          <a href={branding.youtube_live_url} target="_blank" rel="noopener noreferrer">
             <Button size="lg" className="bg-accent hover:bg-accent/90 text-white text-sm md:text-base w-full md:w-auto">
               <Youtube className="w-4 h-4 md:w-5 md:h-5 mr-2" />
               Visit Our YouTube Channel

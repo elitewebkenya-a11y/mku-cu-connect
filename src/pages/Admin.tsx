@@ -22,6 +22,7 @@ import { CommentsManager } from "@/components/admin/CommentsManager";
 import { GalleryManager } from "@/components/admin/GalleryManager";
 import { NotificationsManager } from "@/components/admin/NotificationsManager";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
+import { GuestsManager } from "@/components/admin/GuestsManager";
 import { 
   Home, 
   Calendar, 
@@ -71,6 +72,7 @@ const menuItems = [
   { id: "volunteers", label: "Volunteers", icon: HandHelping },
   { id: "faqs", label: "FAQs", icon: HelpCircle },
   { id: "elections", label: "Elections", icon: Vote },
+  { id: "guests", label: "Visitor Registrations", icon: UsersRound },
 ];
 
 const Admin = () => {
@@ -126,6 +128,8 @@ const Admin = () => {
         return <FAQsManager />;
       case "elections":
         return <ElectionsManager />;
+      case "guests":
+        return <GuestsManager />;
       default:
         return <SiteSettingsManager />;
     }

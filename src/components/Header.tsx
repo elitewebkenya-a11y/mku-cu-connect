@@ -10,6 +10,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationBell } from "@/components/NotificationBell";
 import { cn } from "@/lib/utils";
+import { useSiteSetting } from "@/hooks/useSiteSettings";
+
+const defaultBranding = {
+  site_name: "MKU CU CHURCH",
+  tagline: "Living the Knowledge of God",
+  logo_url: "/lovable-uploads/d7e39077-9fab-48b2-a966-23d29d0ec2ff.png",
+  youtube_live_url: "https://www.youtube.com/live/2nKqPUZFPCE",
+  whatsapp_community_link: "https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29",
+};
+
+const defaultContact = { whatsapp: "https://wa.me/254704021286", phone: "+254 711 201 138", email: "mkucuthika@gmail.com", location: "MKU Main Campus, Thika", map_link: "" };
 
 const navItems = [
   { to: "/", label: "Home", icon: Home },
@@ -49,6 +60,9 @@ export const Header = () => {
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["Connect", "Media", "Engage"]);
   const location = useLocation();
 
+  const { data: branding } = useSiteSetting("branding", defaultBranding);
+  const { data: contact } = useSiteSetting("contact_info", defaultContact);
+
   const isActive = (path: string) => location.pathname === path;
 
   const toggleGroup = (label: string) => {
@@ -59,28 +73,25 @@ export const Header = () => {
 
   return (
     <>
-      {/* Top Bar - always visible */}
       <header className="bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm fixed left-0 right-0 top-0 z-50 border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-3">
-            {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
               <img
-                alt="MKU CU Logo"
+                alt={branding.site_name}
                 className="w-10 h-10 md:w-12 md:h-12 object-contain transition-transform group-hover:scale-105"
-                src="/lovable-uploads/d7e39077-9fab-48b2-a966-23d29d0ec2ff.png"
+                src={branding.logo_url}
               />
               <div>
                 <div className="font-serif font-bold text-base md:text-lg text-foreground group-hover:text-primary transition-colors">
-                  MKU CU CHURCH
+                  {branding.site_name}
                 </div>
                 <div className="text-xs text-muted-foreground italic hidden sm:block">
-                  Living the Knowledge of God
+                  {branding.tagline}
                 </div>
               </div>
             </Link>
 
-            {/* Desktop quick nav */}
             <nav className="hidden lg:flex items-center gap-1">
               {navItems.map((item) => (
                 <Link
@@ -111,9 +122,8 @@ export const Header = () => {
               )}
             </nav>
 
-            {/* Right actions + Menu */}
             <div className="flex items-center gap-2">
-              <a href="https://www.youtube.com/live/2nKqPUZFPCE" target="_blank" rel="noopener noreferrer" className="hidden md:block">
+              <a href={branding.youtube_live_url} target="_blank" rel="noopener noreferrer" className="hidden md:block">
                 <Button variant="outline" size="sm" className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground gap-2">
                   <Youtube className="w-4 h-4" />
                   Watch Live
@@ -133,7 +143,6 @@ export const Header = () => {
         </div>
       </header>
 
-      {/* Sidebar Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
@@ -141,38 +150,27 @@ export const Header = () => {
         />
       )}
 
-      {/* Sidebar Drawer - RIGHT side */}
       <aside
         className={cn(
           "fixed top-0 right-0 z-[70] h-full w-80 bg-card border-l border-border shadow-2xl transition-transform duration-300 ease-in-out flex flex-col",
           sidebarOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <Link to="/" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
-            <img
-              alt="MKU CU Logo"
-              className="w-10 h-10 object-contain"
-              src="/lovable-uploads/d7e39077-9fab-48b2-a966-23d29d0ec2ff.png"
-            />
+            <img alt={branding.site_name} className="w-10 h-10 object-contain" src={branding.logo_url} />
             <div>
-              <div className="font-serif font-bold text-foreground">MKU CU</div>
-              <div className="text-xs text-muted-foreground">Living the Knowledge of God</div>
+              <div className="font-serif font-bold text-foreground">{branding.site_name}</div>
+              <div className="text-xs text-muted-foreground">{branding.tagline}</div>
             </div>
           </Link>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="p-2 rounded-lg hover:bg-accent transition-colors"
-          >
+          <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-lg hover:bg-accent transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Sidebar Content */}
         <ScrollArea className="flex-1">
           <nav className="p-3 space-y-1">
-            {/* Main Items */}
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -195,7 +193,6 @@ export const Header = () => {
               );
             })}
 
-            {/* Groups */}
             {navGroups.map((group) => (
               <div key={group.label} className="pt-2">
                 <button
@@ -241,27 +238,20 @@ export const Header = () => {
           </nav>
         </ScrollArea>
 
-        {/* Sidebar Footer */}
         <div className="p-3 border-t border-border space-y-2">
           <div className="flex items-center gap-3 px-4 py-2 text-xs text-muted-foreground">
             <Phone className="w-4 h-4" />
-            <a href="tel:+254711201138" className="hover:text-primary transition-colors">+254 711 201 138</a>
+            <a href={`tel:${contact.phone}`} className="hover:text-primary transition-colors">{contact.phone}</a>
           </div>
-          <a
-            href="https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-          >
+          <a href={branding.whatsapp_community_link} target="_blank" rel="noopener noreferrer" className="block">
             <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-2" size="sm">
-              Join MKU CU Community
+              Join {branding.site_name} Community
               <ExternalLink className="w-3 h-3" />
             </Button>
           </a>
         </div>
       </aside>
 
-      {/* Spacer for fixed header */}
       <div className="h-16" />
     </>
   );

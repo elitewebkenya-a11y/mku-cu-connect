@@ -5,10 +5,33 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useSiteSetting } from "@/hooks/useSiteSettings";
+
+const platformIcons: Record<string, React.ElementType> = { Facebook, Instagram, YouTube: Youtube, Twitter };
+
+const defaultBranding = {
+  site_name: "MKU CU CHURCH",
+  tagline: "Living the Knowledge of God",
+  logo_url: "/lovable-uploads/d7e39077-9fab-48b2-a966-23d29d0ec2ff.png",
+  youtube_live_url: "https://www.youtube.com/live/2nKqPUZFPCE",
+  whatsapp_community_link: "https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29",
+};
+
+const defaultContact = { whatsapp: "https://wa.me/254704021286", phone: "+254 711 201 138", email: "mkucuthika@gmail.com", location: "Mount Kenya University, Thika Campus", map_link: "" };
+const defaultSocial = [
+  { platform: "Facebook", link: "https://facebook.com/MKUCUTHIKA", handle: "MKU CU THIKA" },
+  { platform: "YouTube", link: "https://www.youtube.com/live/2nKqPUZFPCE", handle: "MKU CU" },
+  { platform: "Instagram", link: "https://instagram.com/mkucu", handle: "@mkucu" },
+  { platform: "Twitter", link: "https://twitter.com/mkucu", handle: "@mkucu" },
+];
 
 export const Footer = () => {
   const [email, setEmail] = useState("");
   const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const { data: branding } = useSiteSetting("branding", defaultBranding);
+  const { data: contact } = useSiteSetting("contact_info", defaultContact);
+  const { data: socialLinks } = useSiteSetting("social_links", defaultSocial);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,13 +62,6 @@ export const Footer = () => {
     { to: "/ministries", label: "Ministries" },
     { to: "/elections", label: "Elections" },
     { to: "/contact", label: "Contact" },
-  ];
-
-  const socials = [
-    { icon: Facebook, href: "https://wa.me/254704021286", label: "Facebook" },
-    { icon: Instagram, href: "https://wa.me/254704021286", label: "Instagram" },
-    { icon: Youtube, href: "https://www.youtube.com/live/2nKqPUZFPCE?si=aS38jGEpbkIwBpHc", label: "YouTube" },
-    { icon: Twitter, href: "https://wa.me/254704021286", label: "Twitter" },
   ];
 
   return (
@@ -81,25 +97,26 @@ export const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                <span className="text-secondary-foreground font-bold text-sm">MKU</span>
-              </div>
+              <img src={branding.logo_url} alt={branding.site_name} className="w-10 h-10 object-contain rounded-full bg-background/10 p-1" />
               <div>
-                <div className="font-serif font-bold text-lg">MKU CU</div>
-                <div className="text-xs text-background/50 italic">Living the Knowledge of God</div>
+                <div className="font-serif font-bold text-lg">{branding.site_name}</div>
+                <div className="text-xs text-background/50 italic">{branding.tagline}</div>
               </div>
             </div>
             <p className="text-background/60 text-sm leading-relaxed mb-5">
               Nurturing belief in Christ and developing Christ-like character through discipleship, evangelism, and missions.
             </p>
             <div className="flex gap-2">
-              {socials.map((s) => (
-                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-full bg-background/10 hover:bg-secondary hover:text-secondary-foreground flex items-center justify-center transition-colors"
-                  aria-label={s.label}>
-                  <s.icon className="w-4 h-4" />
-                </a>
-              ))}
+              {socialLinks.map((s: any, i: number) => {
+                const SIcon = platformIcons[s.platform] || Facebook;
+                return (
+                  <a key={i} href={s.link} target="_blank" rel="noopener noreferrer"
+                    className="w-9 h-9 rounded-full bg-background/10 hover:bg-secondary hover:text-secondary-foreground flex items-center justify-center transition-colors"
+                    aria-label={s.platform} title={s.handle}>
+                    <SIcon className="w-4 h-4" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
@@ -128,9 +145,9 @@ export const Footer = () => {
                 </li>
               ))}
               <li>
-                <a href="https://chat.whatsapp.com/I0O4FU8BFMo59CwKnnVB29" target="_blank" rel="noopener noreferrer"
+                <a href={branding.whatsapp_community_link} target="_blank" rel="noopener noreferrer"
                   className="text-sm text-background/60 hover:text-secondary transition-colors inline-flex items-center gap-1">
-                  Join MKU CU <ArrowUpRight className="w-3 h-3" />
+                  Join Community <ArrowUpRight className="w-3 h-3" />
                 </a>
               </li>
             </ul>
@@ -142,15 +159,15 @@ export const Footer = () => {
             <ul className="space-y-3 text-sm text-background/60">
               <li className="flex items-start gap-2">
                 <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 text-secondary" />
-                <a href="https://wa.me/254704021286" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">+254 711 201 138</a>
+                <a href={`tel:${contact.phone}`} className="hover:text-secondary transition-colors">{contact.phone}</a>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="w-4 h-4 mt-0.5 flex-shrink-0 text-secondary" />
-                <a href="mailto:mkucuthika@gmail.com" className="hover:text-secondary transition-colors break-all">mkucuthika@gmail.com</a>
+                <a href={`mailto:${contact.email}`} className="hover:text-secondary transition-colors break-all">{contact.email}</a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-secondary" />
-                <span>Mount Kenya University, Thika Campus</span>
+                <span>{contact.location}</span>
               </li>
             </ul>
           </div>
@@ -161,9 +178,9 @@ export const Footer = () => {
       <div className="border-t border-background/10">
         <div className="container mx-auto px-4 py-5">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-background/40">
-            <p>© 2026 MKU Christian Union. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {branding.site_name}. All rights reserved.</p>
             <p className="flex items-center gap-1 text-secondary/70 italic">
-              <Heart className="w-3 h-3" /> Living the Knowledge of God — John 17:2-3
+              <Heart className="w-3 h-3" /> {branding.tagline} — John 17:2-3
             </p>
           </div>
         </div>
