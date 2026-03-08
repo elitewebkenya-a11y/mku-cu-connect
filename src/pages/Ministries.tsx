@@ -2,13 +2,12 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Users, Heart, Music, BookOpen, Globe, HandHeart, 
   Mic, Camera, Shield, Home, Baby, Sparkles,
-  Clock, MapPin, User, Loader2
+  Clock, User, Loader2, ArrowRight, Church
 } from "lucide-react";
 
 interface Ministry {
@@ -22,19 +21,8 @@ interface Ministry {
   is_active: boolean | null;
 }
 
-const iconMap: { [key: string]: any } = {
-  Music: Music,
-  BookOpen: BookOpen,
-  Globe: Globe,
-  HandHeart: HandHeart,
-  Heart: Heart,
-  Users: Users,
-  Mic: Mic,
-  Camera: Camera,
-  Shield: Shield,
-  Home: Home,
-  Baby: Baby,
-  Sparkles: Sparkles,
+const iconMap: Record<string, any> = {
+  Music, BookOpen, Globe, HandHeart, Heart, Users, Mic, Camera, Shield, Home, Baby, Sparkles,
 };
 
 const Ministries = () => {
@@ -42,110 +30,114 @@ const Ministries = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchMinistries();
+    supabase.from("ministries").select("*").eq("is_active", true).order("name")
+      .then(({ data }) => { setMinistries(data || []); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
-  const fetchMinistries = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("ministries")
-        .select("*")
-        .eq("is_active", true)
-        .order("name");
-
-      if (error) throw error;
-      setMinistries(data || []);
-    } catch (error) {
-      console.error("Error fetching ministries:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getIcon = (iconName: string | null) => {
-    if (iconName && iconMap[iconName]) {
-      return iconMap[iconName];
-    }
-    return Heart;
-  };
+  const getIcon = (iconName: string | null) => (iconName && iconMap[iconName]) || Heart;
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-        <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4" variant="secondary">Serve With Purpose</Badge>
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
+      {/* Hero */}
+      <section className="relative min-h-[50vh] md:min-h-[60vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1920&q=60"
+            alt="Ministries"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/50 to-black/30" />
+        </div>
+        <div className="container mx-auto px-4 relative z-10 pb-10 md:pb-16">
+          <div className="inline-flex items-center gap-2 bg-secondary/90 text-secondary-foreground px-3 py-1 rounded-full text-sm font-medium mb-4">
+            <Church className="w-4 h-4" /> Serve With Purpose
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-3">
             Our Ministries
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover your calling and make a difference through one of our active ministries. 
-            Everyone has a gift - find where yours can be used for God's glory.
+          <p className="text-lg md:text-xl text-white/80 max-w-2xl">
+            Discover your calling and make a difference. Everyone has a gift — find where yours can be used.
           </p>
         </div>
       </section>
 
+      {/* Stats bar */}
+      <section className="py-6 bg-muted/30 border-b border-border">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16 text-center">
+            <div>
+              <div className="text-2xl md:text-3xl font-bold text-primary">{ministries.length}+</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Active Ministries</div>
+            </div>
+            <div>
+              <div className="text-2xl md:text-3xl font-bold text-primary">500+</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Volunteers</div>
+            </div>
+            <div>
+              <div className="text-2xl md:text-3xl font-bold text-primary">∞</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Lives Impacted</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Ministries Grid */}
-      <section className="py-16">
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-16">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           ) : ministries.length === 0 ? (
-            <div className="text-center py-12">
-              <Heart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <div className="text-center py-16">
+              <Heart className="w-14 h-14 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-foreground mb-2">No Ministries Yet</h3>
-              <p className="text-muted-foreground">Check back soon for available ministries to join.</p>
+              <p className="text-muted-foreground">Check back soon for available ministries.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-7xl mx-auto">
               {ministries.map((ministry) => {
                 const IconComponent = getIcon(ministry.icon);
                 return (
-                  <Card
-                    key={ministry.id}
-                    className="p-6 hover:shadow-xl transition-all duration-300 group border-border bg-card hover:-translate-y-1"
-                  >
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0">
-                        <IconComponent className="w-7 h-7 text-primary" />
+                  <Card key={ministry.id} className="group hover:shadow-xl transition-all duration-300 bg-card hover:-translate-y-1 overflow-hidden">
+                    {/* Color strip */}
+                    <div className="h-1.5 bg-gradient-to-r from-primary to-secondary" />
+                    <div className="p-5 md:p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors flex-shrink-0">
+                          <IconComponent className="w-6 h-6" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-lg font-bold text-card-foreground group-hover:text-primary transition-colors truncate">
+                            {ministry.name}
+                          </h3>
+                          {ministry.leader_name && (
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                              <User className="w-3 h-3" />
+                              <span>Led by {ministry.leader_name}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-card-foreground group-hover:text-primary transition-colors">
-                          {ministry.name}
-                        </h3>
-                        {ministry.leader_name && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                            <User className="w-3 h-3" />
-                            <span>Led by {ministry.leader_name}</span>
-                          </div>
-                        )}
-                      </div>
+                      
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{ministry.description}</p>
+                      
+                      {ministry.meeting_schedule && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 bg-muted/50 p-2.5 rounded-lg">
+                          <Clock className="w-4 h-4 text-primary flex-shrink-0" />
+                          <span>{ministry.meeting_schedule}</span>
+                        </div>
+                      )}
+                      
+                      <a href={ministry.joining_link} target="_blank" rel="noopener noreferrer">
+                        <Button className="w-full gap-2" size="sm">
+                          Join Ministry <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </a>
                     </div>
-                    
-                    <p className="text-muted-foreground mb-4 line-clamp-3">
-                      {ministry.description}
-                    </p>
-                    
-                    {ministry.meeting_schedule && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 bg-muted/50 p-2 rounded-lg">
-                        <Clock className="w-4 h-4 text-primary" />
-                        <span>{ministry.meeting_schedule}</span>
-                      </div>
-                    )}
-                    
-                    <a
-                      href={ministry.joining_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button className="w-full bg-primary hover:bg-primary/90">
-                        Join This Ministry
-                      </Button>
-                    </a>
                   </Card>
                 );
               })}
@@ -154,19 +146,15 @@ const Ministries = () => {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-16 bg-primary/5">
+      {/* CTA */}
+      <section className="py-14 bg-gradient-to-br from-foreground to-foreground/90 text-background">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-4">
-            Not Sure Where to Start?
-          </h2>
-          <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">Not Sure Where to Start?</h2>
+          <p className="text-background/70 mb-6 max-w-xl mx-auto">
             We'd love to help you find the perfect ministry based on your gifts and interests.
           </p>
           <a href="https://wa.me/254704021286?text=Hi%2C%20I%20want%20to%20learn%20more%20about%20joining%20a%20ministry" target="_blank" rel="noopener noreferrer">
-            <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-              Talk to a Leader
-            </Button>
+            <Button size="lg" variant="secondary" className="font-semibold">Talk to a Leader</Button>
           </a>
         </div>
       </section>
