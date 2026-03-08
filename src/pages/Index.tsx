@@ -58,15 +58,19 @@ const Index = () => {
           <EventCalendarPopup />
         </AnimatedSection>
         
-        <AnimatedSection animation="slide-right">
+        <AnimatedSection animation="fade-up">
           <ChurchAnnouncements />
+        </AnimatedSection>
+        
+        <AnimatedSection animation="fade-up">
+          <VisionMission />
         </AnimatedSection>
         
         <AnimatedSection animation="fade-up">
           <LeadersPreview />
         </AnimatedSection>
         
-        <AnimatedSection animation="scale">
+        <AnimatedSection animation="fade-up">
           <MinistriesPreview />
         </AnimatedSection>
         
@@ -74,7 +78,7 @@ const Index = () => {
           <CampusFellowships />
         </AnimatedSection>
         
-        <AnimatedSection animation="slide-left">
+        <AnimatedSection animation="fade-up">
           <LatestSermons />
         </AnimatedSection>
         
@@ -82,7 +86,7 @@ const Index = () => {
           <PrayerRequestForm />
         </AnimatedSection>
         
-        <AnimatedSection animation="slide-right">
+        <AnimatedSection animation="fade-up">
           <GivingSection />
         </AnimatedSection>
         
@@ -90,20 +94,16 @@ const Index = () => {
           <GuestForm />
         </AnimatedSection>
         
-        <AnimatedSection animation="scale">
+        <AnimatedSection animation="fade-up">
           <LatestBlogPost />
         </AnimatedSection>
         
-        <AnimatedSection animation="slide-left">
+        <AnimatedSection animation="fade-up">
           <GalleryPreview />
         </AnimatedSection>
         
         <AnimatedSection animation="fade-up">
           <ConnectWithUs />
-        </AnimatedSection>
-        
-        <AnimatedSection animation="scale">
-          <VisionMission />
         </AnimatedSection>
       </main>
       <Footer />

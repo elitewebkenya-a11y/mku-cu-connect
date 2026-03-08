@@ -143,11 +143,11 @@ export const Header = () => {
         />
       )}
 
-      {/* Sidebar Drawer */}
+      {/* Sidebar Drawer - RIGHT side */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-[70] h-full w-80 bg-card border-r border-border shadow-2xl transition-transform duration-300 ease-in-out flex flex-col",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed top-0 right-0 z-[70] h-full w-80 bg-card border-l border-border shadow-2xl transition-transform duration-300 ease-in-out flex flex-col",
+          sidebarOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Sidebar Header */}
