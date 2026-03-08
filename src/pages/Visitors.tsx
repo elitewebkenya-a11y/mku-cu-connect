@@ -3,10 +3,13 @@ import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GuestForm } from "@/components/GuestForm";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { toast } from "sonner";
 import { 
   Heart, MapPin, Clock, Users, BookOpen, 
-  MessageCircle, Calendar, Gift, ArrowRight
+  MessageCircle, Calendar, Gift, ArrowRight, Send, Phone, Mail, User
 } from "lucide-react";
 
 const welcomeSteps = [
@@ -79,31 +82,50 @@ const faqs = [
 ];
 
 const Visitors = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Thank you for registering! We'll be in touch soon.");
+    setFormData({ name: "", email: "", phone: "", message: "" });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary/10 via-background to-accent/10 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200h20v20H0z%22%20fill%3D%22none%22%2F%3E%3Cpath%20d%3D%22M10%2010m-1%200a1%201%200%201%201%202%200a1%201%200%201%201-2%200%22%20fill%3D%22currentColor%22%20opacity%3D%220.05%22%2F%3E%3C%2Fsvg%3E')] opacity-50" />
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1920&q=75"
+            alt="Welcoming community"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/60 to-black/40" />
+        </div>
         <div className="container mx-auto px-4 text-center relative z-10">
-          <Badge className="mb-4 bg-accent text-accent-foreground">Welcome!</Badge>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground mb-6">
-            New Here? <span className="text-primary">We're So Glad!</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6">
+            New Here? <span className="text-secondary">Welcome!</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-8">
             MKU Christian Union is a vibrant community of believers passionate about 
             knowing Christ and making Him known on campus and beyond.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="#guest-form">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold">
                 Let Us Know You're Coming
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </a>
             <a href="#services">
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10">
                 View Service Times
               </Button>
             </a>
@@ -112,16 +134,16 @@ const Visitors = () => {
       </section>
 
       {/* Welcome Steps */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-serif font-bold text-center text-foreground mb-12">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-center text-foreground mb-12">
             What to Expect
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {welcomeSteps.map((step, index) => (
-              <Card key={index} className="p-6 text-center hover:shadow-lg transition-shadow bg-card">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <step.icon className="w-8 h-8 text-primary" />
+              <Card key={index} className="p-6 text-center hover:shadow-lg transition-shadow bg-card border-t-4 border-t-primary">
+                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <step.icon className="w-7 h-7 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold text-card-foreground mb-2">{step.title}</h3>
                 <p className="text-sm text-muted-foreground">{step.description}</p>
@@ -132,15 +154,15 @@ const Visitors = () => {
       </section>
 
       {/* Service Times */}
-      <section id="services" className="py-16">
+      <section id="services" className="py-16 md:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <Badge variant="secondary" className="mb-4">Join Us</Badge>
-            <h2 className="text-3xl font-serif font-bold text-foreground mb-4">
+            <span className="text-primary font-semibold text-sm uppercase tracking-widest">Join Us</span>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mt-2 mb-4">
               When We Meet
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              We have multiple opportunities throughout the week to gather, worship, and grow together.
+              Multiple opportunities throughout the week to gather, worship, and grow together.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
@@ -165,10 +187,10 @@ const Visitors = () => {
       </section>
 
       {/* FAQs */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif font-bold text-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
               Common Questions
             </h2>
           </div>
@@ -176,7 +198,9 @@ const Visitors = () => {
             {faqs.map((faq, index) => (
               <Card key={index} className="p-6 bg-card">
                 <div className="flex items-start gap-3">
-                  <MessageCircle className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <div className="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="w-4 h-4 text-secondary" />
+                  </div>
                   <div>
                     <h3 className="font-bold text-card-foreground mb-2">{faq.question}</h3>
                     <p className="text-sm text-muted-foreground">{faq.answer}</p>
@@ -188,43 +212,105 @@ const Visitors = () => {
         </div>
       </section>
 
-      {/* Guest Form */}
-      <section id="guest-form" className="py-16">
+      {/* Guest Form - Mobile optimized */}
+      <section id="guest-form" className="py-16 md:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-xl mx-auto">
             <div className="text-center mb-8">
-              <Badge className="mb-4">Connect With Us</Badge>
-              <h2 className="text-3xl font-serif font-bold text-foreground mb-4">
+              <span className="text-primary font-semibold text-sm uppercase tracking-widest">Connect With Us</span>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mt-2 mb-4">
                 Plan Your Visit
               </h2>
               <p className="text-muted-foreground">
-                Let us know you're coming and we'll make sure someone is there to welcome you!
+                Let us know you're coming and we'll make sure someone welcomes you!
               </p>
             </div>
-            <Card className="p-6 md:p-8 bg-card">
-              <GuestForm />
+            <Card className="p-5 md:p-8 bg-card">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-card-foreground">
+                    Full Name *
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="John Doe"
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-card-foreground">
+                    Email Address *
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      required
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="john@example.com"
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-card-foreground">
+                    Phone Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+254 700 000000"
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-card-foreground">
+                    Prayer Requests or Questions
+                  </label>
+                  <Textarea
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    placeholder="How can we pray for you?"
+                    rows={3}
+                  />
+                </div>
+                <Button type="submit" size="lg" className="w-full gap-2">
+                  <Send className="w-4 h-4" />
+                  Submit Registration
+                </Button>
+              </form>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 bg-primary text-primary-foreground">
+      {/* CTA - No blue, use warm gradient */}
+      <section className="py-16 md:py-20 bg-gradient-to-br from-foreground to-foreground/90 text-background">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">
             Have More Questions?
           </h2>
-          <p className="mb-6 opacity-90 max-w-xl mx-auto">
+          <p className="mb-6 opacity-80 max-w-xl mx-auto">
             We'd love to hear from you! Reach out to us via WhatsApp or email.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="https://wa.me/254704021286" target="_blank" rel="noopener noreferrer">
-              <Button size="lg" variant="secondary">
+              <Button size="lg" variant="secondary" className="font-semibold">
                 Chat on WhatsApp
               </Button>
             </a>
             <a href="mailto:mkucuthika@gmail.com">
-              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              <Button size="lg" variant="outline" className="border-background/30 text-background hover:bg-background/10">
                 Send Email
               </Button>
             </a>
