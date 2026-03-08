@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { useSEO } from "@/hooks/useSEO";
+import { getEventImage } from "@/lib/eventImages";
+import { EventRegistrationDialog } from "@/components/EventRegistrationDialog";
 
 interface Event {
   id: string;
@@ -27,6 +29,8 @@ interface Event {
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
@@ -35,7 +39,6 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      // Only fetch upcoming + recent past events for performance
       const threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
       const pastDate = threeMonthsAgo.toISOString().split("T")[0];
@@ -56,7 +59,6 @@ const Events = () => {
     }
   };
 
-  // Dynamic SEO for the events page
   useSEO({
     title: "Upcoming Events",
     description: "Join MKU Christian Union for life-changing gatherings, worship services, and fellowship opportunities.",
@@ -67,17 +69,20 @@ const Events = () => {
   const upcomingEvents = events.filter((e) => e.event_date >= today);
   const pastEvents = events.filter((e) => e.event_date < today).reverse();
 
-  // Helper to share an event
   const shareEvent = (event: Event) => {
     const url = `${window.location.origin}/events#${event.id}`;
     const text = `${event.title} - ${new Date(event.event_date).toLocaleDateString()} at ${event.location}`;
-    
     if (navigator.share) {
       navigator.share({ title: event.title, text, url });
     } else {
       navigator.clipboard.writeText(url);
       toast.success("Event link copied!");
     }
+  };
+
+  const handleRegister = (event: Event) => {
+    setSelectedEvent(event);
+    setDialogOpen(true);
   };
 
   if (loading) {
@@ -125,7 +130,7 @@ const Events = () => {
                       <Card key={event.id} className="overflow-hidden group hover:shadow-xl transition-all duration-300 bg-card">
                         <div className="aspect-video overflow-hidden relative">
                           <img
-                            src={event.image_url || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80"}
+                            src={getEventImage(event.category, event.image_url)}
                             alt={event.title}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             loading="lazy"
@@ -158,13 +163,12 @@ const Events = () => {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            {event.registration_link && (
-                              <a href={event.registration_link} target="_blank" rel="noopener noreferrer" className="flex-1">
-                                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                                  Register <ArrowRight className="w-4 h-4 ml-2" />
-                                </Button>
-                              </a>
-                            )}
+                            <Button 
+                              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                              onClick={() => handleRegister(event)}
+                            >
+                              Register <ArrowRight className="w-4 h-4 ml-2" />
+                            </Button>
                             <Button 
                               variant="outline" 
                               size="icon"
@@ -199,7 +203,7 @@ const Events = () => {
                     <Card key={event.id} className="overflow-hidden bg-card/50">
                       <div className="aspect-video overflow-hidden relative grayscale">
                         <img
-                          src={event.image_url || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80"}
+                          src={getEventImage(event.category, event.image_url)}
                           alt={event.title}
                           className="w-full h-full object-cover"
                           loading="lazy"
@@ -236,6 +240,12 @@ const Events = () => {
         </AnimatedSection>
       </main>
       <Footer />
+
+      <EventRegistrationDialog 
+        open={dialogOpen} 
+        onOpenChange={setDialogOpen} 
+        event={selectedEvent} 
+      />
     </div>
   );
 };
