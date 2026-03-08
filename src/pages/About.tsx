@@ -246,7 +246,7 @@ const About = () => {
         </AnimatedSection>
 
         {/* CTA Section */}
-        <section className="py-20 md:py-28 bg-primary text-primary-foreground">
+        <section className="py-20 md:py-28 bg-gradient-to-br from-foreground to-foreground/90 text-background">
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-3xl mx-auto">
               <Sparkles className="w-10 h-10 mx-auto mb-6 opacity-80" />
