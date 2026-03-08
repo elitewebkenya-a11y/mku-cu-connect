@@ -48,16 +48,16 @@ export const GalleryPreview = () => {
         <div className="max-w-4xl mx-auto mb-6">
           <div className="relative aspect-video rounded-xl overflow-hidden shadow-xl">
             {images.map((img, i) => (
-              <div key={img.id} className={`absolute inset-0 transition-opacity duration-1000 ${i === currentIndex ? "opacity-100" : "opacity-0"}`}>
-                <img src={img.media_url} alt={img.title} className="w-full h-full object-cover" />
+              <div key={img.id} className={`absolute inset-0 transition-opacity duration-1000 ${i === currentIndex ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                <img src={img.media_url} alt={img.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <p className="absolute bottom-4 left-4 text-white text-xl font-bold">{img.title}</p>
               </div>
             ))}
-            <button onClick={() => setCurrentIndex((currentIndex - 1 + images.length) % images.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur rounded-full flex items-center justify-center">
+            <button onClick={() => setCurrentIndex((currentIndex - 1 + images.length) % images.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur rounded-full flex items-center justify-center" aria-label="Previous image">
               <ChevronLeft className="w-6 h-6 text-white" />
             </button>
-            <button onClick={() => setCurrentIndex((currentIndex + 1) % images.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur rounded-full flex items-center justify-center">
+            <button onClick={() => setCurrentIndex((currentIndex + 1) % images.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur rounded-full flex items-center justify-center" aria-label="Next image">
               <ChevronRight className="w-6 h-6 text-white" />
             </button>
           </div>

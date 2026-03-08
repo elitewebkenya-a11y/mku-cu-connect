@@ -27,42 +27,26 @@ export const UpcomingEvents = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .gte("event_date", new Date().toISOString().split('T')[0])
+          .order("event_date", { ascending: true })
+          .limit(3);
+        if (error) throw error;
+        setEvents(data || []);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchEvents();
   }, []);
 
-  const fetchEvents = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .gte("event_date", new Date().toISOString().split('T')[0])
-        .order("event_date", { ascending: true })
-        .limit(3);
-
-      if (error) throw error;
-      setEvents(data || []);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = (event: Event) => {
-    setSelectedEvent(event);
-    setDialogOpen(true);
-  };
-
-  if (loading) {
-    return (
-      <section className="py-10 bg-background">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          Loading events...
-        </div>
-      </section>
-    );
-  }
-
+  if (loading) return null;
   if (events.length === 0) return null;
 
   return (
@@ -73,45 +57,31 @@ export const UpcomingEvents = () => {
             <Calendar className="w-4 h-4" />
             <span className="text-xs font-semibold">Upcoming Events</span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
-            Join Us
-          </h2>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">Join Us</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto mb-6">
           {events.map((event) => (
-            <Card
-              key={event.id}
-              className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-border bg-card"
-            >
+            <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-border bg-card">
               <div className="relative h-32 overflow-hidden">
                 <img
                   src={getEventImage(event.category, event.image_url)}
                   alt={event.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 {event.category && (
-                  <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-0.5">
-                    {event.category}
-                  </Badge>
+                  <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-0.5">{event.category}</Badge>
                 )}
               </div>
-
               <div className="p-4">
-                <h3 className="text-sm font-bold text-card-foreground group-hover:text-primary transition-colors line-clamp-1 mb-2">
-                  {event.title}
-                </h3>
-
+                <h3 className="text-sm font-bold text-card-foreground group-hover:text-primary transition-colors line-clamp-1 mb-2">{event.title}</h3>
                 <div className="space-y-1.5 mb-3">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Calendar className="w-3 h-3 text-primary flex-shrink-0" />
-                    <span>
-                      {new Date(event.event_date).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric'
-                      })}
-                    </span>
+                    <span>{new Date(event.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                     <Clock className="w-3 h-3 text-primary flex-shrink-0 ml-1" />
                     <span>{event.start_time}</span>
                   </div>
@@ -120,14 +90,12 @@ export const UpcomingEvents = () => {
                     <span className="line-clamp-1">{event.location}</span>
                   </div>
                 </div>
-
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8"
-                  onClick={() => handleRegister(event)}
+                  onClick={() => { setSelectedEvent(event); setDialogOpen(true); }}
                 >
-                  Register
-                  <ArrowRight className="w-3 h-3 ml-1" />
+                  Register <ArrowRight className="w-3 h-3 ml-1" />
                 </Button>
               </div>
             </Card>
@@ -137,18 +105,13 @@ export const UpcomingEvents = () => {
         <div className="text-center">
           <a href="/events">
             <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-              View All Events
-              <ArrowRight className="w-3 h-3 ml-1" />
+              View All Events <ArrowRight className="w-3 h-3 ml-1" />
             </Button>
           </a>
         </div>
       </div>
 
-      <EventRegistrationDialog 
-        open={dialogOpen} 
-        onOpenChange={setDialogOpen} 
-        event={selectedEvent} 
-      />
+      <EventRegistrationDialog open={dialogOpen} onOpenChange={setDialogOpen} event={selectedEvent} />
     </section>
   );
 };

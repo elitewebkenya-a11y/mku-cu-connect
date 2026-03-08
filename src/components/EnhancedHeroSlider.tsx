@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +16,6 @@ interface HeroSlide {
   cta2_link: string | null;
 }
 
-// Fallback slides in case DB is empty
 const fallbackSlides: HeroSlide[] = [
   {
     id: "1",
@@ -45,10 +44,7 @@ export const EnhancedHeroSlider = () => {
           .select("*")
           .eq("is_active", true)
           .order("display_order", { ascending: true });
-        
-        if (!error && data && data.length > 0) {
-          setSlides(data);
-        }
+        if (!error && data && data.length > 0) setSlides(data);
       } catch (err) {
         console.error("Error fetching hero slides:", err);
       }
@@ -64,21 +60,9 @@ export const EnhancedHeroSlider = () => {
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-    setIsAutoPlaying(false);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    setIsAutoPlaying(false);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-    setIsAutoPlaying(false);
-  };
-
+  const nextSlide = useCallback(() => { setCurrentSlide((prev) => (prev + 1) % slides.length); setIsAutoPlaying(false); }, [slides.length]);
+  const prevSlide = useCallback(() => { setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length); setIsAutoPlaying(false); }, [slides.length]);
+  const goToSlide = useCallback((index: number) => { setCurrentSlide(index); setIsAutoPlaying(false); }, []);
   const isExternal = (link: string) => link.startsWith('http');
 
   return (
@@ -86,60 +70,30 @@ export const EnhancedHeroSlider = () => {
       {slides.map((slide, index) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         >
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${slide.image_url})` }}
-          />
+          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${slide.image_url})` }} />
           <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/60 to-black/40" />
-          
+
           <div className="relative h-full flex items-center justify-center text-center px-4">
-            <div className="max-w-5xl mx-auto animate-fade-in-up">
+            <div className="max-w-5xl mx-auto">
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-3 md:mb-5 leading-tight drop-shadow-lg">
                 {slide.title}
               </h1>
-              
-              {slide.subtitle && (
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gold mb-3 md:mb-5 font-semibold">
-                  {slide.subtitle}
-                </p>
-              )}
-              
-              {slide.verse && (
-                <p className="text-sm sm:text-base md:text-lg text-white/90 italic mb-2 max-w-3xl mx-auto leading-relaxed">
-                  {slide.verse}
-                </p>
-              )}
-              
-              {slide.verse_ref && (
-                <p className="text-xs sm:text-sm md:text-base text-gold-light mb-6 md:mb-8">
-                  {slide.verse_ref}
-                </p>
-              )}
+              {slide.subtitle && <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-secondary mb-3 md:mb-5 font-semibold">{slide.subtitle}</p>}
+              {slide.verse && <p className="text-sm sm:text-base md:text-lg text-white/90 italic mb-2 max-w-3xl mx-auto leading-relaxed">{slide.verse}</p>}
+              {slide.verse_ref && <p className="text-xs sm:text-sm md:text-base text-secondary/80 mb-6 md:mb-8">{slide.verse_ref}</p>}
 
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center w-full max-w-lg mx-auto">
                 {slide.cta1_text && slide.cta1_link && (
-                  <a 
-                    href={slide.cta1_link} 
-                    target={isExternal(slide.cta1_link) ? '_blank' : undefined} 
-                    rel={isExternal(slide.cta1_link) ? 'noopener noreferrer' : undefined} 
-                    className="w-full sm:w-auto"
-                  >
+                  <a href={slide.cta1_link} target={isExternal(slide.cta1_link) ? '_blank' : undefined} rel={isExternal(slide.cta1_link) ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
                     <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base shadow-lg w-full">
                       {slide.cta1_text} →
                     </Button>
                   </a>
                 )}
                 {slide.cta2_text && slide.cta2_link && (
-                  <a 
-                    href={slide.cta2_link} 
-                    target={isExternal(slide.cta2_link) ? '_blank' : undefined} 
-                    rel={isExternal(slide.cta2_link) ? 'noopener noreferrer' : undefined} 
-                    className="w-full sm:w-auto"
-                  >
+                  <a href={slide.cta2_link} target={isExternal(slide.cta2_link) ? '_blank' : undefined} rel={isExternal(slide.cta2_link) ? 'noopener noreferrer' : undefined} className="w-full sm:w-auto">
                     <Button size="lg" variant="outline" className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-foreground font-semibold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base w-full">
                       {slide.cta2_text} →
                     </Button>
@@ -149,7 +103,6 @@ export const EnhancedHeroSlider = () => {
             </div>
           </div>
 
-          {/* Scroll Indicator */}
           {index === currentSlide && (
             <div className="absolute bottom-20 md:bottom-24 left-1/2 transform -translate-x-1/2 animate-bounce text-center hidden md:block">
               <p className="text-white/80 text-sm mb-2 drop-shadow-lg">Scroll to explore</p>
@@ -159,38 +112,24 @@ export const EnhancedHeroSlider = () => {
         </div>
       ))}
 
-      {/* Navigation Arrows */}
       {slides.length > 1 && (
         <>
-          <button
-            onClick={prevSlide}
-            className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all z-10"
-            aria-label="Previous slide"
-          >
+          <button onClick={prevSlide} className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all z-10" aria-label="Previous slide">
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
-          <button
-            onClick={nextSlide}
-            className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all z-10"
-            aria-label="Next slide"
-          >
+          <button onClick={nextSlide} className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all z-10" aria-label="Next slide">
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
         </>
       )}
 
-      {/* Dot Indicators */}
       {slides.length > 1 && (
         <div className="absolute bottom-6 md:bottom-12 left-1/2 transform -translate-x-1/2 flex gap-2 md:gap-3 z-10">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`h-2 md:h-3 rounded-full transition-all ${
-                index === currentSlide 
-                  ? "bg-primary w-8 md:w-10" 
-                  : "bg-white/50 w-2 md:w-3 hover:bg-white/70"
-              }`}
+              className={`h-2 md:h-3 rounded-full transition-all ${index === currentSlide ? "bg-primary w-8 md:w-10" : "bg-white/50 w-2 md:w-3 hover:bg-white/70"}`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

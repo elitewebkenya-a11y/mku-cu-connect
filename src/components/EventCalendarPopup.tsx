@@ -24,24 +24,27 @@ export const EventCalendarPopup = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isOpen, setIsOpen] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
 
+  // Only fetch when dialog opens
   useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const fetchEvents = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .order("event_date", { ascending: true });
-
-      if (error) throw error;
-      setEvents(data || []);
-    } catch (error) {
-      console.error("Error fetching events:", error);
+    if (isOpen && !hasFetched) {
+      const fetchEvents = async () => {
+        try {
+          const { data, error } = await supabase
+            .from("events")
+            .select("*")
+            .order("event_date", { ascending: true });
+          if (error) throw error;
+          setEvents(data || []);
+        } catch (error) {
+          console.error("Error fetching events:", error);
+        }
+      };
+      fetchEvents();
+      setHasFetched(true);
     }
-  };
+  }, [isOpen, hasFetched]);
 
   const eventsForSelectedDate = events.filter((event) =>
     selectedDate && isSameDay(parseISO(event.event_date), selectedDate)
@@ -82,16 +85,13 @@ export const EventCalendarPopup = () => {
               </DialogHeader>
 
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Calendar */}
                 <div className="flex justify-center">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
                     onSelect={setSelectedDate}
                     className="rounded-md border"
-                    modifiers={{
-                      hasEvent: eventDates,
-                    }}
+                    modifiers={{ hasEvent: eventDates }}
                     modifiersStyles={{
                       hasEvent: {
                         backgroundColor: "hsl(var(--primary) / 0.2)",
@@ -102,47 +102,21 @@ export const EventCalendarPopup = () => {
                   />
                 </div>
 
-                {/* Events for selected date */}
                 <div className="space-y-4">
                   <h4 className="font-semibold text-foreground">
-                    {selectedDate
-                      ? format(selectedDate, "EEEE, MMMM d, yyyy")
-                      : "Select a date"}
+                    {selectedDate ? format(selectedDate, "EEEE, MMMM d, yyyy") : "Select a date"}
                   </h4>
 
                   {eventsForSelectedDate.length > 0 ? (
                     <div className="space-y-3 max-h-64 overflow-y-auto">
                       {eventsForSelectedDate.map((event) => (
                         <Card key={event.id} className="p-4">
-                          <h5 className="font-medium text-card-foreground mb-2">
-                            {event.title}
-                          </h5>
-                          {event.description && (
-                            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                              {event.description}
-                            </p>
-                          )}
+                          <h5 className="font-medium text-card-foreground mb-2">{event.title}</h5>
+                          {event.description && <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{event.description}</p>}
                           <div className="space-y-1 text-xs text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              <span>
-                                {event.start_time}
-                                {event.end_time && ` - ${event.end_time}`}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              <span>{event.location}</span>
-                            </div>
+                            <div className="flex items-center gap-1"><Clock className="w-3 h-3" /><span>{event.start_time}{event.end_time && ` - ${event.end_time}`}</span></div>
+                            <div className="flex items-center gap-1"><MapPin className="w-3 h-3" /><span>{event.location}</span></div>
                           </div>
-                          <a
-                            href={event.registration_link || "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-primary mt-2 hover:underline"
-                          >
-                            Register <ArrowRight className="w-3 h-3" />
-                          </a>
                         </Card>
                       ))}
                     </div>
@@ -155,8 +129,7 @@ export const EventCalendarPopup = () => {
 
                   <Link to="/events" onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full mt-4">
-                      View All Events
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      View All Events <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                 </div>
