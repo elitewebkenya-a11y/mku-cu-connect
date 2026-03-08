@@ -12,3 +12,4 @@ export { HomeFellowshipsManager } from './HomeFellowshipsManager';
 export { FAQsManager } from './FAQsManager';
 export { ElectionsManager } from './ElectionsManager';
 export { NotificationsManager } from './NotificationsManager';
+export { HeroSlidesManager } from './HeroSlidesManager';

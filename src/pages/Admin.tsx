@@ -14,7 +14,8 @@ import {
   DailyScheduleManager,
   HomeFellowshipsManager,
   FAQsManager,
-  ElectionsManager
+  ElectionsManager,
+  HeroSlidesManager
 } from "@/components/admin";
 import { PrayerRequestsManager } from "@/components/admin/PrayerRequestsManager";
 import { CommentsManager } from "@/components/admin/CommentsManager";
@@ -42,12 +43,14 @@ import {
   HomeIcon,
   HelpCircle,
   Vote,
-  BellRing
+  BellRing,
+  Presentation
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
+  { id: "hero", label: "Hero Slideshow", icon: Presentation },
   { id: "notifications", label: "Notifications", icon: BellRing },
   { id: "schedule", label: "Daily Schedule", icon: ClipboardList },
   { id: "activities", label: "Weekly Activities", icon: Calendar },
@@ -69,7 +72,7 @@ const menuItems = [
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("notifications");
+  const [activeTab, setActiveTab] = useState("hero");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -82,8 +85,9 @@ const Admin = () => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case "hero":
+        return <HeroSlidesManager />;
       case "notifications":
-        return <NotificationsManager />;
       case "schedule":
         return <DailyScheduleManager />;
       case "activities":

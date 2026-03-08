@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getEventImage } from "@/lib/eventImages";
+import { EventRegistrationDialog } from "@/components/EventRegistrationDialog";
 
 interface Event {
   id: string;
@@ -21,6 +23,8 @@ interface Event {
 export const UpcomingEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -42,6 +46,11 @@ export const UpcomingEvents = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRegister = (event: Event) => {
+    setSelectedEvent(event);
+    setDialogOpen(true);
   };
 
   if (loading) {
@@ -77,7 +86,7 @@ export const UpcomingEvents = () => {
             >
               <div className="relative h-32 overflow-hidden">
                 <img
-                  src={event.image_url || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80"}
+                  src={getEventImage(event.category, event.image_url)}
                   alt={event.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -112,16 +121,14 @@ export const UpcomingEvents = () => {
                   </div>
                 </div>
 
-                <a
-                  href={event.registration_link || "https://wa.me/254115475543"}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Button 
+                  size="sm" 
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8"
+                  onClick={() => handleRegister(event)}
                 >
-                  <Button size="sm" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8">
-                    Register
-                    <ArrowRight className="w-3 h-3 ml-1" />
-                  </Button>
-                </a>
+                  Register
+                  <ArrowRight className="w-3 h-3 ml-1" />
+                </Button>
               </div>
             </Card>
           ))}
@@ -136,6 +143,12 @@ export const UpcomingEvents = () => {
           </a>
         </div>
       </div>
+
+      <EventRegistrationDialog 
+        open={dialogOpen} 
+        onOpenChange={setDialogOpen} 
+        event={selectedEvent} 
+      />
     </section>
   );
 };

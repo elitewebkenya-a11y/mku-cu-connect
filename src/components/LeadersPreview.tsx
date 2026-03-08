@@ -63,41 +63,8 @@ export const LeadersPreview = () => {
           </h2>
         </div>
 
-        {/* Mobile: Horizontal scroll, Desktop: Grid */}
-        <div className="md:hidden overflow-x-auto pb-2 -mx-4 px-4">
-          <div className="flex gap-3 w-max">
-            {leaders.map((leader) => (
-              <div key={leader.id} className="w-32 flex-shrink-0">
-                <Card className="overflow-hidden border-0 shadow-sm bg-card h-full">
-                  <div className="aspect-square overflow-hidden bg-muted">
-                    {leader.image_url ? (
-                      <img
-                        src={leader.image_url}
-                        alt={leader.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-                        <Users className="w-8 h-8 text-primary/40" />
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="p-2 text-center">
-                    <h3 className="font-semibold text-xs text-foreground line-clamp-1">
-                      {leader.name}
-                    </h3>
-                    <p className="text-[10px] text-muted-foreground line-clamp-1">
-                      {leader.position}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Desktop Grid */}
-        <div className="hidden md:grid grid-cols-4 gap-4 max-w-3xl mx-auto">
+        {/* Responsive grid that works on all screen sizes */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
           {leaders.map((leader) => (
             <Card key={leader.id} className="group overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 bg-card">
               <div className="aspect-square overflow-hidden bg-muted">
@@ -109,15 +76,15 @@ export const LeadersPreview = () => {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-                    <Users className="w-10 h-10 text-primary/40" />
+                    <Users className="w-8 h-8 md:w-10 md:h-10 text-primary/40" />
                   </div>
                 )}
               </div>
-              <CardContent className="p-3 text-center">
-                <h3 className="font-bold text-sm text-foreground line-clamp-1">
+              <CardContent className="p-2 md:p-3 text-center">
+                <h3 className="font-bold text-xs md:text-sm text-foreground line-clamp-1">
                   {leader.name}
                 </h3>
-                <p className="text-xs text-muted-foreground line-clamp-1">
+                <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-1">
                   {leader.position}
                 </p>
               </CardContent>

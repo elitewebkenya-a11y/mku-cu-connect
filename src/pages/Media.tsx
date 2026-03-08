@@ -44,10 +44,11 @@ const Media = () => {
     }
   };
 
-  const sundaySermons = sermons.filter(s => s.category === "Sunday Service" || !s.category);
+  const sundaySermons = sermons.filter(s => s.category === "Sunday Service" || s.category === "Submission" || !s.category);
   const bibleStudies = sermons.filter(s => s.category === "Bible Study");
   const testimonies = sermons.filter(s => s.category === "Testimony");
   const worship = sermons.filter(s => s.category === "Worship");
+  const otherSermons = sermons.filter(s => s.category && !["Sunday Service", "Submission", "Bible Study", "Testimony", "Worship"].includes(s.category));
   const featuredSermons = sermons.filter(s => s.is_featured);
 
   const SermonCard = ({ sermon, featured = false }: { sermon: Sermon; featured?: boolean }) => {
