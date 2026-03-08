@@ -45,8 +45,8 @@ const Signup = () => {
           <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
             <UserPlus className="w-7 h-7 text-primary" />
           </div>
-          <CardTitle>Create Admin Account</CardTitle>
-          <CardDescription>Sign up, then an admin will approve your access to specific departments</CardDescription>
+          <CardTitle>Create Account</CardTitle>
+          <CardDescription>Sign up to manage MKU CU content. After signing up, the super admin will assign your department role and you'll get access to your dashboard.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
