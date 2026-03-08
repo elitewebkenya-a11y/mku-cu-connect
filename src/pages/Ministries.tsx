@@ -30,9 +30,17 @@ const Ministries = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("ministries").select("*").eq("is_active", true).order("name")
-      .then(({ data }) => { setMinistries(data || []); setLoading(false); })
-      .catch(() => setLoading(false));
+    const fetchMinistries = async () => {
+      try {
+        const { data } = await supabase.from("ministries").select("*").eq("is_active", true).order("name");
+        setMinistries(data || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMinistries();
   }, []);
 
   const getIcon = (iconName: string | null) => (iconName && iconMap[iconName]) || Heart;
