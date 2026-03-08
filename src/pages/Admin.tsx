@@ -23,6 +23,7 @@ import { GalleryManager } from "@/components/admin/GalleryManager";
 import { NotificationsManager } from "@/components/admin/NotificationsManager";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
 import { GuestsManager } from "@/components/admin/GuestsManager";
+import { SEOManager } from "@/components/admin/SEOManager";
 import { 
   Home, 
   Calendar, 
@@ -47,13 +48,15 @@ import {
   Vote,
   BellRing,
   Presentation,
-  Settings
+  Settings,
+  Search
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
   { id: "settings", label: "Site Settings", icon: Settings },
+  { id: "seo", label: "Google SEO", icon: Search },
   { id: "hero", label: "Hero Slideshow", icon: Presentation },
   { id: "notifications", label: "Notifications", icon: BellRing },
   { id: "schedule", label: "Daily Schedule", icon: ClipboardList },
@@ -92,6 +95,8 @@ const Admin = () => {
     switch (activeTab) {
       case "settings":
         return <SiteSettingsManager />;
+      case "seo":
+        return <SEOManager />;
       case "hero":
         return <HeroSlidesManager />;
       case "notifications":
