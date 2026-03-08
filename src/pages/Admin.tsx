@@ -14,7 +14,8 @@ import {
   DailyScheduleManager,
   HomeFellowshipsManager,
   FAQsManager,
-  ElectionsManager
+  ElectionsManager,
+  HeroSlidesManager
 } from "@/components/admin";
 import { PrayerRequestsManager } from "@/components/admin/PrayerRequestsManager";
 import { CommentsManager } from "@/components/admin/CommentsManager";
