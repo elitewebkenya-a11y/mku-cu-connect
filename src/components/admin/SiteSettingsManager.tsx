@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, Save, Loader2, Sparkles } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Sparkles, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -18,6 +18,7 @@ interface QuickAction { icon: string; title: string; description: string; color:
 export const SiteSettingsManager = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
+  const [branding, setBranding] = useState({ site_name: "", tagline: "", logo_url: "", youtube_live_url: "", whatsapp_community_link: "" });
   const [stats, setStats] = useState<StatItem[]>([]);
   const [vision, setVision] = useState({ title: "", description: "" });
   const [mission, setMission] = useState({ title: "", description: "" });
@@ -39,6 +40,7 @@ export const SiteSettingsManager = () => {
       if (error) throw error;
       const settings: Record<string, any> = {};
       (data || []).forEach((row: any) => { settings[row.key] = row.value; });
+      if (settings.branding) setBranding(settings.branding);
       if (settings.stats) setStats(settings.stats);
       if (settings.vision) setVision(settings.vision);
       if (settings.mission) setMission(settings.mission);
@@ -57,8 +59,19 @@ export const SiteSettingsManager = () => {
   const saveSetting = async (key: string, value: any) => {
     setSaving(key);
     try {
-      const { error } = await (supabase as any).from("site_settings").update({ value }).eq("key", key);
-      if (error) throw error;
+      // Try update first, then upsert if no rows affected
+      const { error: updateError, count } = await (supabase as any)
+        .from("site_settings")
+        .update({ value })
+        .eq("key", key);
+      
+      if (updateError) {
+        // Fallback: upsert
+        const { error } = await (supabase as any)
+          .from("site_settings")
+          .upsert({ key, value }, { onConflict: "key" });
+        if (error) throw error;
+      }
       toast.success("Saved successfully!");
     } catch (e) {
       console.error(e);
@@ -125,8 +138,9 @@ export const SiteSettingsManager = () => {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="stats" className="w-full">
+      <Tabs defaultValue="branding" className="w-full">
         <TabsList className="flex flex-wrap h-auto gap-1 bg-muted p-1">
+          <TabsTrigger value="branding" className="text-xs">🌐 Branding</TabsTrigger>
           <TabsTrigger value="stats" className="text-xs">Stats</TabsTrigger>
           <TabsTrigger value="vision" className="text-xs">Vision & Mission</TabsTrigger>
           <TabsTrigger value="contact" className="text-xs">Contact & Social</TabsTrigger>
@@ -135,6 +149,31 @@ export const SiteSettingsManager = () => {
           <TabsTrigger value="actions" className="text-xs">Quick Actions</TabsTrigger>
           <TabsTrigger value="ai" className="text-xs">✨ AI Assistant</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="branding" className="space-y-4">
+          <Card>
+            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Globe className="w-5 h-5 text-primary" />Site Branding</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">These settings control the site name, logo, and key links shown in the header, footer, and throughout the site.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><Label>Site Name</Label><Input value={branding.site_name} onChange={e => setBranding({ ...branding, site_name: e.target.value })} placeholder="MKU CU CHURCH" /></div>
+                <div><Label>Tagline</Label><Input value={branding.tagline} onChange={e => setBranding({ ...branding, tagline: e.target.value })} placeholder="Living the Knowledge of God" /></div>
+              </div>
+              <div><Label>Logo URL</Label><Input value={branding.logo_url} onChange={e => setBranding({ ...branding, logo_url: e.target.value })} placeholder="/lovable-uploads/logo.png or https://..." /></div>
+              {branding.logo_url && (
+                <div className="flex items-center gap-4 p-3 bg-muted rounded-lg">
+                  <img src={branding.logo_url} alt="Logo preview" className="w-16 h-16 object-contain rounded" />
+                  <span className="text-sm text-muted-foreground">Logo preview</span>
+                </div>
+              )}
+              <div><Label>YouTube Live URL</Label><Input value={branding.youtube_live_url} onChange={e => setBranding({ ...branding, youtube_live_url: e.target.value })} placeholder="https://www.youtube.com/live/..." /></div>
+              <div><Label>WhatsApp Community Link</Label><Input value={branding.whatsapp_community_link} onChange={e => setBranding({ ...branding, whatsapp_community_link: e.target.value })} placeholder="https://chat.whatsapp.com/..." /></div>
+              <Button size="sm" onClick={() => saveSetting("branding", branding)} disabled={saving === "branding"}>
+                {saving === "branding" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}Save Branding
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="stats" className="space-y-4">
           <Card>
@@ -216,7 +255,7 @@ export const SiteSettingsManager = () => {
             <CardContent className="space-y-3">
               {socialLinks.map((link, i) => (
                 <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 border rounded-lg">
-                  <Input placeholder="Platform" value={link.platform} onChange={e => { const s = [...socialLinks]; s[i].platform = e.target.value; setSocialLinks(s); }} />
+                  <Input placeholder="Platform (Facebook, YouTube, Instagram, Twitter)" value={link.platform} onChange={e => { const s = [...socialLinks]; s[i].platform = e.target.value; setSocialLinks(s); }} />
                   <Input placeholder="URL" value={link.link} onChange={e => { const s = [...socialLinks]; s[i].link = e.target.value; setSocialLinks(s); }} />
                   <div className="flex gap-2">
                     <Input placeholder="Handle" value={link.handle} onChange={e => { const s = [...socialLinks]; s[i].handle = e.target.value; setSocialLinks(s); }} />
