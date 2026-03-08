@@ -35,9 +35,15 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
+      // Only fetch upcoming + recent past events for performance
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+      const pastDate = threeMonthsAgo.toISOString().split("T")[0];
+
       const { data, error } = await supabase
         .from("events")
-        .select("*")
+        .select("id,title,description,event_date,start_time,end_time,location,category,image_url,registration_link,is_featured")
+        .gte("event_date", pastDate)
         .order("event_date", { ascending: true });
 
       if (error) throw error;
@@ -94,7 +100,7 @@ const Events = () => {
       <main>
         {/* Hero Section */}
         <section className="relative py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20" />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1920&q=60')] bg-cover bg-center opacity-20" />
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center text-white">
               <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 animate-fade-in">

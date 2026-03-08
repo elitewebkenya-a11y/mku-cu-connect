@@ -75,9 +75,9 @@ export const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center text-sm">
             <div className="flex items-center gap-6">
-              <a href="tel:+254704021286" className="flex items-center gap-2 hover:text-secondary transition-colors">
+              <a href="tel:+254711201138" className="flex items-center gap-2 hover:text-secondary transition-colors">
                 <Phone className="w-4 h-4" />
-                <span>+254 704 021 286</span>
+                <span>+254 711 201 138</span>
               </a>
               <a href="mailto:mkucuthika@gmail.com" className="flex items-center gap-2 hover:text-secondary transition-colors">
                 <Mail className="w-4 h-4" />
