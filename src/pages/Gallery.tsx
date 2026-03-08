@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Camera, X, ChevronLeft, ChevronRight, Play, Loader2, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useSEO } from "@/hooks/useSEO";
 
 interface GalleryItem {
   id: string;
@@ -23,6 +24,13 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [filter, setFilter] = useState<string>("all");
+
+  useSEO({
+    title: "Photo Gallery — Moments of Faith",
+    description: "Browse photos and videos capturing worship, fellowship, and community at MKU Christian Union.",
+    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/gallery",
+  });
 
   useEffect(() => {
     fetchGallery();

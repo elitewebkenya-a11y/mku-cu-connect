@@ -7,6 +7,7 @@ import { Calendar, ArrowRight, BookOpen, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useSEO } from "@/hooks/useSEO";
 
 interface BlogPost {
   id: string;
@@ -26,6 +27,13 @@ const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useSEO({
+    title: "Faith Stories — Blog & Testimonies",
+    description: "Read inspiring stories of faith, transformation, and God's work at MKU Christian Union. Real testimonies from students.",
+    image: "https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/blog",
+  });
 
   useEffect(() => {
     const fetch = async () => {

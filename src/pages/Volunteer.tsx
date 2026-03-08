@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Clock, CheckCircle, ArrowRight, HandHelping, Loader2, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useSEO } from "@/hooks/useSEO";
 
 interface VolunteerOpportunity {
   id: string;
@@ -17,6 +18,13 @@ interface VolunteerOpportunity {
 }
 
 const Volunteer = () => {
+  useSEO({
+    title: "Volunteer — Serve With Us",
+    description: "Use your gifts and talents to serve God at MKU Christian Union. Browse current volunteer opportunities.",
+    image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1200&q=80",
+    url: "https://mkucuu.lovable.app/volunteer",
+  });
+
   const [opportunities, setOpportunities] = useState<VolunteerOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
 
