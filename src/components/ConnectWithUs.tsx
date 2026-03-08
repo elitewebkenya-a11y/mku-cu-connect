@@ -1,389 +1,118 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { 
-  MessageCircle, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Facebook, 
-  Twitter, 
-  Youtube,
-  ExternalLink,
-  Navigation,
-  Map
-} from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { MessageCircle, Phone, Mail, MapPin, Facebook, Twitter, Youtube, Instagram, ExternalLink, Navigation, Map } from "lucide-react";
+import { useSiteSetting } from "@/hooks/useSiteSettings";
 
-const contactMethods = [
-  {
-    icon: MessageCircle,
-    title: "WhatsApp",
-    description: "Quick responses",
-    action: "Chat Now",
-    link: "https://wa.me/254711201138",
-    color: "bg-green-500/10 text-green-600 dark:text-green-400",
-    type: "external"
-  },
-  {
-    icon: Phone,
-    title: "Call Us",
-    description: "0711201138",
-    action: "Call",
-    link: "tel:+254711201138",
-    color: "bg-primary/10 text-primary",
-    type: "external"
-  },
-  {
-    icon: Mail,
-    title: "Email",
-    description: "mkucuthika@gmail.com",
-    action: "Send Email",
-    link: "mailto:mkucuthika@gmail.com",
-    color: "bg-secondary/10 text-secondary",
-    type: "external"
-  },
-  {
-    icon: MapPin,
-    title: "Location",
-    description: "MKU Main Campus, Thika",
-    action: "Get Directions",
-    link: "https://maps.app.goo.gl/Ci8S9Nhb25FSCrgX8",
-    color: "bg-accent/10 text-accent",
-    type: "location"
-  }
-];
+const platformIcons: Record<string, React.ElementType> = { Facebook, Twitter, YouTube: Youtube, Instagram };
 
-const socialLinks = [
-  { 
-    icon: Facebook, 
-    link: "https://facebook.com/MKUCUTHIKA", 
-    label: "Facebook",
-    handle: "MKU CU THIKA" 
-  },
-  { 
-    icon: Twitter, 
-    link: "https://twitter.com/MkuciThika", 
-    label: "Twitter",
-    handle: "@MkuciThika" 
-  },
-  { 
-    icon: Youtube, 
-    link: "https://youtube.com/@MKUCUThikaTv", 
-    label: "YouTube",
-    handle: "MKU CU Thika Tv" 
-  },
-];
+const defaultContact = { whatsapp: "https://wa.me/254711201138", phone: "0711201138", email: "mkucuthika@gmail.com", location: "MKU Main Campus, Thika", map_link: "https://maps.app.goo.gl/Ci8S9Nhb25FSCrgX8" };
+const defaultSocial = [{ platform: "Facebook", link: "https://facebook.com/MKUCUTHIKA", handle: "MKU CU THIKA" }];
 
 export const ConnectWithUs = () => {
+  const { data: contact } = useSiteSetting("contact_info", defaultContact);
+  const { data: socialLinks } = useSiteSetting("social_links", defaultSocial);
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  
-  const mapLink = "https://maps.app.goo.gl/Ci8S9Nhb25FSCrgX8";
-  
-  // MKU Thika coordinates (approximate - you can adjust these)
+
   const churchLocation = { lat: -1.0333, lng: 37.0833 };
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distance in km
-    return distance;
-  };
-
-  const deg2rad = (deg: number) => {
-    return deg * (Math.PI / 180);
-  };
-
-  const formatDistance = (km: number) => {
-    if (km < 1) {
-      return `${Math.round(km * 1000)} meters away`;
-    } else {
-      return `${km.toFixed(1)} km away`;
-    }
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   };
 
   const getUserLocation = () => {
     setIsLoadingLocation(true);
     setLocationError(null);
-
-    if (!navigator.geolocation) {
-      setLocationError("Geolocation is not supported by your browser");
-      setIsLoadingLocation(false);
-      return;
-    }
-
+    if (!navigator.geolocation) { setLocationError("Geolocation not supported"); setIsLoadingLocation(false); return; }
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userLat = position.coords.latitude;
-        const userLng = position.coords.longitude;
-        setUserLocation({ lat: userLat, lng: userLng });
-        
-        const dist = calculateDistance(
-          userLat,
-          userLng,
-          churchLocation.lat,
-          churchLocation.lng
-        );
-        setDistance(formatDistance(dist));
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        const km = calculateDistance(pos.coords.latitude, pos.coords.longitude, churchLocation.lat, churchLocation.lng);
+        setDistance(km < 1 ? `${Math.round(km * 1000)} meters away` : `${km.toFixed(1)} km away`);
         setIsLoadingLocation(false);
       },
-      (error) => {
-        setIsLoadingLocation(false);
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setLocationError("Location access denied. Please enable location permissions.");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            setLocationError("Location information unavailable.");
-            break;
-          case error.TIMEOUT:
-            setLocationError("Location request timed out.");
-            break;
-          default:
-            setLocationError("An error occurred while getting your location.");
-        }
-      }
+      () => { setLocationError("Location access denied"); setIsLoadingLocation(false); }
     );
   };
 
-  const handleContactClick = (method: typeof contactMethods[0]) => {
-    if (method.type === "location") {
-      setShowLocationModal(true);
-      // Request location when modal opens
-      getUserLocation();
-    } else {
-      window.open(method.link, "_blank");
-    }
-  };
+  const contactMethods = [
+    { icon: MessageCircle, title: "WhatsApp", description: "Quick responses", action: "Chat Now", link: contact.whatsapp, color: "bg-green-500/10 text-green-600 dark:text-green-400", type: "external" },
+    { icon: Phone, title: "Call Us", description: contact.phone, action: "Call", link: `tel:+254${contact.phone.replace(/^0/, "")}`, color: "bg-primary/10 text-primary", type: "external" },
+    { icon: Mail, title: "Email", description: contact.email, action: "Send Email", link: `mailto:${contact.email}`, color: "bg-secondary/10 text-secondary", type: "external" },
+    { icon: MapPin, title: "Location", description: contact.location, action: "Get Directions", link: contact.map_link, color: "bg-accent/10 text-accent", type: "location" },
+  ];
 
   return (
     <>
       <section className="py-16 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <MessageCircle className="w-4 h-4" />
-              Get In Touch
-            </div>
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
-              Connect With Us
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              We'd love to hear from you. Reach out through any of these channels.
-            </p>
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4"><MessageCircle className="w-4 h-4" />Get In Touch</div>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">Connect With Us</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">We'd love to hear from you. Reach out through any of these channels.</p>
           </div>
-
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {contactMethods.map((method, index) => (
-              <Card 
-                key={index} 
-                className="group border-0 shadow-md hover:shadow-lg transition-all duration-300 bg-card overflow-hidden"
-              >
+              <Card key={index} className="group border-0 shadow-md hover:shadow-lg transition-all duration-300 bg-card overflow-hidden">
                 <CardContent className="p-6 text-center">
-                  <div className={`w-14 h-14 rounded-full ${method.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-                    <method.icon className="w-7 h-7" />
-                  </div>
+                  <div className={`w-14 h-14 rounded-full ${method.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}><method.icon className="w-7 h-7" /></div>
                   <h3 className="font-semibold text-foreground mb-1">{method.title}</h3>
                   <p className="text-sm text-muted-foreground mb-4">{method.description}</p>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                    onClick={() => handleContactClick(method)}
-                  >
-                    {method.action}
-                    <ExternalLink className="w-3 h-3 ml-2" />
+                  <Button size="sm" variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                    onClick={() => method.type === "location" ? (setShowLocationModal(true), getUserLocation()) : window.open(method.link, "_blank")}>
+                    {method.action}<ExternalLink className="w-3 h-3 ml-2" />
                   </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
-
           <div className="text-center">
             <p className="text-muted-foreground mb-4">Follow us on social media</p>
             <div className="flex justify-center gap-4">
-              {socialLinks.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary hover:shadow-md transition-all"
-                  aria-label={social.label}
-                  title={social.handle}
-                >
-                  <social.icon className="w-5 h-5" />
-                </a>
-              ))}
+              {socialLinks.map((social: any, index: number) => {
+                const SIcon = platformIcons[social.platform] || MessageCircle;
+                return (
+                  <a key={index} href={social.link} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary hover:shadow-md transition-all" aria-label={social.platform} title={social.handle}>
+                    <SIcon className="w-5 h-5" />
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
-
-      {/* Location Modal */}
       <Dialog open={showLocationModal} onOpenChange={setShowLocationModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <MapPin className="w-5 h-5 text-primary" />
-              Our Location
-            </DialogTitle>
-            <DialogDescription>
-              Mount Kenya University Christian Union - Main Campus, Thika
-            </DialogDescription>
+            <DialogTitle className="flex items-center gap-2 text-xl"><MapPin className="w-5 h-5 text-primary" />Our Location</DialogTitle>
+            <DialogDescription>Mount Kenya University Christian Union - Main Campus, Thika</DialogDescription>
           </DialogHeader>
-          
           <div className="space-y-4">
-            {/* Location Permission Banner */}
-            {!userLocation && !locationError && (
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <Navigation className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-sm text-foreground mb-1">
-                      {isLoadingLocation ? "Getting your location..." : "Enable Location Access"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {isLoadingLocation 
-                        ? "Please wait while we get your current location" 
-                        : "We'll show you the distance from your current location"}
-                    </p>
-                    {!isLoadingLocation && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="mt-3 bg-blue-500 text-white hover:bg-blue-600 border-0"
-                        onClick={getUserLocation}
-                      >
-                        <Navigation className="w-3 h-3 mr-2" />
-                        Allow Location Access
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Location Error */}
-            {locationError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-sm text-foreground mb-1">Location Access Denied</p>
-                    <p className="text-xs text-muted-foreground">{locationError}</p>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="mt-3"
-                      onClick={getUserLocation}
-                    >
-                      Try Again
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Distance Display */}
             {userLocation && distance && (
               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <Navigation className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="font-medium text-sm text-foreground mb-1">Your Location Detected</p>
-                    <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                      {distance}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      from Mount Kenya University CU
-                    </p>
-                  </div>
+                  <div><p className="font-medium text-sm text-foreground mb-1">Your Location Detected</p><p className="text-lg font-bold text-green-600 dark:text-green-400">{distance}</p></div>
                 </div>
               </div>
             )}
-
-            {/* Map Preview */}
+            {locationError && <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-sm text-muted-foreground">{locationError}</div>}
             <div className="relative w-full h-48 bg-muted rounded-lg overflow-hidden border border-border">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.0234567890123!2d37.0833!3d-1.0333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMDInMDAuMCJTIDM3wrAwNScwMC4wIkU!5e0!3m2!1sen!2ske!4v1234567890123"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="MKU Christian Union Location"
-              />
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.0234567890123!2d37.0833!3d-1.0333" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" title="MKU CU Location" />
             </div>
-
-            {/* Address Details */}
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-sm text-foreground">Address</p>
-                  <p className="text-sm text-muted-foreground">
-                    Mount Kenya University<br />
-                    Main Campus, Thika<br />
-                    Thika, Kenya
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  window.open(mapLink, "_blank");
-                }}
-              >
-                <Map className="w-4 h-4 mr-2" />
-                Open in Maps
-              </Button>
-              <Button
-                className="w-full bg-primary hover:bg-primary/90"
-                onClick={() => {
-                  // Create directions URL with user's location if available
-                  let directionsUrl = mapLink;
-                  if (userLocation) {
-                    directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${churchLocation.lat},${churchLocation.lng}`;
-                  }
-                  window.open(directionsUrl, "_blank");
-                }}
-              >
-                <Navigation className="w-4 h-4 mr-2" />
-                Get Directions
-              </Button>
+              <Button variant="outline" onClick={() => window.open(contact.map_link, "_blank")}><Map className="w-4 h-4 mr-2" />Open in Maps</Button>
+              <Button className="bg-primary hover:bg-primary/90" onClick={() => window.open(userLocation ? `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${churchLocation.lat},${churchLocation.lng}` : contact.map_link, "_blank")}><Navigation className="w-4 h-4 mr-2" />Get Directions</Button>
             </div>
-
-            {/* Close Button */}
-            <Button
-              variant="ghost"
-              className="w-full"
-              onClick={() => setShowLocationModal(false)}
-            >
-              Close
-            </Button>
           </div>
         </DialogContent>
       </Dialog>
