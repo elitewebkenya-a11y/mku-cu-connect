@@ -456,6 +456,57 @@ export type Database = {
         }
         Relationships: []
       }
+      hero_slides: {
+        Row: {
+          created_at: string | null
+          cta1_link: string | null
+          cta1_text: string | null
+          cta2_link: string | null
+          cta2_text: string | null
+          display_order: number | null
+          id: string
+          image_url: string
+          is_active: boolean | null
+          subtitle: string | null
+          title: string
+          updated_at: string | null
+          verse: string | null
+          verse_ref: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          cta1_link?: string | null
+          cta1_text?: string | null
+          cta2_link?: string | null
+          cta2_text?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_active?: boolean | null
+          subtitle?: string | null
+          title: string
+          updated_at?: string | null
+          verse?: string | null
+          verse_ref?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          cta1_link?: string | null
+          cta1_text?: string | null
+          cta2_link?: string | null
+          cta2_text?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_active?: boolean | null
+          subtitle?: string | null
+          title?: string
+          updated_at?: string | null
+          verse?: string | null
+          verse_ref?: string | null
+        }
+        Relationships: []
+      }
       home_fellowships: {
         Row: {
           area: string
