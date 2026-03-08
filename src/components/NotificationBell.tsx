@@ -112,9 +112,13 @@ export const NotificationBell = () => {
     // Dismiss this notification for this device
     dismissNotification(notification.id);
     
-    // Navigate without page refresh
+    // Navigate: use window.open for external links, navigate for internal
     if (notification.link) {
-      navigate(notification.link);
+      if (notification.link.startsWith("http://") || notification.link.startsWith("https://")) {
+        window.open(notification.link, "_blank", "noopener,noreferrer");
+      } else {
+        navigate(notification.link);
+      }
     }
     setIsOpen(false);
   }, [dismissNotification, navigate]);
