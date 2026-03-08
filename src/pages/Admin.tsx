@@ -72,7 +72,7 @@ const menuItems = [
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("notifications");
+  const [activeTab, setActiveTab] = useState("hero");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -85,8 +85,9 @@ const Admin = () => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case "hero":
+        return <HeroSlidesManager />;
       case "notifications":
-        return <NotificationsManager />;
       case "schedule":
         return <DailyScheduleManager />;
       case "activities":
