@@ -4,10 +4,9 @@ import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Camera, X, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { Camera, X, ChevronLeft, ChevronRight, Play, Loader2, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { AnimatedSection } from "@/components/AnimatedSection";
 
 interface GalleryItem {
   id: string;
@@ -35,7 +34,6 @@ const Gallery = () => {
         .from("media_gallery")
         .select("*")
         .order("created_at", { ascending: false });
-
       if (error) throw error;
       setItems(data || []);
     } catch (error) {
@@ -52,84 +50,98 @@ const Gallery = () => {
   const openLightbox = (index: number) => setSelectedIndex(index);
   const closeLightbox = () => setSelectedIndex(null);
   const nextImage = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex((selectedIndex + 1) % filteredItems.length);
-    }
+    if (selectedIndex !== null) setSelectedIndex((selectedIndex + 1) % filteredItems.length);
   };
   const prevImage = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex((selectedIndex - 1 + filteredItems.length) % filteredItems.length);
-    }
+    if (selectedIndex !== null) setSelectedIndex((selectedIndex - 1 + filteredItems.length) % filteredItems.length);
   };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (selectedIndex === null) return;
+      if (e.key === "ArrowRight") nextImage();
+      if (e.key === "ArrowLeft") prevImage();
+      if (e.key === "Escape") closeLightbox();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [selectedIndex, filteredItems.length]);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        {/* Hero Section */}
-        <section className="relative py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20" />
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center text-white">
-              <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full mb-6">
-                <Camera className="w-5 h-5" />
-                <span className="text-sm font-medium">Photo Gallery</span>
-              </div>
-              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">
-                Moments of Faith & Fellowship
-              </h1>
-              <p className="text-lg md:text-xl text-white/80">
-                Capturing the joy, worship, and community that make MKU CU special
-              </p>
+        {/* Hero */}
+        <section className="relative min-h-[45vh] md:min-h-[55vh] flex items-end overflow-hidden">
+          <div className="absolute inset-0">
+            <img
+              src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1920&q=80"
+              alt="Gallery"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-black/50 to-black/30" />
+          </div>
+          <div className="container mx-auto px-4 relative z-10 pb-10 md:pb-14">
+            <div className="inline-flex items-center gap-2 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-sm font-medium mb-4">
+              <Camera className="w-4 h-4" /> Photo Gallery
             </div>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-3">
+              Moments of Faith
+            </h1>
+            <p className="text-base md:text-lg text-white/80 max-w-2xl">
+              Capturing the joy, worship, and community that make MKU CU special
+            </p>
           </div>
         </section>
 
-        {/* Filter Tabs */}
-        <section className="py-8 bg-muted/30 border-b border-border">
+        {/* Filters */}
+        <section className="py-4 bg-muted/30 border-b border-border">
           <div className="container mx-auto px-4">
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
               {categories.map((cat) => (
-                <Button
+                <button
                   key={cat}
-                  variant={filter === cat ? "default" : "outline"}
-                  size="sm"
                   onClick={() => setFilter(cat)}
-                  className="capitalize"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap capitalize transition-all flex-shrink-0 ${
+                    filter === cat
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted/50 text-foreground hover:bg-muted"
+                  }`}
                 >
                   {cat}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
         </section>
 
         {/* Gallery Grid */}
-        <AnimatedSection animation="fade-up">
-          <section className="py-16">
-            <div className="container mx-auto px-4">
-              {loading ? (
-                <div className="text-center py-12">
-                  <div className="animate-pulse text-muted-foreground">Loading gallery...</div>
-                </div>
-              ) : filteredItems.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {filteredItems.map((item, index) => (
-                    <Card
-                      key={item.id}
-                      className="overflow-hidden group cursor-pointer"
-                      onClick={() => openLightbox(index)}
-                    >
-                      <div className="aspect-square relative">
+        <section className="py-12 md:py-16">
+          <div className="container mx-auto px-4">
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : filteredItems.length > 0 ? (
+              <div className="columns-2 md:columns-3 lg:columns-4 gap-3 max-w-7xl mx-auto">
+                {filteredItems.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className="break-inside-avoid mb-3 group cursor-pointer"
+                    onClick={() => openLightbox(index)}
+                  >
+                    <Card className="overflow-hidden">
+                      <div className="relative">
                         {item.media_type === "video" ? (
-                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <div className="aspect-video bg-muted flex items-center justify-center">
                             <Play className="w-12 h-12 text-primary" />
                           </div>
                         ) : (
                           <img
                             src={item.media_url}
                             alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
                             loading="lazy"
                           />
                         )}
@@ -137,54 +149,58 @@ const Gallery = () => {
                           <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                         {item.category && (
-                          <Badge className="absolute top-2 right-2 text-xs">{item.category}</Badge>
+                          <Badge className="absolute top-2 right-2 text-xs bg-black/60 backdrop-blur-sm text-white border-0">
+                            {item.category}
+                          </Badge>
                         )}
                       </div>
                     </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Camera className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground text-lg">No gallery items yet</p>
-                </div>
-              )}
-            </div>
-          </section>
-        </AnimatedSection>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20">
+                <Image className="w-16 h-16 text-muted-foreground/40 mx-auto mb-4" />
+                <p className="text-lg font-medium text-muted-foreground">No gallery items yet</p>
+                <p className="text-sm text-muted-foreground/70 mt-1">Photos will appear here once uploaded</p>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Lightbox */}
         {selectedIndex !== null && filteredItems[selectedIndex] && (
-          <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center" onClick={closeLightbox}>
             <button
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 text-white hover:text-white/80 z-10"
+              onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
+              className="absolute top-4 right-4 text-white/70 hover:text-white z-10 p-2"
             >
-              <X className="w-8 h-8" />
+              <X className="w-7 h-7" />
             </button>
             <button
-              onClick={prevImage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-white/80"
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-2"
             >
-              <ChevronLeft className="w-10 h-10" />
+              <ChevronLeft className="w-8 h-8 md:w-10 md:h-10" />
             </button>
             <button
-              onClick={nextImage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-white/80"
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-2"
             >
-              <ChevronRight className="w-10 h-10" />
+              <ChevronRight className="w-8 h-8 md:w-10 md:h-10" />
             </button>
-            <div className="max-w-4xl max-h-[80vh]">
+            <div className="max-w-4xl max-h-[85vh] px-12" onClick={(e) => e.stopPropagation()}>
               <img
                 src={filteredItems[selectedIndex].media_url}
                 alt={filteredItems[selectedIndex].title}
-                className="max-w-full max-h-[70vh] object-contain mx-auto"
+                className="max-w-full max-h-[75vh] object-contain mx-auto rounded-lg"
               />
               <div className="text-center mt-4">
-                <h3 className="text-white text-xl font-semibold">{filteredItems[selectedIndex].title}</h3>
+                <h3 className="text-white text-lg font-semibold">{filteredItems[selectedIndex].title}</h3>
                 {filteredItems[selectedIndex].description && (
-                  <p className="text-white/70 mt-2">{filteredItems[selectedIndex].description}</p>
+                  <p className="text-white/60 mt-1 text-sm">{filteredItems[selectedIndex].description}</p>
                 )}
+                <p className="text-white/40 text-xs mt-2">{selectedIndex + 1} / {filteredItems.length}</p>
               </div>
             </div>
           </div>

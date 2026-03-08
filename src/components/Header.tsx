@@ -63,31 +63,22 @@ export const Header = () => {
       <header className="bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm fixed left-0 right-0 top-0 z-50 border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-3">
-            {/* Menu trigger + Logo */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="p-2 rounded-lg hover:bg-accent transition-colors"
-                aria-label="Open menu"
-              >
-                <Menu className="w-6 h-6" />
-              </button>
-              <Link to="/" className="flex items-center gap-3 group">
-                <img
-                  alt="MKU CU Logo"
-                  className="w-10 h-10 md:w-12 md:h-12 object-contain transition-transform group-hover:scale-105"
-                  src="/lovable-uploads/d7e39077-9fab-48b2-a966-23d29d0ec2ff.png"
-                />
-                <div>
-                  <div className="font-serif font-bold text-base md:text-lg text-foreground group-hover:text-primary transition-colors">
-                    MKU CU CHURCH
-                  </div>
-                  <div className="text-xs text-muted-foreground italic hidden sm:block">
-                    Living the Knowledge of God
-                  </div>
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3 group">
+              <img
+                alt="MKU CU Logo"
+                className="w-10 h-10 md:w-12 md:h-12 object-contain transition-transform group-hover:scale-105"
+                src="/lovable-uploads/d7e39077-9fab-48b2-a966-23d29d0ec2ff.png"
+              />
+              <div>
+                <div className="font-serif font-bold text-base md:text-lg text-foreground group-hover:text-primary transition-colors">
+                  MKU CU CHURCH
                 </div>
-              </Link>
-            </div>
+                <div className="text-xs text-muted-foreground italic hidden sm:block">
+                  Living the Knowledge of God
+                </div>
+              </div>
+            </Link>
 
             {/* Desktop quick nav */}
             <nav className="hidden lg:flex items-center gap-1">
@@ -120,16 +111,23 @@ export const Header = () => {
               )}
             </nav>
 
-            {/* Right actions */}
+            {/* Right actions + Menu */}
             <div className="flex items-center gap-2">
-              <NotificationBell />
-              <ThemeToggle />
               <a href="https://www.youtube.com/live/2nKqPUZFPCE" target="_blank" rel="noopener noreferrer" className="hidden md:block">
                 <Button variant="outline" size="sm" className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground gap-2">
                   <Youtube className="w-4 h-4" />
                   Watch Live
                 </Button>
               </a>
+              <NotificationBell />
+              <ThemeToggle />
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 rounded-lg hover:bg-accent transition-colors"
+                aria-label="Open menu"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
             </div>
           </div>
         </div>

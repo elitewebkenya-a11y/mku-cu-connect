@@ -7,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { 
   Users, Heart, Music, BookOpen, Globe, HandHeart, 
   Mic, Camera, Shield, Home, Baby, Sparkles,
-  Clock, User, Loader2, ArrowRight, Church
+  Clock, User, Loader2, ArrowRight, Church,
+  Volume2, Hand, UserPlus, Palette
 } from "lucide-react";
 
 interface Ministry {
@@ -22,7 +23,11 @@ interface Ministry {
 }
 
 const iconMap: Record<string, any> = {
-  Music, BookOpen, Globe, HandHeart, Heart, Users, Mic, Camera, Shield, Home, Baby, Sparkles,
+  "music": Music, "music-2": Music, "book-open": BookOpen, "globe": Globe,
+  "heart-handshake": HandHeart, "heart": Heart, "users": Users, "mic": Mic,
+  "camera": Camera, "shield": Shield, "home": Home, "baby": Baby,
+  "sparkles": Sparkles, "volume-2": Volume2, "hand": Hand,
+  "user-plus": UserPlus, "palette": Palette, "pray": HandHeart,
 };
 
 const Ministries = () => {
@@ -43,7 +48,10 @@ const Ministries = () => {
     fetchMinistries();
   }, []);
 
-  const getIcon = (iconName: string | null) => (iconName && iconMap[iconName]) || Heart;
+  const getIcon = (iconName: string | null) => {
+    if (!iconName) return Heart;
+    return iconMap[iconName] || Heart;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,10 +71,10 @@ const Ministries = () => {
           <div className="inline-flex items-center gap-2 bg-secondary/90 text-secondary-foreground px-3 py-1 rounded-full text-sm font-medium mb-4">
             <Church className="w-4 h-4" /> Serve With Purpose
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-3">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-3">
             Our Ministries
           </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-2xl">
+          <p className="text-base md:text-lg text-white/80 max-w-2xl">
             Discover your calling and make a difference. Everyone has a gift — find where yours can be used.
           </p>
         </div>
@@ -111,7 +119,6 @@ const Ministries = () => {
                 const IconComponent = getIcon(ministry.icon);
                 return (
                   <Card key={ministry.id} className="group hover:shadow-xl transition-all duration-300 bg-card hover:-translate-y-1 overflow-hidden">
-                    {/* Color strip */}
                     <div className="h-1.5 bg-gradient-to-r from-primary to-secondary" />
                     <div className="p-5 md:p-6">
                       <div className="flex items-start gap-4 mb-4">
