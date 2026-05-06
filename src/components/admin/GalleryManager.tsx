@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Image, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Image, X, Upload, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -34,6 +34,9 @@ export const GalleryManager = () => {
     category: "Events",
     is_featured: false,
   });
+  const [bulkUrls, setBulkUrls] = useState("");
+  const [bulkCategory, setBulkCategory] = useState("Events");
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   useEffect(() => {
     fetchItems();
@@ -137,12 +140,111 @@ export const GalleryManager = () => {
     }
   };
 
+  const handleBulkUrls = async () => {
+    const urls = bulkUrls.split(/[\n,\s]+/).map(u => u.trim()).filter(u => /^https?:\/\//.test(u));
+    if (urls.length === 0) { toast.error("Paste one or more image URLs"); return; }
+    setBulkBusy(true);
+    try {
+      const rows = urls.map((url, i) => ({
+        title: `Photo ${Date.now()}-${i + 1}`,
+        media_url: url,
+        media_type: "image",
+        category: bulkCategory,
+        is_featured: false,
+      }));
+      const { error } = await supabase.from("media_gallery").insert(rows);
+      if (error) throw error;
+      toast.success(`Added ${urls.length} photo${urls.length > 1 ? "s" : ""}`);
+      setBulkUrls("");
+      fetchItems();
+    } catch (e: any) {
+      toast.error(e.message || "Bulk add failed");
+    } finally { setBulkBusy(false); }
+  };
+
+  const handleFilesUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setBulkBusy(true);
+    let success = 0;
+    try {
+      const uploads = await Promise.all(Array.from(files).map(async (file) => {
+        const ext = file.name.split(".").pop() || "jpg";
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("gallery").upload(path, file, { cacheControl: "31536000", upsert: false });
+        if (upErr) { console.error(upErr); return null; }
+        const { data } = supabase.storage.from("gallery").getPublicUrl(path);
+        return {
+          title: file.name.replace(/\.[^.]+$/, ""),
+          media_url: data.publicUrl,
+          media_type: file.type.startsWith("video") ? "video" : "image",
+          category: bulkCategory,
+          is_featured: false,
+        };
+      }));
+      const rows = uploads.filter(Boolean) as any[];
+      if (rows.length) {
+        const { error } = await supabase.from("media_gallery").insert(rows);
+        if (error) throw error;
+        success = rows.length;
+      }
+      toast.success(`Uploaded ${success} of ${files.length} file${files.length > 1 ? "s" : ""}`);
+      fetchItems();
+    } catch (e: any) {
+      toast.error(e.message || "Upload failed");
+    } finally { setBulkBusy(false); }
+  };
+
   if (loading) {
     return <div className="p-6 text-center text-muted-foreground">Loading gallery...</div>;
   }
 
   return (
     <div className="space-y-6">
+      {/* Bulk Upload */}
+      <Card className="p-4 md:p-6 border-primary/30">
+        <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
+          <Upload className="w-5 h-5 text-primary" /> Bulk Upload Photos
+        </h3>
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-3">
+            <Textarea
+              placeholder="Paste multiple image URLs (one per line, or comma-separated)"
+              value={bulkUrls}
+              onChange={(e) => setBulkUrls(e.target.value)}
+              rows={3}
+            />
+            <div className="space-y-2">
+              <Select value={bulkCategory} onValueChange={setBulkCategory}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Button onClick={handleBulkUrls} disabled={bulkBusy} className="w-full">
+                {bulkBusy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                Add URLs
+              </Button>
+            </div>
+          </div>
+          <div>
+            <label className="flex items-center justify-center gap-2 border-2 border-dashed border-border hover:border-primary/50 rounded-lg p-6 cursor-pointer transition-colors">
+              <Upload className="w-5 h-5 text-primary" />
+              <span className="text-sm">
+                {bulkBusy ? "Uploading..." : "Click to upload multiple files (photos / videos)"}
+              </span>
+              <input
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                className="hidden"
+                disabled={bulkBusy}
+                onChange={(e) => handleFilesUpload(e.target.files)}
+              />
+            </label>
+          </div>
+        </div>
+      </Card>
+
       {/* Form */}
       <Card className="p-4 md:p-6">
         <div className="flex items-center justify-between mb-4">

@@ -151,6 +151,7 @@ const Gallery = () => {
                             alt={item.title}
                             className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
                             loading="lazy"
+                            decoding="async"
                           />
                         )}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
