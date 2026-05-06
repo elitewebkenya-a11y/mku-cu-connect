@@ -34,6 +34,9 @@ export const GalleryManager = () => {
     category: "Events",
     is_featured: false,
   });
+  const [bulkUrls, setBulkUrls] = useState("");
+  const [bulkCategory, setBulkCategory] = useState("Events");
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   useEffect(() => {
     fetchItems();
